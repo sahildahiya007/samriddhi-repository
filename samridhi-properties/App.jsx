@@ -647,12 +647,11 @@ function PropertyCard({ property, onClick }) {
         : "Construction";
   return (
     <div
-      className="relative overflow-hidden cursor-pointer transition-all duration-500 group"
+      className="relative overflow-hidden cursor-pointer transition-all duration-500 group rounded-none md:rounded-[18px]"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => onClick(property)}
       style={{
-        borderRadius: "18px",
         transform: hover ? "scale(1.015)" : "scale(1)",
         boxShadow: hover
           ? "0 20px 36px rgba(26,26,26,0.22)"
@@ -782,7 +781,7 @@ function PropertyCarousel({ properties, onClick }) {
       behavior: "smooth",
     });
   return (
-    <div className="relative pl-4 pr-0 md:px-14">
+    <div className="relative px-0 md:px-14">
       {left && (
         <button
           onClick={() => scroll("left")}
@@ -794,7 +793,7 @@ function PropertyCarousel({ properties, onClick }) {
       )}
       <div
         ref={ref}
-        className="flex gap-4 md:gap-6 overflow-x-auto"
+        className="flex gap-0 md:gap-6 overflow-x-auto"
         style={{
           scrollBehavior: "smooth",
           scrollSnapType: "x mandatory",
@@ -806,7 +805,7 @@ function PropertyCarousel({ properties, onClick }) {
           <div
             key={p.id}
             className="flex-shrink-0"
-            style={{ width: "min(92vw, 390px)", scrollSnapAlign: "start" }}
+            style={{ width: "100vw", maxWidth: "390px", scrollSnapAlign: "start" }}
           >
             <PropertyCard property={p} onClick={onClick} />
           </div>
@@ -830,7 +829,7 @@ function PropertyGrid({ properties, onClick }) {
   return (
     <section
       id="sale"
-      className="relative py-24 px-6 overflow-hidden"
+      className="relative py-24 px-0 md:px-6 overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(135deg, rgba(249,247,244,0.93) 0%, rgba(245,243,240,0.92) 100%), url('${bg.sale}')`,
         backgroundSize: "cover",
@@ -870,7 +869,7 @@ function RentalsShowcase({ properties, onClick }) {
   return (
     <section
       id="rentals"
-      className="relative px-6 py-24 overflow-hidden"
+      className="relative px-0 md:px-6 py-24 overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(140deg, rgba(39,39,39,0.78) 0%, rgba(53,53,53,0.8) 100%), url('${bg.rent}')`,
         backgroundSize: "cover",
