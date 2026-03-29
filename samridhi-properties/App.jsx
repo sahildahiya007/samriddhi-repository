@@ -462,21 +462,47 @@ function ContactCard({ label, number, color }) {
 
 function PropertyModal({ property, isOpen, onClose }) {
   const [idx, setIdx] = useState(0);
+  const swipeStartX = useRef(null);
   useEffect(() => setIdx(0), [property?.id]);
   if (!isOpen || !property) return null;
+
+  const showPrev = () => {
+    setIdx((p) => (p - 1 + property.images.length) % property.images.length);
+  };
+
+  const showNext = () => {
+    setIdx((p) => (p + 1) % property.images.length);
+  };
+
+  const handleTouchStart = (event) => {
+    swipeStartX.current = event.touches[0]?.clientX ?? null;
+  };
+
+  const handleTouchEnd = (event) => {
+    const startX = swipeStartX.current;
+    if (startX === null) return;
+    const endX = event.changedTouches[0]?.clientX ?? startX;
+    const deltaX = endX - startX;
+    if (Math.abs(deltaX) > 45) {
+      if (deltaX > 0) showPrev();
+      else showNext();
+    }
+    swipeStartX.current = null;
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-none md:rounded-2xl max-w-4xl w-full h-[100dvh] md:h-auto md:max-h-[90vh] overflow-y-auto"
         style={{ boxShadow: "0 25px 50px rgba(26, 26, 26, 0.3)" }}
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 z-10 p-2 rounded-full"
+          className="absolute top-4 right-4 md:top-6 md:right-6 z-10 p-2 rounded-full"
           style={{
             backgroundColor: "rgba(232,149,110,0.12)",
             color: colors.accent,
@@ -484,35 +510,46 @@ function PropertyModal({ property, isOpen, onClose }) {
         >
           <X className="w-6 h-6" />
         </button>
-        <div className="relative w-full h-96 bg-gray-100 overflow-hidden">
+        <div
+          className="relative w-full h-[38vh] md:h-96 bg-gray-100 overflow-hidden"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <img
             src={property.images[idx]}
             alt={property.title}
             className="w-full h-full object-cover"
           />
           <button
-            onClick={() =>
-              setIdx(
-                (p) =>
-                  (p - 1 + property.images.length) % property.images.length,
-              )
-            }
-            className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full"
+            onClick={showPrev}
+            className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full hidden md:block"
             style={{ backgroundColor: "rgba(26,26,26,0.75)", color: "#fff" }}
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <button
-            onClick={() => setIdx((p) => (p + 1) % property.images.length)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full"
+            onClick={showNext}
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full hidden md:block"
             style={{ backgroundColor: "rgba(26,26,26,0.75)", color: "#fff" }}
           >
             <ChevronRight className="w-6 h-6" />
           </button>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+            {property.images.map((_, imageIndex) => (
+              <span
+                key={imageIndex}
+                className="w-2 h-2 rounded-full"
+                style={{
+                  backgroundColor:
+                    imageIndex === idx ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.45)",
+                }}
+              />
+            ))}
+          </div>
         </div>
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           <h2
-            className="text-4xl font-bold mb-2"
+            className="text-2xl md:text-4xl font-bold mb-2"
             style={{
               fontFamily: "'Playfair Display', serif",
               color: colors.dark,
@@ -521,24 +558,24 @@ function PropertyModal({ property, isOpen, onClose }) {
             {property.title}
           </h2>
           <p
-            className="text-lg mb-2 flex items-start gap-2"
+            className="text-base md:text-lg mb-2 flex items-start gap-2"
             style={{ color: colors.body }}
           >
             <MapPin className="w-5 h-5 mt-0.5" />
             {property.location}
           </p>
-          <p className="text-sm mb-6" style={{ color: colors.body }}>
+          <p className="text-sm mb-4 md:mb-6" style={{ color: colors.body }}>
             {property.address}
           </p>
-          <div className="flex gap-4 items-center mb-6">
+          <div className="flex gap-3 md:gap-4 items-center mb-4 md:mb-6">
             <span
-              className="text-3xl font-bold px-6 py-3 rounded-xl"
+              className="text-xl md:text-3xl font-bold px-4 md:px-6 py-2.5 md:py-3 rounded-xl"
               style={{ backgroundColor: colors.cream, color: colors.dark }}
             >
               {property.price}
             </span>
             <span
-              className="flex items-center gap-2 text-xl"
+              className="flex items-center gap-2 text-base md:text-xl"
               style={{ color: colors.accent }}
             >
               <Star className="w-6 h-6 fill-current" />
