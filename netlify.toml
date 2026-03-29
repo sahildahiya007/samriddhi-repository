@@ -1,0 +1,9 @@
+[build]
+  base    = "samridhi-properties"
+  command = "npm run build"
+  publish = "samridhi-properties/dist"
+
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
