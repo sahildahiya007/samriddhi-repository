@@ -777,7 +777,7 @@ export default function Construction({
 
       <section
         id="estimator"
-        className="py-24 px-6 luxury-gradient relative"
+        className="py-16 md:py-24 px-4 md:px-6 luxury-gradient relative"
         style={{
           background: `linear-gradient(135deg, #FAF8F5 0%, #F5E6D3 25%, #F0E8E0 50%, #E8DED5 75%, #FAF8F5 100%)`,
           overflow: "hidden",
@@ -787,24 +787,24 @@ export default function Construction({
         <div className="float-shape float-shape-1" />
         <div className="float-shape float-shape-2" />
         <div className="float-shape float-shape-3" />
-        <div className="max-w-4xl mx-auto text-center mb-16">
+        <div className="max-w-4xl mx-auto text-center mb-10 md:mb-16">
           <h2
-            className="text-5xl md:text-6xl font-bold mb-6 text-accent"
+            className="text-3xl md:text-6xl font-bold mb-4 md:mb-6 text-accent"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Estimate Your Construction Cost
           </h2>
-          <p className="text-2xl text-accent/80">
+          <p className="text-base md:text-2xl text-accent/80 px-2">
             Better visibility into budget, built-up area and delivery timeline
           </p>
         </div>
-        <div className="bg-white/90 luxury-gradient rounded-3xl p-8 md:p-12 max-w-5xl mx-auto border border-accent/20 shadow-2xl relative">
+        <div className="bg-white/90 luxury-gradient rounded-2xl md:rounded-3xl p-4 md:p-12 max-w-5xl mx-auto border border-accent/20 shadow-2xl relative">
           {/* Transparent button (like 'Our recent projects') */}
 
           <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-start">
             <div className="space-y-6">
               <div>
-                <label className="block text-xl font-bold text-slate-900 mb-3">
+                <label className="block text-base md:text-xl font-bold text-slate-900 mb-2 md:mb-3">
                   Plot Size (sq ft)
                 </label>
                 <input
@@ -813,19 +813,19 @@ export default function Construction({
                   min="0"
                   value={estimator.size}
                   onChange={handleCalcChange}
-                  className="w-full p-5 rounded-2xl text-2xl font-bold text-center border-2 border-orange-200 focus:border-orange-400 bg-white text-slate-900 placeholder-slate-400"
+                  className="w-full p-3 md:p-5 rounded-2xl text-lg md:text-2xl font-bold text-center border-2 border-orange-200 focus:border-orange-400 bg-white text-slate-900 placeholder-slate-400"
                   placeholder="Enter plot area"
                 />
               </div>
               <div>
-                <label className="block text-xl font-bold text-slate-900 mb-3">
+                <label className="block text-base md:text-xl font-bold text-slate-900 mb-2 md:mb-3">
                   Number of Floors
                 </label>
                 <select
                   name="floors"
                   value={estimator.floors}
                   onChange={handleCalcChange}
-                  className="w-full p-5 rounded-2xl text-xl font-bold text-center border-2 border-orange-200 focus:border-orange-400 bg-white text-slate-900"
+                  className="w-full p-3 md:p-5 rounded-2xl text-base md:text-xl font-bold text-center border-2 border-orange-200 focus:border-orange-400 bg-white text-slate-900"
                 >
                   <option value={1}>Ground Floor</option>
                   <option value={2}>G + 1 Floors</option>
@@ -847,7 +847,7 @@ export default function Construction({
               </div>
               {showRateEditor && (
                 <div className="p-4 mb-6 rounded-2xl bg-white border-2 border-purple-200">
-                  <div className="flex gap-4 mb-2">
+                  <div className="flex gap-3 mb-2 overflow-x-auto pb-1">
                     {Object.keys(packageRates).map((key) => (
                       <div key={key} className="flex flex-col items-center">
                         <label className="text-xs font-semibold mb-1 capitalize">
@@ -878,14 +878,14 @@ export default function Construction({
                   )}
                 </div>
               )}
-              <div className="flex gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {Object.entries(packageRates).map(([key, rate]) => (
                   <div
                     key={key}
                     onClick={() =>
                       setEstimator((prev) => ({ ...prev, type: key }))
                     }
-                    className={`cursor-pointer rounded-full px-7 py-5 border-2 transition-all duration-300 text-center shadow-md select-none
+                    className={`cursor-pointer rounded-2xl px-4 py-4 md:px-7 md:py-5 border-2 transition-all duration-300 text-center shadow-md select-none
                       ${
                         estimator.type === key
                           ? "border-accent bg-white scale-105"
@@ -895,7 +895,7 @@ export default function Construction({
                     <p className="text-xs font-semibold text-accent mb-1 uppercase tracking-wide">
                       {finishLabels[key]}
                     </p>
-                    <p className="text-3xl font-extrabold text-accent">
+                    <p className="text-2xl md:text-3xl font-extrabold text-accent">
                       ₹{rate}
                     </p>
                     <p className="text-xs text-accent/70">per sq ft</p>
@@ -907,17 +907,17 @@ export default function Construction({
             <div className="space-y-5">
               {budget ? (
                 <>
-                  <div className="p-6 rounded-3xl bg-white border-2 border-orange-300">
+                  <div className="p-4 md:p-6 rounded-3xl bg-white border-2 border-orange-300">
                     <div className="flex items-center gap-3 mb-2 text-slate-700">
                       <Calculator className="w-5 h-5" />
                       <span className="font-semibold">
                         Estimated Project Budget
                       </span>
                     </div>
-                    <p className="text-4xl font-bold text-orange-600 drop-shadow-lg">
+                    <p className="text-2xl md:text-4xl font-bold text-orange-600 drop-shadow-lg break-words">
                       {budgetFormat(budget.total)}
                     </p>
-                    <p className="text-base mt-2 text-slate-600">
+                    <p className="text-sm md:text-base mt-2 text-slate-600">
                       Approximate all-in estimate for{" "}
                       {budget.builtUpArea.toLocaleString()} sqft built-up area
                     </p>
@@ -948,7 +948,7 @@ export default function Construction({
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className="flex items-center justify-between rounded-2xl bg-white px-5 py-4 border border-orange-100"
+                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-2xl bg-white px-4 md:px-5 py-3 md:py-4 border border-orange-100 gap-2"
                       >
                         <div className="flex items-center gap-3 text-slate-700">
                           <item.icon className="w-5 h-5 text-orange-500" />
@@ -961,7 +961,7 @@ export default function Construction({
                     ))}
                   </div>
 
-                  <div className="rounded-2xl bg-slate-900 text-white p-6">
+                  <div className="rounded-2xl bg-slate-900 text-white p-4 md:p-6">
                     <div className="flex items-center justify-between gap-3 mb-3">
                       <span className="text-white/80">Recommended package</span>
                       <span className="font-bold">
@@ -994,7 +994,7 @@ export default function Construction({
               )}
               <a
                 href="#contact-construction"
-                className="block w-full p-6 rounded-2xl font-extrabold text-2xl text-center bg-accent text-white shadow-2xl hover:scale-105 transition-all border-4 border-accent/30 ring-2 ring-accent/20"
+                className="block w-full p-4 md:p-6 rounded-2xl font-extrabold text-lg md:text-2xl text-center bg-accent text-white shadow-2xl hover:scale-105 transition-all border-2 md:border-4 border-accent/30 ring-2 ring-accent/20"
                 style={{
                   boxShadow:
                     "0 8px 32px 0 rgba(232,149,110,0.25), 0 1.5px 8px 0 #E8956E",
