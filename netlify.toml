@@ -1,7 +1,7 @@
 [build]
   base    = "samridhi-properties"
   command = "npm run build"
-  publish = "samridhi-properties/dist"
+  publish = "dist"
 
 [[redirects]]
   from   = "/*"
