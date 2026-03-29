@@ -290,14 +290,13 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
               ← Back
             </button>
           )}
-          <button
-            type="button"
-            onClick={() => handleAnchorClick("#contact")}
-            className="px-5 md:px-7 py-2.5 rounded-lg font-medium text-sm md:text-base"
+          <a
+            href="tel:+919876543210"
+            className="px-5 md:px-7 py-2.5 rounded-lg font-medium text-sm md:text-base inline-block text-center"
             style={{ backgroundColor: colors.accent, color: "#fff" }}
           >
             Contact us
-          </button>
+          </a>
           {/* Show Admin button only on desktop, move to menu for mobile */}
           <button
             onClick={onAdminClick}
@@ -640,90 +639,108 @@ function PropertyModal({ property, isOpen, onClose }) {
 
 function PropertyCard({ property, onClick }) {
   const [hover, setHover] = useState(false);
+  const typeLabel =
+    property.type === "sale"
+      ? "For Sale"
+      : property.type === "rent"
+        ? "For Rent"
+        : "Construction";
   return (
     <div
-      className="bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-500"
+      className="relative overflow-hidden cursor-pointer transition-all duration-500 group"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => onClick(property)}
       style={{
-        borderTop: `5px solid ${colors.accent}`,
-        transform: hover
-          ? "translateY(-10px) scale(1.015)"
-          : "translateY(0) scale(1)",
+        borderRadius: "16px",
+        transform: hover ? "scale(1.015)" : "scale(1)",
         boxShadow: hover
-          ? "0 28px 48px rgba(26,26,26,0.2)"
-          : "0 8px 20px rgba(26,26,26,0.1)",
+          ? "0 28px 48px rgba(26,26,26,0.28)"
+          : "0 4px 16px rgba(26,26,26,0.10)",
       }}
     >
-      <div className="h-64 overflow-hidden">
+      {/* Full-bleed image */}
+      <div className="h-[420px] md:h-[380px] overflow-hidden">
         <img
           src={property.image}
           alt={property.title}
-          className="w-full h-full object-cover transition-transform duration-500"
-          style={{ transform: hover ? "scale(1.08)" : "scale(1)" }}
+          className="w-full h-full object-cover transition-transform duration-700"
+          style={{ transform: hover ? "scale(1.06)" : "scale(1)" }}
         />
       </div>
-      <div className="p-6">
+
+      {/* Gradient overlay */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.72) 100%)",
+        }}
+      />
+
+      {/* Type badge — top left */}
+      <div className="absolute top-4 left-4">
+        <span
+          className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest"
+          style={{ backgroundColor: colors.accent, color: "#fff" }}
+        >
+          {typeLabel}
+        </span>
+      </div>
+
+      {/* Bottom content overlay */}
+      <div className="absolute bottom-0 left-0 right-0 p-5">
         <h2
-          className="font-semibold text-lg mb-3"
+          className="font-bold text-xl mb-1 leading-snug"
           style={{
             fontFamily: "'Playfair Display', serif",
-            color: hover ? colors.accent : colors.dark,
+            color: "#fff",
+            textShadow: "0 2px 8px rgba(0,0,0,0.4)",
           }}
         >
           {property.title}
         </h2>
-        <p
-          className="text-sm mb-2 flex items-start gap-2"
-          style={{ color: colors.body }}
-        >
-          <MapPin className="w-4 h-4 mt-0.5" />
+        <p className="text-sm mb-3 flex items-center gap-1" style={{ color: "rgba(255,255,255,0.82)" }}>
+          <MapPin className="w-3.5 h-3.5" />
           {property.location}
         </p>
-        <p className="text-xs mb-4" style={{ color: colors.body }}>
-          {property.address}
-        </p>
-        <div className="flex flex-wrap gap-2 mb-5">
-          {(property.amenities || []).slice(0, 4).map((a) => (
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {(property.amenities || []).slice(0, 3).map((a) => (
             <span
               key={a}
               className="px-2.5 py-1 rounded-full text-xs font-semibold"
-              style={{ backgroundColor: colors.cream, color: colors.dark }}
+              style={{ backgroundColor: "rgba(255,255,255,0.18)", color: "#fff", backdropFilter: "blur(6px)" }}
             >
               {a}
             </span>
           ))}
         </div>
-        <div className="flex items-center justify-between mb-5">
-          <span
-            className="flex items-center gap-2"
-            style={{ color: colors.accent }}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Star className="w-4 h-4 fill-current" style={{ color: colors.accent }} />
+            <span className="font-semibold text-sm text-white">{property.rating}</span>
+            <span
+              className="px-3 py-1 rounded-full text-xs font-semibold ml-1"
+              style={{ backgroundColor: "rgba(255,255,255,0.18)", color: "#fff", backdropFilter: "blur(6px)" }}
+            >
+              {property.price}
+            </span>
+          </div>
+          <button
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all"
+            style={{
+              backgroundColor: hover ? colors.accent : "rgba(255,255,255,0.92)",
+              color: hover ? "#fff" : colors.dark,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick(property);
+            }}
           >
-            <Star className="w-5 h-5 fill-current" />
-            <span className="font-semibold">{property.rating}</span>
-          </span>
-          <span
-            className="px-4 py-2 rounded-full text-sm font-medium"
-            style={{ backgroundColor: colors.cream, color: colors.dark }}
-          >
-            {property.price}
-          </span>
+            <Eye className="w-4 h-4" />
+            Quick View
+          </button>
         </div>
-        <button
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium"
-          style={{
-            backgroundColor: hover ? colors.accentSoft : colors.accent,
-            color: "#fff",
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onClick(property);
-          }}
-        >
-          <Eye className="w-4 h-4" />
-          Quick View
-        </button>
       </div>
     </div>
   );
@@ -774,7 +791,7 @@ function PropertyCarousel({ properties, onClick }) {
           <div
             key={p.id}
             className="flex-shrink-0"
-            style={{ width: 320, scrollSnapAlign: "start" }}
+            style={{ width: "min(85vw, 360px)", scrollSnapAlign: "start" }}
           >
             <PropertyCard property={p} onClick={onClick} />
           </div>
