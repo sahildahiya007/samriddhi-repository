@@ -219,7 +219,7 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
     { label: "For Sale", href: "#sale" },
     { label: "Rentals", href: "#rentals" },
     { label: "Construction", href: "#construction" },
-    { label: "Contact us", href: "#contact" },
+    { label: "Contact", href: "#contact" },
   ];
   const currentHash = hash || window.location.hash || "#home";
 
@@ -295,7 +295,7 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
             className="px-5 md:px-7 py-2.5 rounded-lg font-medium text-sm md:text-base inline-block text-center"
             style={{ backgroundColor: colors.accent, color: "#fff" }}
           >
-            Contact us
+            Contact
           </a>
           {/* Show Admin button only on desktop, move to menu for mobile */}
           <button
@@ -652,15 +652,15 @@ function PropertyCard({ property, onClick }) {
       onMouseLeave={() => setHover(false)}
       onClick={() => onClick(property)}
       style={{
-        borderRadius: "16px",
+        borderRadius: "18px",
         transform: hover ? "scale(1.015)" : "scale(1)",
         boxShadow: hover
-          ? "0 28px 48px rgba(26,26,26,0.28)"
-          : "0 4px 16px rgba(26,26,26,0.10)",
+          ? "0 20px 36px rgba(26,26,26,0.22)"
+          : "none",
       }}
     >
       {/* Full-bleed image */}
-      <div className="h-[420px] md:h-[380px] overflow-hidden">
+      <div className="h-[460px] md:h-[390px] overflow-hidden">
         <img
           src={property.image}
           alt={property.title}
@@ -689,9 +689,9 @@ function PropertyCard({ property, onClick }) {
       </div>
 
       {/* Bottom content overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-5">
+      <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
         <h2
-          className="font-bold text-xl mb-1 leading-snug"
+          className="font-bold text-3xl md:text-2xl mb-1 leading-snug"
           style={{
             fontFamily: "'Playfair Display', serif",
             color: "#fff",
@@ -700,11 +700,14 @@ function PropertyCard({ property, onClick }) {
         >
           {property.title}
         </h2>
-        <p className="text-sm mb-3 flex items-center gap-1" style={{ color: "rgba(255,255,255,0.82)" }}>
+        <p
+          className="text-sm mb-3 flex items-center gap-1"
+          style={{ color: "rgba(255,255,255,0.82)" }}
+        >
           <MapPin className="w-3.5 h-3.5" />
           {property.location}
         </p>
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        <div className="flex flex-wrap gap-1.5 mb-3">
           {(property.amenities || []).slice(0, 3).map((a) => (
             <span
               key={a}
@@ -715,7 +718,7 @@ function PropertyCard({ property, onClick }) {
             </span>
           ))}
         </div>
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 fill-current" style={{ color: colors.accent }} />
             <span className="font-semibold text-sm text-white">{property.rating}</span>
@@ -726,11 +729,23 @@ function PropertyCard({ property, onClick }) {
               {property.price}
             </span>
           </div>
+          <span className="text-xs text-white/75">Swipe for more</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <a
+            href="tel:+919876543210"
+            className="px-4 py-2.5 rounded-xl text-sm font-semibold text-center"
+            style={{ backgroundColor: colors.accent, color: "#fff" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            Contact
+          </a>
           <button
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all"
+            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
             style={{
-              backgroundColor: hover ? colors.accent : "rgba(255,255,255,0.92)",
-              color: hover ? "#fff" : colors.dark,
+              backgroundColor: "rgba(255,255,255,0.92)",
+              color: colors.dark,
             }}
             onClick={(e) => {
               e.stopPropagation();
@@ -767,11 +782,11 @@ function PropertyCarousel({ properties, onClick }) {
       behavior: "smooth",
     });
   return (
-    <div className="relative px-10 md:px-14">
+    <div className="relative pl-4 pr-0 md:px-14">
       {left && (
         <button
           onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full hidden md:block"
           style={{ backgroundColor: "white", color: colors.accent }}
         >
           <ChevronLeft className="w-6 h-6" />
@@ -779,7 +794,7 @@ function PropertyCarousel({ properties, onClick }) {
       )}
       <div
         ref={ref}
-        className="flex gap-6 overflow-x-auto"
+        className="flex gap-4 md:gap-6 overflow-x-auto"
         style={{
           scrollBehavior: "smooth",
           scrollSnapType: "x mandatory",
@@ -791,7 +806,7 @@ function PropertyCarousel({ properties, onClick }) {
           <div
             key={p.id}
             className="flex-shrink-0"
-            style={{ width: "min(85vw, 360px)", scrollSnapAlign: "start" }}
+            style={{ width: "min(92vw, 390px)", scrollSnapAlign: "start" }}
           >
             <PropertyCard property={p} onClick={onClick} />
           </div>
@@ -800,7 +815,7 @@ function PropertyCarousel({ properties, onClick }) {
       {right && (
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full hidden md:block"
           style={{ backgroundColor: "white", color: colors.accent }}
         >
           <ChevronRight className="w-6 h-6" />
