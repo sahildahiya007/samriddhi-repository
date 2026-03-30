@@ -257,7 +257,7 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
             color: colors.dark,
           }}
         >
-          Samridhi Properties
+          Samridhi
         </button>
         <div className="hidden md:flex items-center gap-8 flex-1 justify-center">
           {links.map((l) => {
@@ -436,16 +436,18 @@ function Hero() {
     >
       <div className="max-w-4xl px-6 relative z-10 text-center md:text-left">
         <div
-          className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full p-1 transition-all duration-300 md:bottom-8 ${
+          className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full p-1.5 transition-all duration-300 md:bottom-8 ${
             panelVisible && isHeroInView
               ? "opacity-100 translate-y-0"
               : "pointer-events-none opacity-0 translate-y-3"
           }`}
           style={{
-            backgroundColor: "transparent",
+            backgroundColor: "rgba(0, 0, 0, 0.35)",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(255,255,255,0.15)",
           }}
         >
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             {panelLinks.map((link) => {
               const isActive = activePanel === link.href;
               return (
@@ -453,13 +455,14 @@ function Hero() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setActivePanel(link.href)}
-                  className={`whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-semibold transition-all md:px-6 md:py-3 md:text-base ${
+                  className={`whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 md:px-7 md:py-3 md:text-base ${
                     isActive
-                      ? "text-white shadow-lg"
-                      : "text-white/80 hover:text-white"
+                      ? "text-white shadow-md"
+                      : "text-white/70 hover:text-white"
                   }`}
                   style={{
-                    backgroundColor: isActive ? colors.accent : "rgba(0,0,0,0.25)",
+                    backgroundColor: isActive ? colors.accent : "transparent",
+                    transform: isActive ? "scale(1.02)" : "scale(1)",
                   }}
                 >
                   {link.label}
