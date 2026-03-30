@@ -28,14 +28,13 @@ const bg = {
     "https://images.unsplash.com/photo-1600210492486-724fe5c67fb3?auto=format&fit=crop&w=1600&q=80",
 };
 
-const API_BASE = (
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
-).replace(/\/$/, "");
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
 async function requestApi(path, options = {}) {
   let response;
   try {
-    response = await fetch(`${API_BASE}${path}`, {
+    const url = API_BASE ? `${API_BASE}${path}` : path;
+    response = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
         ...(options.headers || {}),
