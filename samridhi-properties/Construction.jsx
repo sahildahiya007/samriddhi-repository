@@ -329,7 +329,10 @@ export default function Construction({
           backgroundAttachment: "fixed",
         }}
       >
-        <div className="max-w-6xl px-6 text-center relative z-10">
+        <div
+          className="max-w-6xl px-6 text-center relative z-10 select-none"
+          style={{ WebkitUserSelect: "none", userSelect: "none" }}
+        >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/15 text-white/90 text-sm font-semibold mb-6">
             <BadgeCheck className="w-4 h-4" />
             Gurgaon construction specialists for residential and commercial

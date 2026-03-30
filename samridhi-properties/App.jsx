@@ -213,6 +213,7 @@ const initialInquiryForm = {
 
 function Navbar({ onAdminClick, hash, onNavigateHome }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navRef = useRef(null);
   const links = [
     { label: "Home", href: "#home" },
     { label: "For Sale", href: "#sale" },
@@ -237,8 +238,30 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
     window.location.hash = href;
   };
 
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const handleOutsideTap = (event) => {
+      if (!navRef.current) return;
+      if (!navRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("touchstart", handleOutsideTap, {
+      passive: true,
+    });
+    document.addEventListener("mousedown", handleOutsideTap);
+
+    return () => {
+      document.removeEventListener("touchstart", handleOutsideTap);
+      document.removeEventListener("mousedown", handleOutsideTap);
+    };
+  }, [menuOpen]);
+
   return (
     <nav
+      ref={navRef}
       className="sticky top-0 z-50 border-b"
       style={{
         backgroundColor: "rgba(255,255,255,0.96)",
