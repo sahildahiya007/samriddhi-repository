@@ -76,7 +76,7 @@ const projects = [
 const testimonials = [
   {
     quote:
-      "Samridhi Properties built our dream villa in Gurgaon with exceptional quality and professionalism.",
+      "Samriddhi Properties built our dream villa in Gurgaon with exceptional quality and professionalism.",
     name: "Rajesh K.",
     rating: 5,
   },
@@ -394,7 +394,7 @@ export default function Construction({
               className="text-lg mb-6 leading-relaxed"
               style={{ color: colors.body, lineHeight: 1.7 }}
             >
-              Samridhi Properties delivers construction with one-point
+              Samriddhi Properties delivers construction with one-point
               accountability. From plot review and concept planning to finishing
               and handover, you get practical design guidance, local execution
               expertise and disciplined cost control.
@@ -725,7 +725,7 @@ export default function Construction({
               color: colors.dark,
             }}
           >
-            Why Choose Samridhi Properties
+            Why Choose Samriddhi Properties
           </h2>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">

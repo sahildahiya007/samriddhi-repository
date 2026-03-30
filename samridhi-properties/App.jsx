@@ -280,7 +280,7 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
             color: colors.dark,
           }}
         >
-          Samridhi
+          Samriddhi
         </button>
         <div className="hidden md:flex items-center gap-8 flex-1 justify-center">
           {links.map((l) => {
@@ -503,7 +503,7 @@ function Hero() {
           }}
         >
           Gurgaon Luxury Living by{" "}
-          <span style={{ color: colors.accent }}>Samridhi Properties</span>
+          <span style={{ color: colors.accent }}>Samriddhi Properties</span>
         </h1>
         <p className="text-lg md:text-xl mb-10" style={{ color: "#F5F3F0" }}>
           Urban, premium, and thoughtfully curated apartments.
@@ -2033,8 +2033,15 @@ export default function App() {
           <p
             style={{ color: colors.body, fontSize: 14, letterSpacing: "0.5px" }}
           >
-            (c) 2026 Samridhi Properties. Crafted for Gurgaon luxury living.
+            (c) 2026 Samriddhi Properties. Crafted for Gurgaon luxury living.
           </p>
+          <a
+            href="mailto:samriddhiproperties9@gmail.com"
+            className="inline-block mt-3 text-sm font-semibold"
+            style={{ color: colors.accent }}
+          >
+            samriddhiproperties9@gmail.com
+          </a>
         </div>
       </footer>
     </div>
