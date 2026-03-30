@@ -241,16 +241,17 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
     <nav
       className="sticky top-0 z-50 border-b"
       style={{
-        backgroundColor: "rgba(255,255,255,0.93)",
-        backdropFilter: "blur(14px)",
-        borderColor: "rgba(212,165,116,0.25)",
+        backgroundColor: "rgba(255,255,255,0.96)",
+        backdropFilter: "blur(18px)",
+        borderColor: colors.cream,
+        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-6">
         <button
           type="button"
           onClick={() => handleAnchorClick("#home")}
-          className="text-2xl md:text-3xl font-bold text-left"
+          className="text-2xl md:text-3xl font-bold text-left flex-shrink-0 hover:opacity-80 transition"
           style={{
             fontFamily: "'Playfair Display', serif",
             color: colors.dark,
@@ -258,7 +259,7 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
         >
           Samridhi Properties
         </button>
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-8 flex-1 justify-center">
           {links.map((l) => {
             const isActive = currentHash === l.href;
             return (
@@ -266,12 +267,10 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
                 type="button"
                 key={l.href}
                 onClick={() => handleAnchorClick(l.href)}
-                className="text-sm font-semibold transition"
+                className="text-sm font-semibold transition-all pb-1 hover:opacity-70"
                 style={{
                   color: isActive ? colors.accent : colors.body,
-                  fontWeight: isActive ? "bold" : "semibold",
-                  textDecoration: isActive ? "underline" : "none",
-                  textUnderlineOffset: isActive ? "4px" : "0",
+                  borderBottom: isActive ? `2px solid ${colors.accent}` : "2px solid transparent",
                 }}
               >
                 {l.label}
@@ -279,11 +278,12 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
             );
           })}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-shrink-0">
           {hash && hash !== "#home" && (
             <button
               onClick={() => window.history.back()}
-              className="px-3 py-2 rounded-lg text-sm font-semibold bg-white/90 border border-gray-200 text-gray-700 md:hidden"
+              className="px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 md:hidden transition-all hover:bg-gray-100"
+              style={{ backgroundColor: "rgba(232,149,110,0.08)" }}
               aria-label="Back"
             >
               ← Back
@@ -291,17 +291,16 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
           )}
           <a
             href="tel:+919876543210"
-            className="px-5 md:px-7 py-2.5 rounded-lg font-medium text-sm md:text-base inline-block text-center"
+            className="px-5 md:px-7 py-2.5 rounded-xl font-semibold text-sm md:text-base inline-block text-center transition-all hover:shadow-md"
             style={{ backgroundColor: colors.accent, color: "#fff" }}
           >
             Contact
           </a>
-          {/* Show Admin button only on desktop, move to menu for mobile */}
           <button
             onClick={onAdminClick}
-            className="p-2.5 rounded-lg hidden md:block"
+            className="p-2.5 rounded-lg hidden md:block transition-all hover:bg-gray-100"
             style={{
-              backgroundColor: "rgba(232,149,110,0.12)",
+              backgroundColor: "rgba(232,149,110,0.1)",
               color: colors.accent,
             }}
             title="Admin Login"
@@ -310,7 +309,11 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
           </button>
           <button
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="md:hidden px-4 py-2 rounded-lg font-semibold bg-orange-100 text-orange-400 hover:bg-orange-200 transition"
+            className="md:hidden px-4 py-2 rounded-xl font-semibold transition-all hover:shadow-md"
+            style={{
+              backgroundColor: colors.accent,
+              color: "#fff",
+            }}
             aria-label="Toggle menu"
           >
             Menu
@@ -318,13 +321,6 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
         </div>
       </div>
 
-      {menuOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 z-30 md:hidden"
-          onClick={() => setMenuOpen(false)}
-          aria-label="Close menu"
-        />
-      )}
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ${
           menuOpen ? "max-h-96" : "max-h-0"
@@ -440,14 +436,13 @@ function Hero() {
     >
       <div className="max-w-4xl px-6 relative z-10 text-center md:text-left">
         <div
-          className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-[2rem] p-1.5 transition-all duration-300 md:bottom-8 ${
+          className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full p-1 transition-all duration-300 md:bottom-8 ${
             panelVisible && isHeroInView
               ? "opacity-100 translate-y-0"
               : "pointer-events-none opacity-0 translate-y-3"
           }`}
           style={{
-            backgroundColor: colors.accent,
-            boxShadow: "0 8px 32px rgba(232, 149, 110, 0.35)",
+            backgroundColor: "transparent",
           }}
         >
           <div className="flex items-center gap-1">
@@ -458,13 +453,13 @@ function Hero() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setActivePanel(link.href)}
-                  className={`whitespace-nowrap rounded-[1.4rem] px-4 py-2 text-sm font-semibold transition-all md:px-5 md:py-2.5 md:text-base ${
+                  className={`whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-semibold transition-all md:px-6 md:py-3 md:text-base ${
                     isActive
                       ? "text-white shadow-lg"
-                      : "text-white/70 hover:text-white"
+                      : "text-white/80 hover:text-white"
                   }`}
                   style={{
-                    backgroundColor: isActive ? "rgba(255,255,255,0.25)" : "transparent",
+                    backgroundColor: isActive ? colors.accent : "rgba(0,0,0,0.25)",
                   }}
                 >
                   {link.label}
