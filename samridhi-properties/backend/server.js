@@ -3,7 +3,7 @@ const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Sunday@123456789";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "K@9971647910";
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
 
 // Middleware

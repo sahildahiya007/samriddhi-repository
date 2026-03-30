@@ -7,15 +7,15 @@
 1. **Connect to Netlify** from your GitHub repo
 2. **Set Environment Variables** in Netlify UI (Settings → Environment):
    ```
-   ADMIN_PASSWORD = Sunday@123456789
+  ADMIN_PASSWORD = K@9971647910
    JWT_SECRET = samridhi_jwt_secret_2025
    VITE_API_BASE_URL = (leave empty)
    ```
 3. **Deploy** ✓
 
 ### Admin Login
-- **Username**: `lukeshPrime`
-- **Password**: `Sunday@123456789` (from `ADMIN_PASSWORD` env)
+- **Username**: `lukeshprime`
+- **Password**: `K@9971647910` (from `ADMIN_PASSWORD` env)
 - After login: manage properties, view inquiries, delete queries
 
 ### How it Works
@@ -38,7 +38,7 @@ Terminal 2:
 npm run dev:backend     # http://localhost:5000
 ```
 
-Login: `lukeshPrime` / `Sunday@123456789`
+Login: `lukeshprime` / `K@9971647910`
 
 ---
 

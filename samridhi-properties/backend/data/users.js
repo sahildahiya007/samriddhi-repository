@@ -2,7 +2,7 @@ const users = [
   {
     id: 1,
     name: "Lukesh",
-    username: "lukeshPrime",
+    username: "lukeshprime",
     // password: set via admin creation, not in code
     password: process.env.PRIME_ADMIN_PASSWORD || undefined, // Set at runtime, not in code
     email: "samridhi@example.com",
