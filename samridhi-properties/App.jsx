@@ -813,13 +813,19 @@ function PropertyCarousel({ properties, onClick }) {
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, [properties]);
-  const scroll = (d) =>
-    ref.current?.scrollBy({
-      left: d === "left" ? -320 : 320,
+  const scroll = (direction) => {
+    if (!ref.current) return;
+    const firstCard = ref.current.firstElementChild;
+    const cardWidth = firstCard?.getBoundingClientRect().width || 320;
+    const gap = window.innerWidth < 768 ? 12 : 24;
+    const amount = cardWidth + gap;
+    ref.current.scrollBy({
+      left: direction === "left" ? -amount : amount,
       behavior: "smooth",
     });
+  };
   return (
-    <div className="relative px-4 md:px-14">
+    <div className="relative px-0 md:px-14">
       {left && (
         <button
           onClick={() => scroll("left")}
@@ -831,7 +837,7 @@ function PropertyCarousel({ properties, onClick }) {
       )}
       <div
         ref={ref}
-        className="flex gap-3 md:gap-6 overflow-x-auto"
+        className="flex gap-3 md:gap-6 overflow-x-auto pl-3 pr-3 md:pl-0 md:pr-0"
         style={{
           scrollBehavior: "smooth",
           scrollSnapType: "x mandatory",
@@ -843,7 +849,7 @@ function PropertyCarousel({ properties, onClick }) {
           <div
             key={p.id}
             className="flex-shrink-0"
-            style={{ width: "min(90vw, 390px)", scrollSnapAlign: "start" }}
+            style={{ width: "clamp(250px, 70vw, 390px)", scrollSnapAlign: "start" }}
           >
             <PropertyCard property={p} onClick={onClick} />
           </div>
@@ -1063,15 +1069,28 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
             >
               Reason for contact
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div
+              className="p-1 rounded-2xl"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.28)",
+                border: "1px solid rgba(255,255,255,0.42)",
+                backdropFilter: "blur(10px)",
+              }}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
               {["Rent", "Buy / Sell", "Construction"].map((option) => (
                 <label
                   key={option}
-                  className={`rounded-xl border px-4 py-3 flex items-center gap-3 cursor-pointer transition ${
+                  className={`rounded-xl px-4 py-3 flex items-center justify-center cursor-pointer transition ${
                     form.reasonType === option
-                      ? "border-orange-300 bg-orange-50"
-                      : "border-gray-200 bg-white"
+                      ? "bg-white/70"
+                      : "bg-transparent"
                   }`}
+                  style={{
+                    border: form.reasonType === option
+                      ? "1px solid rgba(232,149,110,0.7)"
+                      : "1px solid transparent",
+                  }}
                 >
                   <input
                     type="radio"
@@ -1079,16 +1098,20 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
                     value={option}
                     checked={form.reasonType === option}
                     onChange={onChange}
-                    className="accent-orange-500"
+                    className="sr-only"
                   />
                   <span
                     className="font-semibold"
-                    style={{ color: colors.dark }}
+                    style={{
+                      color:
+                        form.reasonType === option ? colors.dark : colors.body,
+                    }}
                   >
                     {option}
                   </span>
                 </label>
               ))}
+              </div>
             </div>
           </div>
           <div className="mb-8">
@@ -1830,14 +1853,6 @@ export default function App() {
         hash={hash}
         onNavigateHome={navigateHome}
       />
-      {error && (
-        <div
-          className="max-w-6xl mx-auto mt-4 px-6 py-3 rounded-lg text-sm font-semibold"
-          style={{ backgroundColor: "#FFE5E5", color: "#C94242" }}
-        >
-          Backend warning: {error}
-        </div>
-      )}
       {hash === "#construction" ? (
         <Construction
           projects={constructionProjects}
