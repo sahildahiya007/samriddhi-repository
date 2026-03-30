@@ -7,6 +7,7 @@ import {
   Menu,
   ChevronLeft,
   ChevronRight,
+  ArrowLeft,
   Lock,
   MapPin,
 } from "lucide-react";
@@ -275,11 +276,11 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
           {hash && hash !== "#home" && (
             <button
               onClick={() => window.history.back()}
-              className="h-9 w-9 rounded-lg text-base font-semibold text-gray-700 md:hidden transition-all hover:bg-gray-100 flex items-center justify-center"
+              className="h-9 w-9 rounded-lg text-gray-700 md:hidden transition-all hover:bg-gray-100 flex items-center justify-center flex-shrink-0"
               style={{ backgroundColor: "rgba(232,149,110,0.08)" }}
               aria-label="Back"
             >
-              &lt;
+              <ArrowLeft className="w-5 h-5" style={{ color: colors.dark }} />
             </button>
           )}
           <button

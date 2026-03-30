@@ -220,7 +220,7 @@ app.delete("/api/inquiries/:id", authMiddleware, (req, res) => {
   return res.json(deletedInquiry);
 });
 
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 // Admin login (returns JWT)
 app.post("/api/auth/login", async (req, res) => {
@@ -230,7 +230,7 @@ app.post("/api/auth/login", async (req, res) => {
       .status(400)
       .json({ message: "Username and password are required" });
   }
-  const user = users.find((u) => u.username === username);
+  const user = users.find((u) => u.username === username.toLowerCase().trim());
   if (!user) return res.status(401).json({ message: "Invalid credentials" });
   const match = user.password
     ? await bcrypt.compare(password, user.password)
