@@ -5,7 +5,7 @@ const users = [
     username: "lukeshprime",
     // password: set via admin creation, not in code
     password: process.env.PRIME_ADMIN_PASSWORD || undefined, // Set at runtime, not in code
-    email: "samridhi@example.com",
+    email: "samriddhiproperties9@gmail.com",
     phone: "+91 9971647910",
     role: "prime-admin", // only id 1 is prime admin
   },
