@@ -262,7 +262,7 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
   return (
     <nav
       ref={navRef}
-      className="sticky top-0 z-50 border-b"
+      className="sticky top-0 z-50 border-b overflow-x-clip"
       style={{
         backgroundColor: "rgba(255,255,255,0.96)",
         backdropFilter: "blur(18px)",
@@ -270,18 +270,30 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
         boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-6">
-        <button
-          type="button"
-          onClick={() => handleAnchorClick("#home")}
-          className="text-2xl md:text-3xl font-bold text-left flex-shrink-0 hover:opacity-80 transition"
-          style={{
-            fontFamily: "'Playfair Display', serif",
-            color: colors.dark,
-          }}
-        >
-          Samriddhi
-        </button>
+      <div className="max-w-7xl mx-auto px-3 md:px-8 py-3 md:py-4 flex items-center justify-between gap-2 md:gap-6">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          {hash && hash !== "#home" && (
+            <button
+              onClick={() => window.history.back()}
+              className="h-9 w-9 rounded-lg text-base font-semibold text-gray-700 md:hidden transition-all hover:bg-gray-100 flex items-center justify-center"
+              style={{ backgroundColor: "rgba(232,149,110,0.08)" }}
+              aria-label="Back"
+            >
+              &lt;
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => handleAnchorClick("#home")}
+            className="text-[2rem] leading-none md:text-3xl font-bold text-left hover:opacity-80 transition truncate"
+            style={{
+              fontFamily: "'Playfair Display', serif",
+              color: colors.dark,
+            }}
+          >
+            Samriddhi
+          </button>
+        </div>
         <div className="hidden md:flex items-center gap-8 flex-1 justify-center">
           {links.map((l) => {
             const isActive = currentHash === l.href;
@@ -301,20 +313,10 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
             );
           })}
         </div>
-        <div className="flex items-center gap-3 flex-shrink-0">
-          {hash && hash !== "#home" && (
-            <button
-              onClick={() => window.history.back()}
-              className="px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 md:hidden transition-all hover:bg-gray-100"
-              style={{ backgroundColor: "rgba(232,149,110,0.08)" }}
-              aria-label="Back"
-            >
-              ← Back
-            </button>
-          )}
+        <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
           <a
             href="tel:+919876543210"
-            className="px-5 md:px-7 py-2.5 rounded-xl font-semibold text-sm md:text-base inline-block text-center transition-all hover:shadow-md"
+            className="px-3.5 md:px-7 py-2 md:py-2.5 rounded-lg md:rounded-xl font-semibold text-sm md:text-base inline-block text-center transition-all hover:shadow-md"
             style={{ backgroundColor: colors.accent, color: "#fff" }}
           >
             Contact
@@ -332,7 +334,7 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
           </button>
           <button
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="md:hidden px-4 py-2 rounded-xl font-semibold transition-all hover:shadow-md"
+            className="md:hidden px-3 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
             style={{
               backgroundColor: colors.accent,
               color: "#fff",
