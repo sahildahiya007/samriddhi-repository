@@ -47,7 +47,7 @@ app.put(
   },
 );
 // Simple in-memory session (for demo, not production)
-const authMiddleware = (req, res, next) => {
+function authMiddleware(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth || !auth.startsWith("Bearer "))
     return res.status(401).json({ message: "Missing token" });
@@ -58,12 +58,12 @@ const authMiddleware = (req, res, next) => {
   } catch {
     return res.status(401).json({ message: "Invalid token" });
   }
-};
+}
 
-const requirePrimeAdmin = (req, res, next) => {
+function requirePrimeAdmin(req, res, next) {
   if (req.admin && req.admin.role === "prime-admin") return next();
   return res.status(403).json({ message: "Only Prime Admin allowed" });
-};
+}
 const inquiries = require("./data/inquiries");
 
 const requiredPropertyFields = [
@@ -114,7 +114,7 @@ app.get("/api/users/:id", (req, res) => {
   }
 });
 
-app.post("/api/properties", (req, res) => {
+app.post("/api/properties", authMiddleware, (req, res) => {
   const missing = missingFields(req.body, requiredPropertyFields);
   if (missing.length > 0) {
     return res
@@ -139,7 +139,7 @@ app.post("/api/users", (req, res) => {
   res.status(201).json(newUser);
 });
 
-app.get("/api/inquiries", (req, res) => {
+app.get("/api/inquiries", authMiddleware, (req, res) => {
   res.json(inquiries);
 });
 
@@ -165,7 +165,7 @@ app.post("/api/inquiries", (req, res) => {
   return res.status(201).json(newInquiry);
 });
 
-app.put("/api/properties/:id", (req, res) => {
+app.put("/api/properties/:id", authMiddleware, (req, res) => {
   const id = parseId(req.params.id);
   const index = properties.findIndex((p) => p.id === id);
   if (index !== -1) {
@@ -187,7 +187,7 @@ app.put("/api/users/:id", (req, res) => {
   }
 });
 
-app.delete("/api/properties/:id", (req, res) => {
+app.delete("/api/properties/:id", authMiddleware, (req, res) => {
   const id = parseId(req.params.id);
   const index = properties.findIndex((p) => p.id === id);
   if (index !== -1) {
@@ -209,7 +209,7 @@ app.delete("/api/users/:id", (req, res) => {
   }
 });
 
-app.delete("/api/inquiries/:id", (req, res) => {
+app.delete("/api/inquiries/:id", authMiddleware, (req, res) => {
   const id = parseId(req.params.id);
   const index = inquiries.findIndex((inquiry) => inquiry.id === id);
   if (index === -1) {
@@ -232,7 +232,9 @@ app.post("/api/auth/login", async (req, res) => {
   }
   const user = users.find((u) => u.username === username);
   if (!user) return res.status(401).json({ message: "Invalid credentials" });
-  const match = await bcrypt.compare(password, user.password);
+  const match = user.password
+    ? await bcrypt.compare(password, user.password)
+    : user.role === "prime-admin" && password === ADMIN_PASSWORD;
   if (!match) return res.status(401).json({ message: "Invalid credentials" });
   // Only admins can login
   if (!user.role) return res.status(403).json({ message: "Not an admin" });

@@ -361,9 +361,69 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
 }
 
 function Hero() {
+  const heroRef = useRef(null);
+  const [activePanel, setActivePanel] = useState(() => {
+    const hash =
+      typeof window !== "undefined" && window.location.hash
+        ? window.location.hash
+        : "#sale";
+    return hash === "#rentals" || hash === "#construction" ? hash : "#sale";
+  });
+  const [isHeroInView, setIsHeroInView] = useState(true);
+  const [panelVisible, setPanelVisible] = useState(true);
+  const scrollTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    const heroElement = heroRef.current;
+    if (!heroElement || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsHeroInView(entry.isIntersecting);
+        if (!entry.isIntersecting) {
+          setPanelVisible(false);
+        }
+      },
+      { threshold: 0.18 },
+    );
+
+    observer.observe(heroElement);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (!isHeroInView) return;
+      setPanelVisible(false);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      scrollTimeoutRef.current = setTimeout(() => {
+        if (isHeroInView) {
+          setPanelVisible(true);
+        }
+      }, 220);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, [isHeroInView]);
+
+  const panelLinks = [
+    { label: "Rental", href: "#rentals" },
+    { label: "Buy / Sell", href: "#sale" },
+    { label: "Construction", href: "#construction" },
+  ];
+
   return (
     <section
       id="home"
+      ref={heroRef}
       className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(120deg, rgba(26,26,26,0.66) 0%, rgba(232,149,110,0.22) 48%, rgba(26,26,26,0.66) 100%), url('${bg.hero}')`,
@@ -373,46 +433,32 @@ function Hero() {
       }}
     >
       <div className="max-w-4xl px-6 relative z-10 text-center md:text-left">
-        <div className="absolute left-4 top-[88%] md:hidden flex flex-col gap-3">
-          <a
-            href="#rentals"
-            className="w-28 text-center px-3 py-2 rounded-full text-base font-semibold text-white bg-slate-900/90 hover:bg-slate-900 transition"
-          >
-            Rental
-          </a>
-          <a
-            href="#sale"
-            className="w-28 text-center px-3 py-2 rounded-full text-base font-semibold text-slate-900 bg-white/90 hover:bg-white transition"
-          >
-            Buy / Sell
-          </a>
-          <a
-            href="#construction"
-            className="w-28 text-center px-3 py-2 rounded-full text-base font-semibold text-white bg-orange-500/90 hover:bg-orange-600 transition"
-          >
-            Construction
-          </a>
-        </div>
-
-        <div className="hidden md:flex fixed bottom-8 left-1/2 z-50 -translate-x-1/2 items-center gap-3 bg-white/80 backdrop-blur-xl rounded-full px-4 py-2 shadow-2xl border border-orange-200">
-          <a
-            href="#rentals"
-            className="text-sm md:text-base px-4 py-2 rounded-full font-semibold text-white bg-slate-900 hover:bg-slate-800 transition"
-          >
-            Rental
-          </a>
-          <a
-            href="#sale"
-            className="text-sm md:text-base px-6 py-2 rounded-full font-bold text-white bg-gradient-to-r from-[#E8956E] to-[#D4A574] shadow-lg hover:shadow-2xl transform hover:-translate-y-0.5 transition-all"
-          >
-            Buy / Sell
-          </a>
-          <a
-            href="#construction"
-            className="text-sm md:text-base px-4 py-2 rounded-full font-semibold text-white bg-orange-500 hover:bg-orange-600 transition"
-          >
-            Construction
-          </a>
+        <div
+          className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-[2rem] border border-white/25 bg-white/10 p-1 backdrop-blur-2xl transition-all duration-300 md:bottom-8 ${
+            panelVisible && isHeroInView
+              ? "opacity-100 translate-y-0"
+              : "pointer-events-none opacity-0 translate-y-3"
+          }`}
+        >
+          <div className="flex items-center gap-1">
+            {panelLinks.map((link) => {
+              const isActive = activePanel === link.href;
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setActivePanel(link.href)}
+                  className={`whitespace-nowrap rounded-[1.6rem] px-4 py-2 text-sm font-semibold transition-all md:px-6 md:py-2.5 md:text-base ${
+                    isActive
+                      ? "bg-white/20 text-white shadow-[0_8px_24px_rgba(0,0,0,0.25)]"
+                      : "text-white/85 hover:bg-white/10"
+                  }`}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
+          </div>
         </div>
         <h1
           className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
@@ -772,14 +818,14 @@ function PropertyCard({ property, onClick }) {
         <div className="grid grid-cols-2 gap-2">
           <a
             href="tel:+919876543210"
-            className="px-4 py-2.5 rounded-xl text-sm font-semibold text-center"
+            className="flex min-h-[50px] items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-center whitespace-nowrap"
             style={{ backgroundColor: colors.accent, color: "#fff" }}
             onClick={(e) => e.stopPropagation()}
           >
             Contact
           </a>
           <button
-            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
+            className="flex min-h-[50px] items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold whitespace-nowrap transition-all"
             style={{
               backgroundColor: "rgba(255,255,255,0.92)",
               color: colors.dark,
@@ -1717,6 +1763,9 @@ export default function App() {
     defaultProperties.map(normalize),
   );
   const [inquiries, setInquiries] = useState([]);
+  const [adminToken, setAdminToken] = useState(
+    () => window.localStorage.getItem("adminToken") || "",
+  );
   const [selected, setSelected] = useState(null);
   const [hash, setHash] = useState(window.location.hash || "#home");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -1732,15 +1781,24 @@ export default function App() {
     setTimeout(() => setSelected(null), 200);
   };
 
+  const requestWithAuth = (path, options = {}) => {
+    if (!adminToken) {
+      throw new Error("Please login as admin");
+    }
+    return requestApi(path, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        Authorization: `Bearer ${adminToken}`,
+      },
+    });
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
-        const [propertyData, inquiryData] = await Promise.all([
-          requestApi("/api/properties"),
-          requestApi("/api/inquiries"),
-        ]);
+        const propertyData = await requestApi("/api/properties");
         setProperties(propertyData.map(normalize));
-        setInquiries(inquiryData);
         setError("");
       } catch (err) {
         setError(err.message || "Failed to connect to backend");
@@ -1885,14 +1943,14 @@ export default function App() {
         onClose={() => setIsAdminOpen(false)}
         properties={properties}
         onAdd={async (p) => {
-          const created = await requestApi("/api/properties", {
+          const created = await requestWithAuth("/api/properties", {
             method: "POST",
             body: JSON.stringify(p),
           });
           setProperties((prev) => [...prev, normalize(created)]);
         }}
         onEdit={async (id, p) => {
-          const updated = await requestApi(`/api/properties/${id}`, {
+          const updated = await requestWithAuth(`/api/properties/${id}`, {
             method: "PUT",
             body: JSON.stringify(p),
           });
@@ -1901,31 +1959,35 @@ export default function App() {
           );
         }}
         onDelete={async (id) => {
-          await requestApi(`/api/properties/${id}`, { method: "DELETE" });
+          await requestWithAuth(`/api/properties/${id}`, { method: "DELETE" });
           setProperties((prev) => prev.filter((x) => x.id !== id));
         }}
         inquiries={inquiries}
         onDeleteInquiry={async (id) => {
-          await requestApi(`/api/inquiries/${id}`, { method: "DELETE" });
+          await requestWithAuth(`/api/inquiries/${id}`, { method: "DELETE" });
           setInquiries((prev) => prev.filter((x) => x.id !== id));
         }}
       />
       <LoginSidePane
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
-        onLogin={async (password) => {
-          try {
-            await requestApi("/api/auth/login", {
-              method: "POST",
-              body: JSON.stringify({ password }),
-            });
-          } catch (err) {
-            const localPass = "Sunday@123456789";
-            if (password === localPass) {
-              return { success: true };
-            }
-            throw err;
+        onLogin={async (username, password) => {
+          const response = await requestApi("/api/auth/login", {
+            method: "POST",
+            body: JSON.stringify({ username, password }),
+          });
+          const token = response?.token;
+          if (!token) {
+            throw new Error("Login failed. Token not received.");
           }
+          window.localStorage.setItem("adminToken", token);
+          setAdminToken(token);
+          const adminInquiries = await requestApi("/api/inquiries", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setInquiries(adminInquiries);
         }}
         onLoginSuccess={() => {
           setIsAdminOpen(true);
