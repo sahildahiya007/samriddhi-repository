@@ -10,6 +10,7 @@ import {
   ArrowLeft,
   Lock,
   MapPin,
+  MessageCircle,
 } from "lucide-react";
 import Construction from "./Construction.jsx";
 
@@ -223,8 +224,13 @@ const initialInquiryForm = {
 
 function Navbar({ onAdminClick, hash, onNavigateHome }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [contactMenuOpen, setContactMenuOpen] = useState(false);
   const navRef = useRef(null);
   const inConstructionView = isConstructionHash(hash);
+  const phoneNumber = "+919876543210";
+  const whatsappHref = `https://wa.me/919876543210?text=${encodeURIComponent(
+    "Hi Samriddhi, I want to discuss a property requirement."
+  )}`;
   const links = [
     { label: "Home", href: "#home" },
     { label: "For Sale", href: "#sale" },
@@ -258,12 +264,13 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
   };
 
   useEffect(() => {
-    if (!menuOpen) return;
+    if (!menuOpen && !contactMenuOpen) return;
 
     const handleOutsideTap = (event) => {
       if (!navRef.current) return;
       if (!navRef.current.contains(event.target)) {
         setMenuOpen(false);
+        setContactMenuOpen(false);
       }
     };
 
@@ -276,7 +283,7 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
       document.removeEventListener("touchstart", handleOutsideTap);
       document.removeEventListener("mousedown", handleOutsideTap);
     };
-  }, [menuOpen]);
+  }, [menuOpen, contactMenuOpen]);
 
   return (
     <nav
@@ -349,20 +356,57 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
           })}
         </div>
         <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
-          <a
-            href="tel:+919876543210"
-            className="px-3.5 md:px-6 py-2 md:py-2.5 rounded-xl font-semibold text-sm md:text-sm inline-block text-center transition-all duration-200 hover:shadow-lg active:scale-95 tracking-wide"
-            style={{
-              background: `linear-gradient(135deg, ${colors.accent} 0%, #c8713a 100%)`,
-              color: "#fff",
-              letterSpacing: "0.04em",
-              boxShadow: "0 2px 10px rgba(180,90,30,0.28), 0 1px 0 rgba(255,255,255,0.18) inset",
-            }}
-          >
-            Contact
-          </a>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setContactMenuOpen((prev) => !prev)}
+              className="px-3.5 md:px-6 py-2 md:py-2.5 rounded-xl font-semibold text-sm md:text-sm inline-flex items-center justify-center text-center transition-all duration-200 hover:shadow-lg active:scale-95 tracking-wide"
+              style={{
+                background: `linear-gradient(135deg, ${colors.accent} 0%, #c8713a 100%)`,
+                color: "#fff",
+                letterSpacing: "0.04em",
+                boxShadow: "0 2px 10px rgba(180,90,30,0.28), 0 1px 0 rgba(255,255,255,0.18) inset",
+              }}
+              aria-label="Open contact options"
+              aria-expanded={contactMenuOpen}
+            >
+              Contact
+            </button>
+            {contactMenuOpen && (
+              <div
+                className="absolute right-0 mt-2 w-44 rounded-xl border p-2 z-50"
+                style={{
+                  background: "rgba(255,250,244,0.98)",
+                  borderColor: "rgba(198,148,89,0.25)",
+                  boxShadow: "0 10px 24px rgba(120,70,20,0.18)",
+                }}
+              >
+                <a
+                  href={`tel:${phoneNumber}`}
+                  onClick={() => setContactMenuOpen(false)}
+                  className="w-full px-3 py-2 rounded-lg text-sm font-semibold flex items-center gap-2"
+                  style={{ color: "#3d2a1a" }}
+                >
+                  <Phone className="w-4 h-4" /> Call Now
+                </a>
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setContactMenuOpen(false)}
+                  className="w-full px-3 py-2 rounded-lg text-sm font-semibold flex items-center gap-2"
+                  style={{ color: "#3d2a1a" }}
+                >
+                  <MessageCircle className="w-4 h-4" style={{ color: "#25D366" }} /> WhatsApp DM
+                </a>
+              </div>
+            )}
+          </div>
           <button
-            onClick={onAdminClick}
+            onClick={() => {
+              setContactMenuOpen(false);
+              onAdminClick();
+            }}
             className="p-2 rounded-lg hidden md:flex items-center justify-center transition-all duration-200 hover:scale-105"
             style={{
               background: "rgba(180,100,40,0.08)",
@@ -374,7 +418,10 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
             <Lock className="w-4 h-4" />
           </button>
           <button
-            onClick={() => setMenuOpen((prev) => !prev)}
+            onClick={() => {
+              setContactMenuOpen(false);
+              setMenuOpen((prev) => !prev);
+            }}
             className="md:hidden px-3 py-2 rounded-xl font-semibold text-sm transition-all duration-200 hover:shadow-md active:scale-95 flex items-center gap-1.5"
             style={{
               background: `linear-gradient(135deg, ${colors.accent} 0%, #c8713a 100%)`,
@@ -435,7 +482,7 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
           <div style={{ borderTop: "1px solid rgba(198,148,89,0.16)" }} className="mx-3" />
           <div className="px-2 py-2">
             <button
-              onClick={() => { setMenuOpen(false); onAdminClick(); }}
+              onClick={() => { setMenuOpen(false); setContactMenuOpen(false); onAdminClick(); }}
               className="w-full text-sm py-2.5 px-4 rounded-xl font-semibold text-left flex items-center gap-2 transition-all duration-150"
               style={{
                 color: colors.accent,
@@ -825,6 +872,13 @@ function PropertyModal({ property, isOpen, onClose }) {
 
 function PropertyCard({ property, onClick }) {
   const [hover, setHover] = useState(false);
+  const isSale = property.type === "sale";
+  const isRent = property.type === "rent";
+  const rentPerMonth = isRent
+    ? /month|mo/i.test(property.price || "")
+      ? property.price
+      : `${property.price} / month`
+    : property.price;
   const typeLabel =
     property.type === "sale"
       ? "For Sale"
@@ -845,8 +899,7 @@ function PropertyCard({ property, onClick }) {
           : "0 6px 18px rgba(26,26,26,0.12)",
       }}
     >
-      {/* Full-bleed image */}
-      <div className="h-[460px] md:h-[390px] overflow-hidden">
+      <div className="h-[340px] md:h-[320px] overflow-hidden rounded-[20px]">
         <img
           src={property.image}
           alt={property.title}
@@ -855,17 +908,7 @@ function PropertyCard({ property, onClick }) {
         />
       </div>
 
-      {/* Gradient overlay */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.72) 100%)",
-        }}
-      />
-
-      {/* Type badge — top left */}
-      <div className="absolute top-4 left-4">
+      <div className="absolute top-4 left-4 z-10">
         <span
           className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest"
           style={{ backgroundColor: colors.accent, color: "#fff" }}
@@ -874,21 +917,26 @@ function PropertyCard({ property, onClick }) {
         </span>
       </div>
 
-      {/* Bottom content overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
+      <div className="relative -mt-8 md:-mt-10 mx-3 mb-3 md:mx-4 md:mb-4 z-10">
+        <div
+          className="rounded-[22px] md:rounded-[24px] px-4 py-4 md:px-5 md:py-5"
+          style={{
+            backgroundColor: "rgba(255,255,255,0.98)",
+            boxShadow: "0 14px 24px rgba(26,26,26,0.16)",
+          }}
+        >
         <h2
-          className="font-bold text-3xl md:text-2xl mb-1 leading-snug"
+          className="font-bold text-xl md:text-2xl mb-1 leading-snug"
           style={{
             fontFamily: "'Playfair Display', serif",
-            color: "#fff",
-            textShadow: "0 2px 8px rgba(0,0,0,0.4)",
+            color: colors.dark,
           }}
         >
           {property.title}
         </h2>
         <p
           className="text-sm mb-3 flex items-center gap-1"
-          style={{ color: "rgba(255,255,255,0.82)" }}
+          style={{ color: colors.body }}
         >
           <MapPin className="w-3.5 h-3.5" />
           {property.location}
@@ -899,9 +947,8 @@ function PropertyCard({ property, onClick }) {
               key={a}
               className="px-2.5 py-1 rounded-full text-xs font-semibold"
               style={{
-                backgroundColor: "rgba(255,255,255,0.18)",
-                color: "#fff",
-                backdropFilter: "blur(6px)",
+                backgroundColor: colors.cream,
+                color: colors.dark,
               }}
             >
               {a}
@@ -909,26 +956,31 @@ function PropertyCard({ property, onClick }) {
           ))}
         </div>
         <div className="flex items-center justify-between gap-3 mb-3">
-          <div className="flex items-center gap-2">
-            <Star
-              className="w-4 h-4 fill-current"
-              style={{ color: colors.accent }}
-            />
-            <span className="font-semibold text-sm text-white">
-              {property.rating}
-            </span>
+          <div className="flex items-center gap-2 flex-wrap">
             <span
-              className="px-3 py-1 rounded-full text-xs font-semibold ml-1"
+              className="px-3 py-1 rounded-full text-xs font-semibold"
               style={{
-                backgroundColor: "rgba(255,255,255,0.18)",
-                color: "#fff",
-                backdropFilter: "blur(6px)",
+                backgroundColor: colors.cream,
+                color: colors.dark,
               }}
             >
-              {property.price}
+              {isRent ? `Rent: ${rentPerMonth}` : `Price: ${property.price}`}
             </span>
+            {isSale && (
+              <span
+                className="px-3 py-1 rounded-full text-xs font-semibold"
+                style={{
+                  backgroundColor: colors.cream,
+                  color: colors.dark,
+                }}
+              >
+                {(property.amenities || []).length} amenities
+              </span>
+            )}
           </div>
-          <span className="text-xs text-white/75">Swipe for more</span>
+          <span className="text-xs" style={{ color: colors.body }}>
+            Swipe for more
+          </span>
         </div>
 
         <div className="grid grid-cols-2 gap-2">
@@ -954,6 +1006,7 @@ function PropertyCard({ property, onClick }) {
             <Eye className="w-4 h-4" />
             Quick View
           </button>
+        </div>
         </div>
       </div>
     </div>
@@ -1055,10 +1108,10 @@ function PropertyGrid({ properties, onClick }) {
               color: colors.dark,
             }}
           >
-            Featured Properties
+            Premium Homes in Gurugram
           </h3>
           <p className="text-lg" style={{ color: colors.body }}>
-            Handpicked luxury apartments with Gurgaon urban vibes.
+            Curated sale listings with clear pricing and amenity highlights.
           </p>
         </div>
         {sale.length > 0 ? (
@@ -1097,7 +1150,7 @@ function RentalsShowcase({ properties, onClick }) {
               marginBottom: 14,
             }}
           >
-            Luxury Rental Properties
+            Premium Rental Properties in Gurugram
           </h2>
           <p
             style={{
@@ -1414,6 +1467,10 @@ function AdminPanel({
     tab === "construction"
       ? properties.filter((p) => p.type === "construction")
       : properties.filter((p) => p.type !== "construction");
+  const pricePlaceholder =
+    f.type === "sale"
+      ? "Total Price (e.g. Rs 1.95 Cr)"
+      : "Rent per month (e.g. Rs 78,000/month)";
 
   const save = async () => {
     if (!f.title || !f.price || !f.location || !f.address)
@@ -1566,7 +1623,7 @@ function AdminPanel({
                     <input
                       value={f.price}
                       onChange={(e) => setF({ ...f, price: e.target.value })}
-                      placeholder="Price"
+                      placeholder={pricePlaceholder}
                       className="w-full border-b-2 px-3 py-2 bg-transparent text-white focus:outline-none"
                       style={{ borderColor: "rgba(255,255,255,0.22)" }}
                     />
@@ -2047,7 +2104,13 @@ export default function App() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#F9F7F4" }}>
       <Navbar
-        onAdminClick={() => setIsLoginOpen(true)}
+        onAdminClick={() => {
+          if (adminToken) {
+            setIsAdminOpen(true);
+            return;
+          }
+          setIsLoginOpen(true);
+        }}
         hash={hash}
         onNavigateHome={navigateHome}
       />

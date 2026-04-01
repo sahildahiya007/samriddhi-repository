@@ -231,6 +231,13 @@ export default function Construction({
   const projectList = (
     incomingProjects && incomingProjects.length ? incomingProjects : projects
   ).slice(0, 12);
+  const projectRows = useMemo(() => {
+    const splitIndex = Math.ceil(projectList.length / 2);
+    return [projectList.slice(0, splitIndex), projectList.slice(splitIndex)].slice(
+      0,
+      2,
+    );
+  }, [projectList]);
 
   const constructionListings = (listedProperties || []).filter(
     (property) => property.type === "construction",
@@ -506,49 +513,63 @@ export default function Construction({
             Our Recent Construction Projects
           </h2>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8 max-w-7xl mx-auto">
-          {projectList.map((project, i) => (
-            <div
-              key={i}
-              className="group relative overflow-hidden rounded-3xl bg-white shadow-xl transition-all duration-700 cursor-pointer hover:-translate-y-3"
-              style={{ borderTop: `5px solid ${colors.accent}` }}
-            >
-              <div className="relative overflow-hidden h-52 md:h-64">
-                <img
-                  src={project.image}
-                  alt={project.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="absolute bottom-6 left-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="inline-block px-4 py-2 rounded-full bg-black/75 text-white text-sm font-bold mb-2">
-                    {project.status}
-                  </span>
+        <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
+          {projectRows.map(
+            (row, rowIndex) =>
+              row.length > 0 && (
+                <div
+                  key={rowIndex}
+                  className="flex gap-4 md:gap-6 overflow-x-auto pb-2"
+                  style={{ scrollbarWidth: "none" }}
+                >
+                  {row.map((project, i) => (
+                    <div
+                      key={`${rowIndex}-${i}`}
+                      className="group relative overflow-hidden rounded-3xl bg-white shadow-xl transition-all duration-700 cursor-pointer hover:-translate-y-2 flex-shrink-0"
+                      style={{
+                        borderTop: `5px solid ${colors.accent}`,
+                        width: "clamp(260px, 74vw, 340px)",
+                      }}
+                    >
+                      <div className="relative overflow-hidden h-52 md:h-60">
+                        <img
+                          src={project.image}
+                          alt={project.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="inline-block px-3 py-1.5 rounded-full bg-black/75 text-white text-xs font-bold">
+                            {project.status}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-5 md:p-6">
+                        <h3
+                          className="text-lg md:text-xl font-bold mb-2"
+                          style={{
+                            fontFamily: "'Playfair Display', serif",
+                            color: colors.dark,
+                          }}
+                        >
+                          {project.name}
+                        </h3>
+                        <p
+                          className="flex items-center gap-2 mb-2 text-sm md:text-base font-semibold"
+                          style={{ color: colors.accent }}
+                        >
+                          <MapPin className="w-4 h-4" />
+                          {project.location}
+                        </p>
+                        <p className="text-xs md:text-sm mb-1" style={{ color: colors.body }}>
+                          {project.type} • {project.size}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-              <div className="p-5 md:p-8">
-                <h3
-                  className="text-xl md:text-2xl font-bold mb-2"
-                  style={{
-                    fontFamily: "'Playfair Display', serif",
-                    color: colors.dark,
-                  }}
-                >
-                  {project.name}
-                </h3>
-                <p
-                  className="flex items-center gap-2 mb-2 text-lg font-semibold"
-                  style={{ color: colors.accent }}
-                >
-                  <MapPin className="w-5 h-5" />
-                  {project.location}
-                </p>
-                <p className="text-sm mb-1" style={{ color: colors.body }}>
-                  {project.type} • {project.size}
-                </p>
-              </div>
-            </div>
-          ))}
+              ),
+          )}
         </div>
       </section>
 
