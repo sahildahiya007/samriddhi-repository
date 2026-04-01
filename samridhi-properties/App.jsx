@@ -31,6 +31,22 @@ const bg = {
 };
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+const NETLIFY_FUNCTIONS_API_BASE = "/.netlify/functions/api";
+const VERCEL_BACKEND_API_BASE = "/_/backend";
+
+function buildApiCandidates(path) {
+  if (API_BASE) {
+    return [`${API_BASE}${path}`];
+  }
+  if (path.startsWith("/api/")) {
+    return [
+      path,
+      `${VERCEL_BACKEND_API_BASE}${path}`,
+      `${NETLIFY_FUNCTIONS_API_BASE}${path.replace(/^\/api/, "")}`,
+    ];
+  }
+  return [path];
+}
 
 const CONSTRUCTION_HASHES = new Set([
   "#construction",
@@ -42,29 +58,61 @@ const CONSTRUCTION_HASHES = new Set([
 const isConstructionHash = (value) => CONSTRUCTION_HASHES.has(value);
 
 async function requestApi(path, options = {}) {
+  const isFormDataBody =
+    typeof FormData !== "undefined" && options.body instanceof FormData;
+  const requestHeaders = {
+    ...(isFormDataBody ? {} : { "Content-Type": "application/json" }),
+    ...(options.headers || {}),
+  };
+  const candidateUrls = buildApiCandidates(path);
   let response;
-  try {
-    const url = API_BASE ? `${API_BASE}${path}` : path;
-    response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        ...(options.headers || {}),
-      },
-      ...options,
-    });
-  } catch (err) {
+  let fetchFailed = false;
+
+  for (let index = 0; index < candidateUrls.length; index += 1) {
+    const url = candidateUrls[index];
+    try {
+      const currentResponse = await fetch(url, {
+        headers: requestHeaders,
+        ...options,
+      });
+
+      if (currentResponse.status === 404 && index < candidateUrls.length - 1) {
+        continue;
+      }
+
+      response = currentResponse;
+      break;
+    } catch {
+      fetchFailed = true;
+    }
+  }
+
+  if (!response) {
     throw new Error(
-      "Backend unavailable. Please start backend at http://localhost:5000 or check network connection.",
+      fetchFailed
+        ? "Backend unavailable. Please start backend at http://localhost:5000 or check network connection."
+        : "Request failed",
     );
   }
 
   if (!response.ok) {
-    let message = "Request failed";
+    let message = `Request failed (${response.status})`;
     try {
       const payload = await response.json();
       message = payload.message || message;
     } catch {
-      // Keep generic fallback if response has no JSON body.
+      try {
+        const responseText = await response.text();
+        if (
+          response.status === 404 &&
+          /<!doctype html>|<html/i.test(responseText)
+        ) {
+          message =
+            "API route not found. Configure VITE_API_BASE_URL to your backend URL.";
+        }
+      } catch {
+        // Keep fallback message.
+      }
     }
     throw new Error(message);
   }
@@ -1197,7 +1245,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
   return (
     <section
       id="contact"
-      className="relative py-24 px-6 overflow-hidden"
+      className="relative py-16 md:py-24 px-4 sm:px-6 overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(140deg, rgba(249,247,244,0.93) 0%, rgba(245,243,240,0.92) 100%), url('${bg.contact}')`,
         backgroundSize: "cover",
@@ -1208,7 +1256,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
       <div className="max-w-3xl mx-auto relative z-10">
         <div className="text-center mb-12">
           <h3
-            className="text-5xl md:text-6xl font-bold mb-4"
+            className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4"
             style={{
               fontFamily: "'Playfair Display', serif",
               color: colors.dark,
@@ -1222,7 +1270,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
         </div>
         <form
           onSubmit={submit}
-          className="rounded-2xl p-10"
+          className="rounded-2xl p-5 sm:p-8 md:p-10"
           style={{
             backgroundColor: "rgba(255,255,255,0.88)",
             border: "1px solid rgba(232,149,110,0.25)",
@@ -1359,7 +1407,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full px-6 py-4 rounded-lg font-semibold text-lg disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full px-5 sm:px-6 py-4 rounded-lg font-semibold text-base sm:text-lg disabled:opacity-60 disabled:cursor-not-allowed"
             style={{ backgroundColor: colors.accent, color: "#fff" }}
           >
             {submitting ? "Submitting..." : "Submit Inquiry"}
@@ -1447,6 +1495,7 @@ function AdminPanel({
   onDelete,
   inquiries,
   onDeleteInquiry,
+  onUploadImage,
 }) {
   const base = {
     title: "",
@@ -1461,6 +1510,7 @@ function AdminPanel({
   const [tab, setTab] = useState("properties");
   const [editingId, setEditingId] = useState(null);
   const [f, setF] = useState(base);
+  const [uploadingIndex, setUploadingIndex] = useState(null);
   if (!isOpen) return null;
 
   const visibleProperties =
@@ -1511,10 +1561,35 @@ function AdminPanel({
       images:
         Array.isArray(p.images) && p.images.length ? p.images : [p.image || ""],
     }) || setEditingId(p.id);
+
+  const uploadImageAtIndex = async (index, file) => {
+    if (!file) return;
+    if (!onUploadImage) {
+      alert("Image upload is not configured.");
+      return;
+    }
+    try {
+      setUploadingIndex(index);
+      const uploaded = await onUploadImage(file);
+      const uploadedUrl = uploaded?.url;
+      if (!uploadedUrl) {
+        throw new Error("Upload failed. URL not returned by backend.");
+      }
+      setF((prev) => ({
+        ...prev,
+        images: prev.images.map((x, idx) => (idx === index ? uploadedUrl : x)),
+      }));
+    } catch (error) {
+      alert(error.message || "Failed to upload image");
+    } finally {
+      setUploadingIndex(null);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/70 z-50 p-4 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/70 z-50 p-0 sm:p-4 flex items-end sm:items-center justify-center">
       <div
-        className="w-full max-w-6xl h-[90vh] rounded-2xl flex overflow-hidden"
+        className="w-full max-w-6xl h-[100dvh] sm:h-[90vh] rounded-none sm:rounded-2xl flex flex-col md:flex-row overflow-hidden"
         style={{ boxShadow: "0 30px 60px rgba(10,10,10,0.45)" }}
       >
         <GlassPanel
@@ -1571,29 +1646,73 @@ function AdminPanel({
           style={{ backgroundColor: "rgba(24,24,24,0.85)", color: "#fff" }}
         >
           <div
-            className="flex items-center justify-between p-6 border-b"
+            className="flex items-center justify-between p-4 sm:p-6 border-b"
             style={{ borderColor: "rgba(255,255,255,0.15)" }}
           >
             <h2
-              className="text-2xl font-bold"
+              className="text-lg sm:text-2xl font-bold"
               style={{ fontFamily: "'Playfair Display', serif", color: "#fff" }}
             >
               Property Management
             </h2>
             <button
               onClick={onClose}
-              className="p-2 rounded-full"
+              className="p-2 rounded-full shrink-0"
               style={{ backgroundColor: colors.accent, color: "#fff" }}
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-6">
+          <div
+            className="md:hidden px-4 py-3 border-b flex gap-2 overflow-x-auto"
+            style={{ borderColor: "rgba(255,255,255,0.15)" }}
+          >
+            <button
+              onClick={() => setTab("properties")}
+              className="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap"
+              style={{
+                color: tab === "properties" ? "#fff" : "#E4DED5",
+                backgroundColor:
+                  tab === "properties"
+                    ? "rgba(232,149,110,0.35)"
+                    : "rgba(255,255,255,0.08)",
+              }}
+            >
+              Properties
+            </button>
+            <button
+              onClick={() => setTab("construction")}
+              className="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap"
+              style={{
+                color: tab === "construction" ? "#fff" : "#E4DED5",
+                backgroundColor:
+                  tab === "construction"
+                    ? "rgba(232,149,110,0.35)"
+                    : "rgba(255,255,255,0.08)",
+              }}
+            >
+              Construction
+            </button>
+            <button
+              onClick={() => setTab("inquiries")}
+              className="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap"
+              style={{
+                color: tab === "inquiries" ? "#fff" : "#E4DED5",
+                backgroundColor:
+                  tab === "inquiries"
+                    ? "rgba(232,149,110,0.35)"
+                    : "rgba(255,255,255,0.08)",
+              }}
+            >
+              Inquiries ({inquiries.length})
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
             {(tab === "properties" || tab === "construction") && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <GlassPanel className="p-6 rounded-2xl">
                   <h3
-                    className="text-xl font-bold mb-4"
+                    className="text-lg sm:text-xl font-bold mb-4"
                     style={{
                       fontFamily: "'Playfair Display', serif",
                       color: "#fff",
@@ -1669,26 +1788,44 @@ function AdminPanel({
                       + Add Photo
                     </button>
                     {f.images.map((img, i) => (
-                      <input
-                        key={i}
-                        value={img}
-                        onChange={(e) =>
-                          setF({
-                            ...f,
-                            images: f.images.map((x, idx) =>
-                              idx === i ? e.target.value : x,
-                            ),
-                          })
-                        }
-                        placeholder={`Photo URL ${i + 1}`}
-                        className="w-full border-b-2 px-3 py-2 bg-transparent text-white focus:outline-none"
-                        style={{ borderColor: "rgba(255,255,255,0.22)" }}
-                      />
+                      <div key={i} className="flex flex-col sm:flex-row gap-2">
+                        <input
+                          value={img}
+                          onChange={(e) =>
+                            setF({
+                              ...f,
+                              images: f.images.map((x, idx) =>
+                                idx === i ? e.target.value : x,
+                              ),
+                            })
+                          }
+                          placeholder={`Photo URL ${i + 1}`}
+                          className="w-full border-b-2 px-3 py-2 bg-transparent text-white focus:outline-none"
+                          style={{ borderColor: "rgba(255,255,255,0.22)" }}
+                        />
+                        <label
+                          className="px-3 py-2 text-xs font-semibold rounded cursor-pointer text-center"
+                          style={{ backgroundColor: "rgba(232,149,110,0.2)", color: "#fff" }}
+                        >
+                          {uploadingIndex === i ? "Uploading..." : "Upload"}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            disabled={uploadingIndex !== null}
+                            onChange={(e) => {
+                              const selectedFile = e.target.files?.[0];
+                              uploadImageAtIndex(i, selectedFile);
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
+                      </div>
                     ))}
-                    <div className="pt-3 flex gap-3">
+                    <div className="pt-3 flex flex-col sm:flex-row gap-3">
                       <button
                         onClick={save}
-                        className="flex-1 py-3 rounded-lg font-semibold"
+                        className="flex-1 py-3 rounded-lg font-semibold text-sm sm:text-base"
                         style={{
                           backgroundColor: colors.accent,
                           color: "#fff",
@@ -1702,7 +1839,7 @@ function AdminPanel({
                             setEditingId(null);
                             setF(base);
                           }}
-                          className="flex-1 py-3 rounded-lg font-semibold"
+                          className="flex-1 py-3 rounded-lg font-semibold text-sm sm:text-base"
                           style={{
                             backgroundColor: colors.cream,
                             color: colors.dark,
@@ -1724,7 +1861,7 @@ function AdminPanel({
                   )}
                   {visibleProperties.map((p) => (
                     <GlassPanel key={p.id} className="p-4 mb-3 rounded-xl">
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                         <div>
                           <h4 className="font-semibold text-white">
                             {p.title}
@@ -1740,7 +1877,7 @@ function AdminPanel({
                           </p>
                         </div>
                         <span
-                          className="text-xs px-2 py-1 rounded-full"
+                          className="text-xs px-2 py-1 rounded-full w-fit"
                           style={{
                             backgroundColor: "rgba(232,149,110,0.16)",
                             color: "#fff",
@@ -1749,7 +1886,7 @@ function AdminPanel({
                           {p.location}
                         </span>
                       </div>
-                      <div className="flex gap-2 mt-3">
+                      <div className="flex flex-col sm:flex-row gap-2 mt-3">
                         <button
                           onClick={() => edit(p)}
                           className="flex-1 py-2 text-sm rounded font-semibold"
@@ -1862,7 +1999,7 @@ function LoginSidePane({ isOpen, onClose, onLoginSuccess, onLogin }) {
       <div className="fixed top-0 right-0 h-screen w-full sm:w-96 bg-white z-50 shadow-2xl overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute top-6 left-6 p-2 rounded-full"
+          className="absolute top-4 left-4 sm:top-6 sm:left-6 p-2 rounded-full"
           style={{
             backgroundColor: "rgba(232,149,110,0.1)",
             color: colors.accent,
@@ -1870,9 +2007,9 @@ function LoginSidePane({ isOpen, onClose, onLoginSuccess, onLogin }) {
         >
           <X className="w-6 h-6" />
         </button>
-        <div className="p-8 sm:p-10 max-w-sm mx-auto pt-20">
+        <div className="px-6 sm:px-10 pb-8 pt-16 sm:pt-20 max-w-sm mx-auto">
           <h2
-            className="text-4xl font-bold mb-8 text-center"
+            className="text-3xl sm:text-4xl font-bold mb-8 text-center"
             style={{
               fontFamily: "'Playfair Display', serif",
               color: colors.dark,
@@ -1891,16 +2028,14 @@ function LoginSidePane({ isOpen, onClose, onLoginSuccess, onLogin }) {
                 setUsername("");
                 setPassword("");
               } catch (err) {
-                setError(
-                  err.message ||
-                    "Incorrect username or password. Please try again.",
-                );
+                console.error("Admin login failed", err);
+                setError("Unable to log in");
                 setPassword("");
               } finally {
                 setLoading(false);
               }
             }}
-            className="space-y-6"
+            className="space-y-5 sm:space-y-6"
           >
             <input
               type="text"
@@ -2172,6 +2307,14 @@ export default function App() {
           await requestWithAuth(`/api/inquiries/${id}`, { method: "DELETE" });
           setInquiries((prev) => prev.filter((x) => x.id !== id));
         }}
+        onUploadImage={async (file) => {
+          const formData = new FormData();
+          formData.append("image", file);
+          return requestWithAuth("/api/uploads/property-image", {
+            method: "POST",
+            body: formData,
+          });
+        }}
       />
       <LoginSidePane
         isOpen={isLoginOpen}
@@ -2187,12 +2330,16 @@ export default function App() {
           }
           window.localStorage.setItem("adminToken", token);
           setAdminToken(token);
-          const adminInquiries = await requestApi("/api/inquiries", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          setInquiries(adminInquiries);
+          try {
+            const adminInquiries = await requestApi("/api/inquiries", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            setInquiries(adminInquiries);
+          } catch {
+            setInquiries([]);
+          }
         }}
         onLoginSuccess={() => {
           setIsAdminOpen(true);

@@ -1196,11 +1196,11 @@ export default function Construction({
             <label className="block font-bold text-sm md:text-base mb-1.5 md:mb-3">
               Reason for contact
             </label>
-            <div className="grid grid-cols-3 gap-2 md:gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3">
               {["Rent", "Buy / Sell", "Construction"].map((option) => (
                 <label
                   key={option}
-                  className={`border-2 rounded-xl md:rounded-2xl px-2 py-2.5 md:px-4 md:py-4 flex items-center gap-1.5 md:gap-3 cursor-pointer transition ${
+                  className={`border-2 rounded-xl md:rounded-2xl px-3 py-3 md:px-4 md:py-4 flex items-center gap-2 md:gap-3 cursor-pointer transition ${
                     inquiryForm?.reasonType === option
                       ? "border-orange-400 bg-orange-50"
                       : "border-gray-200 bg-white"
@@ -1214,8 +1214,9 @@ export default function Construction({
                     onChange={onInquiryChange}
                     className="accent-orange-500"
                   />
-                  <span className="font-semibold text-slate-800">{option}</span>
-                                   <span className="font-semibold text-xs md:text-sm text-slate-800">{option}</span>
+                  <span className="font-semibold text-sm md:text-base text-slate-800">
+                    {option}
+                  </span>
                 </label>
               ))}
             </div>
