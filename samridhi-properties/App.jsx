@@ -31,6 +31,15 @@ const bg = {
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
+const CONSTRUCTION_HASHES = new Set([
+  "#construction",
+  "#projects",
+  "#estimator",
+  "#contact-construction",
+]);
+
+const isConstructionHash = (value) => CONSTRUCTION_HASHES.has(value);
+
 async function requestApi(path, options = {}) {
   let response;
   try {
@@ -215,12 +224,17 @@ const initialInquiryForm = {
 function Navbar({ onAdminClick, hash, onNavigateHome }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef(null);
+  const inConstructionView = isConstructionHash(hash);
   const links = [
     { label: "Home", href: "#home" },
     { label: "For Sale", href: "#sale" },
     { label: "Rentals", href: "#rentals" },
     { label: "Construction", href: "#construction" },
-    { label: "Contact", href: "#contact" },
+    { label: "Free Cost Estimate", href: "#estimator" },
+    {
+      label: "Contact",
+      href: inConstructionView ? "#contact-construction" : "#contact",
+    },
   ];
   const currentHash = hash || window.location.hash || "#home";
 
@@ -230,7 +244,11 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
       onNavigateHome();
       return;
     }
-    if (hash === "#construction" && href !== "#construction") {
+    if (
+      inConstructionView &&
+      !isConstructionHash(href) &&
+      href !== "#construction"
+    ) {
       if (typeof onNavigateHome === "function") {
         onNavigateHome(href);
         return;
@@ -263,12 +281,13 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
   return (
     <nav
       ref={navRef}
-      className="sticky top-0 z-50 border-b overflow-x-clip"
+      className="sticky top-0 z-50 overflow-x-clip"
       style={{
-        backgroundColor: "rgba(255,255,255,0.96)",
-        backdropFilter: "blur(18px)",
-        borderColor: colors.cream,
-        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+        background:
+          "linear-gradient(135deg, rgba(255,252,247,0.98) 0%, rgba(253,245,233,0.97) 35%, rgba(248,237,220,0.97) 70%, rgba(243,229,210,0.96) 100%)",
+        backdropFilter: "blur(24px) saturate(1.4)",
+        borderBottom: "1.5px solid rgba(198,148,89,0.32)",
+        boxShadow: "0 2px 0 rgba(212,165,116,0.18), 0 8px 32px rgba(120,70,20,0.10), 0 1px 0 rgba(255,255,255,0.9) inset",
       }}
     >
       <div className="max-w-7xl mx-auto px-3 md:px-8 py-3 md:py-4 flex items-center justify-between gap-2 md:gap-6">
@@ -286,30 +305,45 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
           <button
             type="button"
             onClick={() => handleAnchorClick("#home")}
-            className="text-[2rem] leading-none md:text-3xl font-bold text-left hover:opacity-80 transition truncate"
+            className="text-[1.85rem] leading-none md:text-[2.2rem] font-bold text-left hover:opacity-85 transition truncate tracking-wide flex-shrink-0"
             style={{
               fontFamily: "'Playfair Display', serif",
-              color: colors.dark,
+              color: "#111111",
+              letterSpacing: "0.01em",
+              textShadow: "0 1px 0 rgba(255,255,255,0.6)",
             }}
           >
-            Samriddhi
+            <span className="md:hidden">Samriddhi</span>
+            <span className="hidden md:inline">Samriddhi Properties</span>
           </button>
         </div>
-        <div className="hidden md:flex items-center gap-8 flex-1 justify-center">
+        <div className="hidden md:flex items-center gap-6 flex-1 justify-center">
           {links.map((l) => {
-            const isActive = currentHash === l.href;
+            const isActive =
+              currentHash === l.href ||
+              (l.href === "#construction" && isConstructionHash(currentHash));
             return (
               <button
                 type="button"
                 key={l.href}
                 onClick={() => handleAnchorClick(l.href)}
-                className="text-sm font-semibold transition-all pb-1 hover:opacity-70"
+                className="relative text-sm font-semibold tracking-wide transition-all duration-200 pb-1.5 group"
                 style={{
-                  color: isActive ? colors.accent : colors.body,
-                  borderBottom: isActive ? `2px solid ${colors.accent}` : "2px solid transparent",
+                  color: isActive ? colors.accent : "#4a3728",
+                  letterSpacing: "0.04em",
                 }}
               >
                 {l.label}
+                <span
+                  className="absolute bottom-0 left-0 w-full transition-all duration-300 rounded-full"
+                  style={{
+                    height: "2px",
+                    background: `linear-gradient(90deg, ${colors.accent}, #e8956e)`,
+                    opacity: isActive ? 1 : 0,
+                    transform: isActive ? "scaleX(1)" : "scaleX(0)",
+                    transformOrigin: "left",
+                  }}
+                />
               </button>
             );
           })}
@@ -317,71 +351,101 @@ function Navbar({ onAdminClick, hash, onNavigateHome }) {
         <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
           <a
             href="tel:+919876543210"
-            className="px-3.5 md:px-7 py-2 md:py-2.5 rounded-lg md:rounded-xl font-semibold text-sm md:text-base inline-block text-center transition-all hover:shadow-md"
-            style={{ backgroundColor: colors.accent, color: "#fff" }}
+            className="px-3.5 md:px-6 py-2 md:py-2.5 rounded-xl font-semibold text-sm md:text-sm inline-block text-center transition-all duration-200 hover:shadow-lg active:scale-95 tracking-wide"
+            style={{
+              background: `linear-gradient(135deg, ${colors.accent} 0%, #c8713a 100%)`,
+              color: "#fff",
+              letterSpacing: "0.04em",
+              boxShadow: "0 2px 10px rgba(180,90,30,0.28), 0 1px 0 rgba(255,255,255,0.18) inset",
+            }}
           >
             Contact
           </a>
           <button
             onClick={onAdminClick}
-            className="p-2.5 rounded-lg hidden md:block transition-all hover:bg-gray-100"
+            className="p-2 rounded-lg hidden md:flex items-center justify-center transition-all duration-200 hover:scale-105"
             style={{
-              backgroundColor: "rgba(232,149,110,0.1)",
+              background: "rgba(180,100,40,0.08)",
+              border: "1px solid rgba(180,100,40,0.18)",
               color: colors.accent,
             }}
             title="Admin Login"
           >
-            <Lock className="w-5 h-5" />
+            <Lock className="w-4 h-4" />
           </button>
           <button
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="md:hidden px-3 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+            className="md:hidden px-3 py-2 rounded-xl font-semibold text-sm transition-all duration-200 hover:shadow-md active:scale-95 flex items-center gap-1.5"
             style={{
-              backgroundColor: colors.accent,
+              background: `linear-gradient(135deg, ${colors.accent} 0%, #c8713a 100%)`,
               color: "#fff",
+              boxShadow: "0 2px 8px rgba(180,90,30,0.25)",
             }}
             aria-label="Toggle menu"
           >
-            Menu
+            {menuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            {menuOpen ? "Close" : "Menu"}
           </button>
         </div>
       </div>
 
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ${
-          menuOpen ? "max-h-96" : "max-h-0"
+          menuOpen ? "max-h-[32rem]" : "max-h-0"
         }`}
       >
-        <div className="flex flex-col gap-2 px-4 pb-4">
-          {links.map((l) => {
-            const isActive = currentHash === l.href;
-            return (
-              <button
-                type="button"
-                key={l.href}
-                onClick={() => handleAnchorClick(l.href, true)}
-                className="text-base py-2 px-3 rounded-lg font-semibold text-left"
-                style={{
-                  color: isActive ? colors.accent : colors.dark,
-                  backgroundColor: isActive
-                    ? "rgba(232,149,110,0.1)"
-                    : "transparent",
-                }}
-              >
-                {l.label}
-              </button>
-            );
-          })}
-          <button
-            onClick={onAdminClick}
-            className="text-base py-2 px-3 rounded-lg font-semibold text-left flex items-center gap-2"
-            style={{
-              color: colors.accent,
-              backgroundColor: "rgba(232,149,110,0.07)",
-            }}
-          >
-            <Lock className="w-5 h-5" /> Admin
-          </button>
+        <div
+          className="mx-3 mb-3 rounded-2xl overflow-hidden"
+          style={{
+            background: "rgba(255,250,244,0.98)",
+            border: "1px solid rgba(198,148,89,0.22)",
+            boxShadow: "0 8px 24px rgba(120,70,20,0.10)",
+          }}
+        >
+          <div className="flex flex-col px-2 py-2">
+            {links.map((l, idx) => {
+              const isActive =
+                currentHash === l.href ||
+                (l.href === "#construction" && isConstructionHash(currentHash));
+              return (
+                <button
+                  type="button"
+                  key={l.href}
+                  onClick={() => handleAnchorClick(l.href, true)}
+                  className="text-sm py-3 px-4 rounded-xl font-semibold text-left transition-all duration-150 flex items-center justify-between"
+                  style={{
+                    color: isActive ? colors.accent : "#3d2a1a",
+                    backgroundColor: isActive
+                      ? "rgba(198,120,50,0.10)"
+                      : "transparent",
+                    letterSpacing: "0.03em",
+                  }}
+                >
+                  {l.label}
+                  {isActive && (
+                    <span
+                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: colors.accent }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <div style={{ borderTop: "1px solid rgba(198,148,89,0.16)" }} className="mx-3" />
+          <div className="px-2 py-2">
+            <button
+              onClick={() => { setMenuOpen(false); onAdminClick(); }}
+              className="w-full text-sm py-2.5 px-4 rounded-xl font-semibold text-left flex items-center gap-2 transition-all duration-150"
+              style={{
+                color: colors.accent,
+                backgroundColor: "rgba(198,120,50,0.06)",
+                letterSpacing: "0.03em",
+              }}
+            >
+              <Lock className="w-4 h-4" /> Login
+            </button>
+          </div>
         </div>
       </div>
     </nav>
@@ -624,7 +688,9 @@ function PropertyModal({ property, isOpen, onClose }) {
                 className="w-2 h-2 rounded-full"
                 style={{
                   backgroundColor:
-                    imageIndex === idx ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.45)",
+                    imageIndex === idx
+                      ? "rgba(255,255,255,0.95)"
+                      : "rgba(255,255,255,0.45)",
                 }}
               />
             ))}
@@ -832,7 +898,11 @@ function PropertyCard({ property, onClick }) {
             <span
               key={a}
               className="px-2.5 py-1 rounded-full text-xs font-semibold"
-              style={{ backgroundColor: "rgba(255,255,255,0.18)", color: "#fff", backdropFilter: "blur(6px)" }}
+              style={{
+                backgroundColor: "rgba(255,255,255,0.18)",
+                color: "#fff",
+                backdropFilter: "blur(6px)",
+              }}
             >
               {a}
             </span>
@@ -840,11 +910,20 @@ function PropertyCard({ property, onClick }) {
         </div>
         <div className="flex items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 fill-current" style={{ color: colors.accent }} />
-            <span className="font-semibold text-sm text-white">{property.rating}</span>
+            <Star
+              className="w-4 h-4 fill-current"
+              style={{ color: colors.accent }}
+            />
+            <span className="font-semibold text-sm text-white">
+              {property.rating}
+            </span>
             <span
               className="px-3 py-1 rounded-full text-xs font-semibold ml-1"
-              style={{ backgroundColor: "rgba(255,255,255,0.18)", color: "#fff", backdropFilter: "blur(6px)" }}
+              style={{
+                backgroundColor: "rgba(255,255,255,0.18)",
+                color: "#fff",
+                backdropFilter: "blur(6px)",
+              }}
             >
               {property.price}
             </span>
@@ -932,7 +1011,10 @@ function PropertyCarousel({ properties, onClick }) {
           <div
             key={p.id}
             className="flex-shrink-0"
-            style={{ width: "clamp(250px, 70vw, 390px)", scrollSnapAlign: "start" }}
+            style={{
+              width: "clamp(250px, 70vw, 390px)",
+              scrollSnapAlign: "start",
+            }}
           >
             <PropertyCard property={p} onClick={onClick} />
           </div>
@@ -1112,10 +1194,16 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
           <div className="mb-6">
             <input
               name="phone"
+              type="tel"
+              inputMode="numeric"
+              pattern="[0-9]{10}"
+              title="Please enter a valid 10-digit phone number"
+              minLength={10}
+              maxLength={10}
               value={form.phone}
               onChange={onChange}
               required
-              placeholder="Phone Number"
+              placeholder="Phone Number (10 digits)"
               className="w-full border-b-2 px-4 py-4 focus:outline-none"
               style={{
                 borderColor: colors.cream,
@@ -1161,39 +1249,42 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
               }}
             >
               <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
-              {["Rent", "Buy / Sell", "Construction"].map((option) => (
-                <label
-                  key={option}
-                  className={`rounded-xl px-4 py-3 flex items-center justify-center cursor-pointer transition ${
-                    form.reasonType === option
-                      ? "bg-white/70"
-                      : "bg-transparent"
-                  }`}
-                  style={{
-                    border: form.reasonType === option
-                      ? "1px solid rgba(232,149,110,0.7)"
-                      : "1px solid transparent",
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="reasonType"
-                    value={option}
-                    checked={form.reasonType === option}
-                    onChange={onChange}
-                    className="sr-only"
-                  />
-                  <span
-                    className="font-semibold"
+                {["Rent", "Buy / Sell", "Construction"].map((option) => (
+                  <label
+                    key={option}
+                    className={`rounded-xl px-4 py-3 flex items-center justify-center cursor-pointer transition ${
+                      form.reasonType === option
+                        ? "bg-white/70"
+                        : "bg-transparent"
+                    }`}
                     style={{
-                      color:
-                        form.reasonType === option ? colors.dark : colors.body,
+                      border:
+                        form.reasonType === option
+                          ? "1px solid rgba(232,149,110,0.7)"
+                          : "1px solid transparent",
                     }}
                   >
-                    {option}
-                  </span>
-                </label>
-              ))}
+                    <input
+                      type="radio"
+                      name="reasonType"
+                      value={option}
+                      checked={form.reasonType === option}
+                      onChange={onChange}
+                      className="sr-only"
+                    />
+                    <span
+                      className="font-semibold"
+                      style={{
+                        color:
+                          form.reasonType === option
+                            ? colors.dark
+                            : colors.body,
+                      }}
+                    >
+                      {option}
+                    </span>
+                  </label>
+                ))}
               </div>
             </div>
           </div>
@@ -1851,6 +1942,16 @@ export default function App() {
       if (nextHash === "#construction") {
         window.scrollTo({ top: 0, behavior: "auto" });
       }
+
+      if (isConstructionHash(nextHash) && nextHash !== "#construction") {
+        const id = nextHash.slice(1);
+        requestAnimationFrame(() => {
+          const target = document.getElementById(id);
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      }
     };
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
@@ -1883,9 +1984,11 @@ export default function App() {
 
   const handleInquiryChange = (e) => {
     const { name, value } = e.target;
+    const normalizedValue =
+      name === "phone" ? value.replace(/\D/g, "").slice(0, 10) : value;
     setInquiryForm((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: normalizedValue,
     }));
   };
 
@@ -1948,7 +2051,7 @@ export default function App() {
         hash={hash}
         onNavigateHome={navigateHome}
       />
-      {hash === "#construction" ? (
+      {isConstructionHash(hash) ? (
         <Construction
           projects={constructionProjects}
           listedProperties={properties}
@@ -1956,6 +2059,8 @@ export default function App() {
           onInquiryChange={handleInquiryChange}
           onInquirySubmit={submitInquiry}
           submitting={isSubmittingInquiry}
+          canEditRates={Boolean(adminToken)}
+          adminToken={adminToken}
         />
       ) : (
         <>
