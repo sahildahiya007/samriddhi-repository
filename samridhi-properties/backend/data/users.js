@@ -3,8 +3,9 @@ const users = [
     id: 1,
     name: "Lukesh",
     username: "lukeshprime",
-    // password: set via admin creation, not in code
-    password: process.env.PRIME_ADMIN_PASSWORD || undefined, // Set at runtime, not in code
+    // bcrypt hash of the default admin password (K@9971647910)
+    // Override by setting ADMIN_PASSWORD env var on the server
+    password: "$2a$10$XgN//DkqOUsKjHjEDfLjN.b4k8X5LxZxwOlq2o9qNJnOoQS4glcmq",
     email: "samriddhiproperties9@gmail.com",
     phone: "+91 9971647910",
     role: "prime-admin", // only id 1 is prime admin

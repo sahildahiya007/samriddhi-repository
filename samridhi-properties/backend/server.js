@@ -296,12 +296,12 @@ app.post("/api/auth/login", async (req, res) => {
     // Stored as a proper bcrypt hash — compare securely
     match = await bcrypt.compare(password, user.password);
   } else if (user.password) {
-    // Stored as plain text (shouldn't happen in prod but handle gracefully)
+    // Stored as plain text — compare directly
     match = password === user.password;
   }
-  // Prime-admin fallback: always allow login via ADMIN_PASSWORD env var
-  if (!match && user.role === "prime-admin") {
-    match = password === ADMIN_PASSWORD;
+  // Prime-admin: also accept ADMIN_PASSWORD env var override
+  if (!match && user.role === "prime-admin" && process.env.ADMIN_PASSWORD) {
+    match = password === process.env.ADMIN_PASSWORD;
   }
   if (!match) return res.status(401).json({ message: "Invalid credentials" });
   // Only admins can login
