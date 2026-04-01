@@ -1245,7 +1245,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
   return (
     <section
       id="contact"
-      className="relative py-16 md:py-24 px-4 sm:px-6 overflow-hidden"
+      className="relative py-10 sm:py-14 md:py-24 px-3 sm:px-6 overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(140deg, rgba(249,247,244,0.93) 0%, rgba(245,243,240,0.92) 100%), url('${bg.contact}')`,
         backgroundSize: "cover",
@@ -1253,10 +1253,10 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
         backgroundAttachment: "fixed",
       }}
     >
-      <div className="max-w-3xl mx-auto relative z-10">
-        <div className="text-center mb-12">
+      <div className="w-full max-w-3xl mx-auto relative z-10">
+        <div className="text-center mb-7 sm:mb-12">
           <h3
-            className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4"
+            className="text-2xl sm:text-4xl md:text-6xl font-bold mb-3 sm:mb-4"
             style={{
               fontFamily: "'Playfair Display', serif",
               color: colors.dark,
@@ -1264,27 +1264,27 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
           >
             Get in Touch
           </h3>
-          <p className="text-lg" style={{ color: colors.body }}>
+          <p className="text-sm sm:text-lg" style={{ color: colors.body }}>
             Tell us your requirement and our brokers will respond quickly.
           </p>
         </div>
         <form
           onSubmit={submit}
-          className="rounded-2xl p-5 sm:p-8 md:p-10"
+          className="rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10"
           style={{
             backgroundColor: "rgba(255,255,255,0.88)",
             border: "1px solid rgba(232,149,110,0.25)",
             boxShadow: "0 20px 50px rgba(26,26,26,0.1)",
           }}
         >
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <input
               name="name"
               value={form.name}
               onChange={onChange}
               required
               placeholder="Full Name"
-              className="w-full border-b-2 px-4 py-4 focus:outline-none"
+              className="w-full border-b-2 px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base focus:outline-none"
               style={{
                 borderColor: colors.cream,
                 backgroundColor: "transparent",
@@ -1292,7 +1292,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
               }}
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <input
               name="phone"
               type="tel"
@@ -1305,7 +1305,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
               onChange={onChange}
               required
               placeholder="Phone Number (10 digits)"
-              className="w-full border-b-2 px-4 py-4 focus:outline-none"
+              className="w-full border-b-2 px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base focus:outline-none"
               style={{
                 borderColor: colors.cream,
                 backgroundColor: "transparent",
@@ -1313,13 +1313,13 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
               }}
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <select
               name="time"
               value={form.time}
               onChange={onChange}
               required
-              className="w-full border-b-2 px-4 py-4 focus:outline-none"
+              className="w-full border-b-2 px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base focus:outline-none"
               style={{
                 borderColor: colors.cream,
                 backgroundColor: "transparent",
@@ -1334,7 +1334,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
               <option>Evening (4pm-8pm)</option>
             </select>
           </div>
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <p
               className="text-sm font-semibold mb-3 uppercase tracking-wide"
               style={{ color: colors.body }}
@@ -1353,7 +1353,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
                 {["Rent", "Buy / Sell", "Construction"].map((option) => (
                   <label
                     key={option}
-                    className={`rounded-xl px-4 py-3 flex items-center justify-center cursor-pointer transition ${
+                    className={`rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-center cursor-pointer transition ${
                       form.reasonType === option
                         ? "bg-white/70"
                         : "bg-transparent"
@@ -1374,7 +1374,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
                       className="sr-only"
                     />
                     <span
-                      className="font-semibold"
+                      className="font-semibold text-sm sm:text-base"
                       style={{
                         color:
                           form.reasonType === option
@@ -1389,25 +1389,25 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
               </div>
             </div>
           </div>
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <textarea
               name="reason"
               value={form.reason}
               onChange={onChange}
               placeholder="Tell us what you need"
-              className="w-full border-b-2 px-4 py-4 focus:outline-none resize-none"
+              className="w-full border-b-2 px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base focus:outline-none resize-none"
               style={{
                 borderColor: colors.cream,
                 backgroundColor: "transparent",
                 color: colors.dark,
-                minHeight: 90,
+                minHeight: 78,
               }}
             />
           </div>
           <button
             type="submit"
             disabled={submitting}
-            className="w-full px-5 sm:px-6 py-4 rounded-lg font-semibold text-base sm:text-lg disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full px-4 sm:px-6 py-3.5 sm:py-4 rounded-lg font-semibold text-sm sm:text-lg disabled:opacity-60 disabled:cursor-not-allowed"
             style={{ backgroundColor: colors.accent, color: "#fff" }}
           >
             {submitting ? "Submitting..." : "Submit Inquiry"}
@@ -1425,7 +1425,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
             </div>
           )}
           <div
-            className="mt-8 pt-6 border-t"
+            className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t"
             style={{ borderColor: "rgba(232,149,110,0.25)" }}
           >
             <p className="text-sm mb-4" style={{ color: colors.body }}>
