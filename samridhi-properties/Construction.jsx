@@ -326,7 +326,7 @@ export default function Construction({
 
       <section
         ref={(el) => (sectionRefs.current[0] = el)}
-        className="relative min-h-[78vh] md:min-h-[92vh] flex items-center justify-center overflow-hidden reveal"
+        className="relative min-h-screen md:min-h-[92vh] flex items-center justify-center overflow-hidden reveal"
         style={{
           backgroundImage: `linear-gradient(135deg, rgba(10,10,10,0.78) 0%, rgba(26,26,26,0.76) 40%, rgba(232,149,110,0.42) 80%), url(${constructionBg})`,
           backgroundSize: "cover",
@@ -795,14 +795,14 @@ export default function Construction({
         <div className="float-shape float-shape-1" />
         <div className="float-shape float-shape-2" />
         <div className="float-shape float-shape-3" />
-        <div className="max-w-4xl mx-auto text-center mb-10 md:mb-16">
+        <div className="max-w-4xl mx-auto text-center mb-7 md:mb-16">
           <h2
-            className="text-3xl md:text-6xl font-bold mb-4 md:mb-6 text-accent"
+            className="text-2xl md:text-5xl font-bold mb-3 md:mb-6 text-accent"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Estimate Your Construction Cost
           </h2>
-          <p className="text-base md:text-2xl text-accent/80 px-2">
+          <p className="text-sm md:text-xl text-accent/80 px-2">
             Better visibility into budget, built-up area and delivery timeline
           </p>
         </div>
@@ -812,7 +812,7 @@ export default function Construction({
           <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-6 md:gap-10 items-start">
             <div className="space-y-4 md:space-y-6">
               <div>
-                <label className="block text-sm md:text-xl font-bold text-slate-900 mb-2 md:mb-3">
+                <label className="block text-xs md:text-lg font-bold text-slate-900 mb-1.5 md:mb-3">
                   Plot Size (sq ft)
                 </label>
                 <input
@@ -821,19 +821,19 @@ export default function Construction({
                   min="0"
                   value={estimator.size}
                   onChange={handleCalcChange}
-                  className="w-full p-2.5 md:p-5 rounded-2xl text-base md:text-2xl font-bold text-center border-2 border-orange-200 focus:border-orange-400 bg-white text-slate-900 placeholder-slate-400"
+                  className="w-full p-2 md:p-5 rounded-xl md:rounded-2xl text-sm md:text-xl font-bold text-center border-2 border-orange-200 focus:border-orange-400 bg-white text-slate-900 placeholder-slate-400"
                   placeholder="Enter plot area"
                 />
               </div>
               <div>
-                <label className="block text-sm md:text-xl font-bold text-slate-900 mb-2 md:mb-3">
+                <label className="block text-xs md:text-lg font-bold text-slate-900 mb-1.5 md:mb-3">
                   Number of Floors
                 </label>
                 <select
                   name="floors"
                   value={estimator.floors}
                   onChange={handleCalcChange}
-                  className="w-full p-2.5 md:p-5 rounded-2xl text-sm md:text-xl font-bold text-center border-2 border-orange-200 focus:border-orange-400 bg-white text-slate-900"
+                  className="w-full p-2 md:p-5 rounded-xl md:rounded-2xl text-xs md:text-lg font-bold text-center border-2 border-orange-200 focus:border-orange-400 bg-white text-slate-900"
                 >
                   <option value={1}>Ground Floor</option>
                   <option value={2}>G + 1 Floors</option>
@@ -1098,11 +1098,11 @@ export default function Construction({
 
       <section
         id="contact-construction"
-        className="py-14 md:py-24 px-4 md:px-6 max-w-4xl mx-auto"
+        className="py-8 md:py-20 px-4 md:px-6 max-w-4xl mx-auto"
       >
-        <div className="text-center mb-10 md:mb-16">
+        <div className="text-center mb-6 md:mb-14">
           <h2
-            className="text-3xl md:text-6xl font-bold mb-4 md:mb-6"
+            className="text-xl md:text-4xl font-bold mb-2 md:mb-5"
             style={{
               fontFamily: "'Playfair Display', serif",
               color: colors.dark,
@@ -1110,30 +1110,30 @@ export default function Construction({
           >
             Submit Construction Inquiry
           </h2>
-          <p className="text-base md:text-xl" style={{ color: colors.body }}>
+          <p className="text-sm md:text-lg" style={{ color: colors.body }}>
             Use the common inquiry form below and select{" "}
             <span className="font-semibold">Construction</span> as the reason.
           </p>
         </div>
         <form
           onSubmit={submitForm}
-          className="grid gap-5 md:gap-6 p-5 md:p-10 rounded-3xl bg-white shadow-2xl border border-gray-100"
-          style={{ boxShadow: "0 30px 60px rgba(0,0,0,0.1)" }}
+          className="grid gap-3.5 md:gap-6 p-4 md:p-10 rounded-2xl md:rounded-3xl bg-white shadow-xl border border-gray-100"
+          style={{ boxShadow: "0 20px 50px rgba(0,0,0,0.08)" }}
         >
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+          <div className="grid md:grid-cols-2 gap-3 md:gap-6">
             <div>
-              <label className="block font-bold text-base md:text-lg mb-2 md:mb-3">Full Name</label>
+              <label className="block font-bold text-sm md:text-base mb-1.5 md:mb-3">Full Name</label>
               <input
                 name="name"
                 value={inquiryForm?.name || ""}
                 onChange={onInquiryChange}
                 required
-                className="w-full p-3 md:p-4 border-2 border-gray-200 rounded-2xl focus:border-orange-400 focus:outline-none text-base md:text-lg"
+                className="w-full p-2.5 md:p-4 border-2 border-gray-200 rounded-xl md:rounded-2xl focus:border-orange-400 focus:outline-none text-sm md:text-base"
                 placeholder="Your name"
               />
             </div>
             <div>
-              <label className="block font-bold text-base md:text-lg mb-2 md:mb-3">
+              <label className="block font-bold text-sm md:text-base mb-1.5 md:mb-3">
                 Phone Number
               </label>
               <input
@@ -1147,14 +1147,14 @@ export default function Construction({
                 value={inquiryForm?.phone || ""}
                 onChange={onInquiryChange}
                 required
-                className="w-full p-3 md:p-4 border-2 border-gray-200 rounded-2xl focus:border-orange-400 focus:outline-none text-base md:text-lg"
-                placeholder="Your phone number (10 digits)"
+                className="w-full p-2.5 md:p-4 border-2 border-gray-200 rounded-xl md:rounded-2xl focus:border-orange-400 focus:outline-none text-sm md:text-base"
+                placeholder="Phone number (10 digits)"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-bold text-base md:text-lg mb-2 md:mb-3">
+            <label className="block font-bold text-sm md:text-base mb-1.5 md:mb-3">
               Preferred Callback Time
             </label>
             <select
@@ -1162,7 +1162,7 @@ export default function Construction({
               value={inquiryForm?.time || ""}
               onChange={onInquiryChange}
               required
-              className="w-full p-3 md:p-4 border-2 border-gray-200 rounded-2xl focus:border-orange-400 focus:outline-none text-base md:text-lg"
+              className="w-full p-2.5 md:p-4 border-2 border-gray-200 rounded-xl md:rounded-2xl focus:border-orange-400 focus:outline-none text-sm md:text-base"
             >
               <option value="">Select time</option>
               <option>Morning (9am-12pm)</option>
@@ -1172,14 +1172,14 @@ export default function Construction({
           </div>
 
           <div>
-            <label className="block font-bold text-lg mb-3">
+            <label className="block font-bold text-sm md:text-base mb-1.5 md:mb-3">
               Reason for contact
             </label>
-            <div className="grid sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 md:gap-3">
               {["Rent", "Buy / Sell", "Construction"].map((option) => (
                 <label
                   key={option}
-                  className={`border-2 rounded-2xl px-4 py-4 flex items-center gap-3 cursor-pointer transition ${
+                  className={`border-2 rounded-xl md:rounded-2xl px-2 py-2.5 md:px-4 md:py-4 flex items-center gap-1.5 md:gap-3 cursor-pointer transition ${
                     inquiryForm?.reasonType === option
                       ? "border-orange-400 bg-orange-50"
                       : "border-gray-200 bg-white"
@@ -1194,21 +1194,22 @@ export default function Construction({
                     className="accent-orange-500"
                   />
                   <span className="font-semibold text-slate-800">{option}</span>
+                                   <span className="font-semibold text-xs md:text-sm text-slate-800">{option}</span>
                 </label>
               ))}
             </div>
           </div>
 
           <div>
-            <label className="block font-bold text-lg mb-3">
+            <label className="block font-bold text-sm md:text-base mb-1.5 md:mb-3">
               Requirement Details
             </label>
             <textarea
               name="reason"
               value={inquiryForm?.reason || ""}
               onChange={onInquiryChange}
-              rows="5"
-              className="w-full p-4 border-2 border-gray-200 rounded-2xl focus:border-orange-400 focus:outline-none text-lg resize-y"
+              rows="4"
+              className="w-full p-2.5 md:p-4 border-2 border-gray-200 rounded-xl md:rounded-2xl focus:border-orange-400 focus:outline-none text-sm md:text-base resize-y"
               placeholder="Share your plot size, location, budget or construction requirements"
             />
           </div>
@@ -1216,7 +1217,7 @@ export default function Construction({
           <button
             type="submit"
             disabled={submitting}
-            className="w-full p-6 rounded-3xl font-bold text-xl bg-gradient-to-r from-[#E8956E] to-[#D4A574] text-white transition-all shadow-2xl flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full p-3.5 md:p-5 rounded-2xl md:rounded-3xl font-bold text-sm md:text-lg bg-gradient-to-r from-[#E8956E] to-[#D4A574] text-white transition-all shadow-lg flex items-center justify-center gap-2 md:gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
             style={{ border: "1px solid rgba(232,149,110,0.65)" }}
           >
             <Send className="w-6 h-6" />
