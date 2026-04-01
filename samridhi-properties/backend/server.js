@@ -21,9 +21,16 @@ app.use(
 );
 app.use(express.json());
 
-const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+const uploadsDir =
+  process.env.NODE_ENV === "production"
+    ? path.join("/tmp", "uploads")
+    : path.join(__dirname, "uploads");
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch {
+  // Non-writable filesystem (serverless) — disk upload will use /tmp fallback
 }
 
 const storage = multer.diskStorage({
