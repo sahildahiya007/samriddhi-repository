@@ -3,11 +3,14 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "K@9971647910";
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
+const JWT_SECRET = process.env.JWT_SECRET || "samridhi_jwt_secret";
 
 // Middleware
 app.use(
@@ -38,7 +41,10 @@ const storage = multer.diskStorage({
   filename: (_req, file, cb) => {
     const extension = path.extname(file.originalname || "").toLowerCase();
     const safeExtension = extension || ".jpg";
-    cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${safeExtension}`);
+    cb(
+      null,
+      `${Date.now()}-${Math.round(Math.random() * 1e9)}${safeExtension}`,
+    );
   },
 });
 
@@ -58,9 +64,153 @@ app.use("/uploads", express.static(uploadsDir));
 
 const properties = require("./data/properties");
 let users = require("./data/users");
-const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET || "samridhi_jwt_secret";
 let constructionRates = require("./data/constructionRates");
+
+/* ── In-memory stores for regular users & wishlists ── */
+let registeredUsers = []; // { id, name, email, password (bcrypt), wishlist: [propertyId,...] }
+let nextUserId = 1;
+
+/* ── Auth middleware (admin JWT) ── */
+function authMiddleware(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith("Bearer "))
+    return res.status(401).json({ message: "Missing token" });
+  try {
+    const decoded = jwt.verify(auth.replace("Bearer ", ""), JWT_SECRET);
+    req.admin = decoded;
+    next();
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+}
+
+/* ── Auth middleware (regular user JWT) ── */
+function userAuthMiddleware(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith("Bearer "))
+    return res.status(401).json({ message: "Missing token" });
+  try {
+    const decoded = jwt.verify(auth.replace("Bearer ", ""), JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+}
+
+function requirePrimeAdmin(req, res, next) {
+  if (req.admin && req.admin.role === "prime-admin") return next();
+  return res.status(403).json({ message: "Only Prime Admin allowed" });
+}
+
+const inquiries = require("./data/inquiries");
+
+/* ── User Registration & Login ── */
+app.post("/api/users/register", async (req, res) => {
+  const { name, email, password } = req.body || {};
+  if (!name || !email || !password)
+    return res
+      .status(400)
+      .json({ message: "Name, email, and password are required" });
+  const emailLower = email.toLowerCase().trim();
+  if (registeredUsers.find((u) => u.email === emailLower))
+    return res
+      .status(409)
+      .json({ message: "An account with this email already exists" });
+  const hash = await bcrypt.hash(password, 10);
+  const newUser = {
+    id: nextUserId++,
+    name: name.trim(),
+    email: emailLower,
+    password: hash,
+    wishlist: [],
+  };
+  registeredUsers.push(newUser);
+  const token = jwt.sign(
+    { id: newUser.id, email: newUser.email, type: "user" },
+    JWT_SECRET,
+    { expiresIn: "7d" },
+  );
+  return res
+    .status(201)
+    .json({
+      token,
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        wishlist: newUser.wishlist,
+      },
+    });
+});
+
+app.post("/api/users/login", async (req, res) => {
+  const { email, password } = req.body || {};
+  if (!email || !password)
+    return res.status(400).json({ message: "Email and password are required" });
+  const user = registeredUsers.find(
+    (u) => u.email === email.toLowerCase().trim(),
+  );
+  if (!user) return res.status(401).json({ message: "Invalid credentials" });
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) return res.status(401).json({ message: "Invalid credentials" });
+  const token = jwt.sign(
+    { id: user.id, email: user.email, type: "user" },
+    JWT_SECRET,
+    { expiresIn: "7d" },
+  );
+  return res.json({
+    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      wishlist: user.wishlist,
+    },
+  });
+});
+
+app.get("/api/users/me", userAuthMiddleware, (req, res) => {
+  const user = registeredUsers.find((u) => u.id === req.user.id);
+  if (!user) return res.status(404).json({ message: "User not found" });
+  return res.json({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    wishlist: user.wishlist,
+  });
+});
+
+/* ── Wishlist ── */
+app.post("/api/wishlist/:propertyId", userAuthMiddleware, (req, res) => {
+  const user = registeredUsers.find((u) => u.id === req.user.id);
+  if (!user) return res.status(404).json({ message: "User not found" });
+  const propId = Number(req.params.propertyId);
+  if (!user.wishlist.includes(propId)) user.wishlist.push(propId);
+  return res.json({ wishlist: user.wishlist });
+});
+
+app.delete("/api/wishlist/:propertyId", userAuthMiddleware, (req, res) => {
+  const user = registeredUsers.find((u) => u.id === req.user.id);
+  if (!user) return res.status(404).json({ message: "User not found" });
+  const propId = Number(req.params.propertyId);
+  user.wishlist = user.wishlist.filter((id) => id !== propId);
+  return res.json({ wishlist: user.wishlist });
+});
+
+app.get("/api/wishlist", userAuthMiddleware, (req, res) => {
+  const user = registeredUsers.find((u) => u.id === req.user.id);
+  if (!user) return res.status(404).json({ message: "User not found" });
+  const wishlisted = properties.filter((p) => user.wishlist.includes(p.id));
+  return res.json({ wishlist: user.wishlist, properties: wishlisted });
+});
+
+// Admin endpoint — list all registered users + their wishlists
+app.get("/api/registered-users", authMiddleware, (req, res) => {
+  const safeUsers = registeredUsers.map(({ password, ...rest }) => rest);
+  return res.json(safeUsers);
+});
+
 // Construction Rates API
 app.get("/api/construction-rates", (req, res) => {
   res.json(constructionRates);
@@ -80,29 +230,9 @@ app.put(
       return res.status(400).json({ message: "All rates must be numbers." });
     }
     constructionRates = { standard, premium, luxury };
-    // Optionally, persist to file here for production
     res.json(constructionRates);
   },
 );
-// Simple in-memory session (for demo, not production)
-function authMiddleware(req, res, next) {
-  const auth = req.headers.authorization;
-  if (!auth || !auth.startsWith("Bearer "))
-    return res.status(401).json({ message: "Missing token" });
-  try {
-    const decoded = jwt.verify(auth.replace("Bearer ", ""), JWT_SECRET);
-    req.admin = decoded;
-    next();
-  } catch {
-    return res.status(401).json({ message: "Invalid token" });
-  }
-}
-
-function requirePrimeAdmin(req, res, next) {
-  if (req.admin && req.admin.role === "prime-admin") return next();
-  return res.status(403).json({ message: "Only Prime Admin allowed" });
-}
-const inquiries = require("./data/inquiries");
 
 const requiredPropertyFields = [
   "title",
@@ -276,7 +406,89 @@ app.delete("/api/inquiries/:id", authMiddleware, (req, res) => {
   return res.json(deletedInquiry);
 });
 
-const bcrypt = require("bcryptjs");
+/* ── Unified login endpoint ──
+   Accepts { identifier, password } where identifier can be email or username.
+   Tries admin (username match) first, then regular user (email match).
+   Returns { token, user, type: "admin" | "user" } so frontend knows which flow. */
+app.post("/api/auth/unified-login", async (req, res) => {
+  const { identifier, password } = req.body || {};
+  if (!identifier || !password)
+    return res
+      .status(400)
+      .json({ message: "Identifier and password are required" });
+
+  const identifierLower = identifier.toLowerCase().trim();
+  const isBcryptHash = (str) =>
+    typeof str === "string" && /^\$2[ab]\$\d+\$/.test(str);
+
+  // 1) Try admin users (match by username OR email)
+  const adminUser = users.find(
+    (u) =>
+      u.username === identifierLower ||
+      (u.email && u.email.toLowerCase() === identifierLower),
+  );
+  if (adminUser && adminUser.role) {
+    let match = false;
+    if (adminUser.password && isBcryptHash(adminUser.password)) {
+      match = await bcrypt.compare(password, adminUser.password);
+    } else if (adminUser.password) {
+      match = password === adminUser.password;
+    }
+    if (
+      !match &&
+      adminUser.role === "prime-admin" &&
+      process.env.ADMIN_PASSWORD
+    ) {
+      match = password === process.env.ADMIN_PASSWORD;
+    }
+    if (match) {
+      const token = jwt.sign(
+        {
+          id: adminUser.id,
+          username: adminUser.username,
+          role: adminUser.role,
+        },
+        JWT_SECRET,
+        { expiresIn: "2h" },
+      );
+      return res.json({
+        token,
+        type: "admin",
+        user: {
+          id: adminUser.id,
+          username: adminUser.username,
+          role: adminUser.role,
+          name: adminUser.name,
+        },
+      });
+    }
+  }
+
+  // 2) Try regular registered user (match by email)
+  const regUser = registeredUsers.find((u) => u.email === identifierLower);
+  if (regUser) {
+    const match = await bcrypt.compare(password, regUser.password);
+    if (match) {
+      const token = jwt.sign(
+        { id: regUser.id, email: regUser.email, type: "user" },
+        JWT_SECRET,
+        { expiresIn: "7d" },
+      );
+      return res.json({
+        token,
+        type: "user",
+        user: {
+          id: regUser.id,
+          name: regUser.name,
+          email: regUser.email,
+          wishlist: regUser.wishlist,
+        },
+      });
+    }
+  }
+
+  return res.status(401).json({ message: "Invalid credentials" });
+});
 
 // Admin login (returns JWT)
 app.post("/api/auth/login", async (req, res) => {

@@ -33,6 +33,8 @@ const aboutBg =
   "https://images.unsplash.com/photo-1578896883415-139635c3d296?auto=format&fit=crop&w=1600&q=80";
 const ctaBg =
   "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=1920&q=80";
+const warmWoodBg =
+  "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1920&q=80";
 
 const projects = [
   {
@@ -233,10 +235,10 @@ export default function Construction({
   ).slice(0, 12);
   const projectRows = useMemo(() => {
     const splitIndex = Math.ceil(projectList.length / 2);
-    return [projectList.slice(0, splitIndex), projectList.slice(splitIndex)].slice(
-      0,
-      2,
-    );
+    return [
+      projectList.slice(0, splitIndex),
+      projectList.slice(splitIndex),
+    ].slice(0, 2);
   }, [projectList]);
 
   const constructionListings = (listedProperties || []).filter(
@@ -327,8 +329,54 @@ export default function Construction({
           from { opacity: 0; transform: translateY(14px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes premiumFloatA {
+          0% { transform: translate3d(-6%, -4%, 0) scale(1); }
+          50% { transform: translate3d(6%, 5%, 0) scale(1.08); }
+          100% { transform: translate3d(-6%, -4%, 0) scale(1); }
+        }
+        @keyframes premiumFloatB {
+          0% { transform: translate3d(5%, -6%, 0) scale(1.02); }
+          50% { transform: translate3d(-5%, 6%, 0) scale(1.1); }
+          100% { transform: translate3d(5%, -6%, 0) scale(1.02); }
+        }
+        @keyframes premiumFloatC {
+          0% { transform: translate3d(0%, 0%, 0) scale(1); }
+          50% { transform: translate3d(4%, -5%, 0) scale(1.06); }
+          100% { transform: translate3d(0%, 0%, 0) scale(1); }
+        }
         .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
         .reveal.show { opacity: 1; transform: translateY(0); }
+        .premium-orb {
+          position: absolute;
+          border-radius: 9999px;
+          filter: blur(10px);
+          pointer-events: none;
+          mix-blend-mode: screen;
+        }
+        .premium-orb-a {
+          width: min(40vw, 420px);
+          height: min(40vw, 420px);
+          left: -8%;
+          top: 12%;
+          background: radial-gradient(circle at 35% 35%, rgba(232,149,110,0.30) 0%, rgba(232,149,110,0.04) 58%, rgba(232,149,110,0) 100%);
+          animation: premiumFloatA 15s ease-in-out infinite;
+        }
+        .premium-orb-b {
+          width: min(34vw, 360px);
+          height: min(34vw, 360px);
+          right: -6%;
+          top: 6%;
+          background: radial-gradient(circle at 45% 40%, rgba(212,165,116,0.25) 0%, rgba(212,165,116,0.05) 56%, rgba(212,165,116,0) 100%);
+          animation: premiumFloatB 18s ease-in-out infinite;
+        }
+        .premium-orb-c {
+          width: min(46vw, 500px);
+          height: min(46vw, 500px);
+          left: 22%;
+          bottom: -24%;
+          background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.03) 52%, rgba(255,255,255,0) 100%);
+          animation: premiumFloatC 20s ease-in-out infinite;
+        }
       `}</style>
 
       <section
@@ -341,6 +389,14 @@ export default function Construction({
           backgroundAttachment: "fixed",
         }}
       >
+        <div
+          className="absolute inset-0 z-0 overflow-hidden"
+          aria-hidden="true"
+        >
+          <div className="premium-orb premium-orb-a" />
+          <div className="premium-orb premium-orb-b" />
+          <div className="premium-orb premium-orb-c" />
+        </div>
         <div
           className="max-w-6xl px-4 md:px-6 text-center relative z-10 select-none"
           style={{ WebkitUserSelect: "none", userSelect: "none" }}
@@ -388,30 +444,38 @@ export default function Construction({
 
       <section
         ref={(el) => (sectionRefs.current[1] = el)}
-        className="py-14 md:py-24 px-4 md:px-6 max-w-7xl mx-auto reveal"
-        style={{ backgroundColor: "#f8f8f8" }}
+        className="py-14 md:py-24 px-4 md:px-6 reveal"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(4,4,4,0.88) 0%, rgba(22,16,10,0.84) 52%, rgba(4,4,4,0.88) 100%), url(${warmWoodBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
       >
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div>
             <h2
               className="text-3xl md:text-5xl font-bold mb-4 md:mb-6"
               style={{
                 fontFamily: "'Playfair Display', serif",
-                color: colors.dark,
+                color: "#fff",
               }}
             >
               Trusted Civil Contractor in Gurgaon
             </h2>
             <p
               className="text-base md:text-lg mb-5 md:mb-6 leading-relaxed"
-              style={{ color: colors.body, lineHeight: 1.7 }}
+              style={{ color: "#F5E6D3", lineHeight: 1.7 }}
             >
               Samriddhi Properties delivers construction with one-point
               accountability. From plot review and concept planning to finishing
               and handover, you get practical design guidance, local execution
               expertise and disciplined cost control.
             </p>
-            <ul className="space-y-3 text-base md:text-lg">
+            <ul
+              className="space-y-3 text-base md:text-lg"
+              style={{ color: "#F3EBDD" }}
+            >
               <li className="flex items-start gap-3">
                 <Hammer className="w-6 h-6 mt-1 flex-shrink-0 text-accent" />
                 Residential construction for floors, villas and duplex homes
@@ -451,21 +515,26 @@ export default function Construction({
       <section
         ref={(el) => (sectionRefs.current[2] = el)}
         className="py-14 md:py-24 px-4 md:px-6 reveal"
-        style={{ backgroundColor: "#f8f8f8" }}
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(4,4,4,0.88) 0%, rgba(22,16,10,0.84) 55%, rgba(4,4,4,0.88) 100%), url(${warmWoodBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
       >
         <div className="max-w-7xl mx-auto text-center mb-12 md:mb-20">
           <h2
             className="text-3xl md:text-6xl font-bold mb-4 md:mb-6"
             style={{
               fontFamily: "'Playfair Display', serif",
-              color: colors.dark,
+              color: "#fff",
             }}
           >
             Our Construction Services
           </h2>
           <p
             className="text-base md:text-lg max-w-3xl mx-auto"
-            style={{ color: colors.body }}
+            style={{ color: "#F5E6D3" }}
           >
             Full-service execution tailored for homeowners, investors and plot
             owners who want clarity on planning, budget, quality and delivery.
@@ -500,14 +569,19 @@ export default function Construction({
         ref={(el) => (sectionRefs.current[3] = el)}
         id="projects"
         className="py-14 md:py-24 px-4 md:px-6 reveal"
-        style={{ backgroundColor: "#ffffff" }}
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(4,4,4,0.88) 0%, rgba(22,16,10,0.84) 55%, rgba(4,4,4,0.88) 100%), url(${warmWoodBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
       >
         <div className="max-w-7xl mx-auto text-center mb-12 md:mb-20">
           <h2
             className="text-3xl md:text-6xl font-bold mb-4 md:mb-6"
             style={{
               fontFamily: "'Playfair Display', serif",
-              color: colors.dark,
+              color: "#fff",
             }}
           >
             Our Recent Construction Projects
@@ -561,7 +635,10 @@ export default function Construction({
                           <MapPin className="w-4 h-4" />
                           {project.location}
                         </p>
-                        <p className="text-xs md:text-sm mb-1" style={{ color: colors.body }}>
+                        <p
+                          className="text-xs md:text-sm mb-1"
+                          style={{ color: colors.body }}
+                        >
                           {project.type} • {project.size}
                         </p>
                       </div>
@@ -574,21 +651,29 @@ export default function Construction({
       </section>
 
       {constructionListings.length > 0 && (
-        <section className="py-14 md:py-24 px-4 md:px-6" style={{ backgroundColor: "#fff7f2" }}>
+        <section
+          className="py-14 md:py-24 px-4 md:px-6"
+          style={{
+            backgroundImage: `linear-gradient(135deg, rgba(4,4,4,0.88) 0%, rgba(22,16,10,0.84) 55%, rgba(4,4,4,0.88) 100%), url(${warmWoodBg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundAttachment: "fixed",
+          }}
+        >
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-10 md:mb-14">
               <h2
                 className="text-3xl md:text-5xl font-bold mb-4"
                 style={{
                   fontFamily: "'Playfair Display', serif",
-                  color: colors.dark,
+                  color: "#fff",
                 }}
               >
                 Listed Construction Opportunities
               </h2>
               <p
                 className="text-base md:text-lg max-w-3xl mx-auto"
-                style={{ color: colors.body }}
+                style={{ color: "#F5E6D3" }}
               >
                 Admin-added construction listings are shown here automatically,
                 so your construction team can highlight active custom-build
@@ -671,14 +756,19 @@ export default function Construction({
       <section
         ref={(el) => (sectionRefs.current[4] = el)}
         className="py-14 md:py-24 px-4 md:px-6 reveal"
-        style={{ backgroundColor: "#F3F4F6" }}
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(4,4,4,0.88) 0%, rgba(22,16,10,0.84) 55%, rgba(4,4,4,0.88) 100%), url(${warmWoodBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
       >
         <div className="max-w-6xl mx-auto text-center mb-12 md:mb-20">
           <h2
             className="text-3xl md:text-6xl font-bold mb-4 md:mb-6"
             style={{
               fontFamily: "'Playfair Display', serif",
-              color: colors.dark,
+              color: "#fff",
             }}
           >
             Our Construction Process
@@ -742,13 +832,21 @@ export default function Construction({
         </div>
       </section>
 
-      <section className="py-14 md:py-24 px-4 md:px-6 relative">
+      <section
+        className="py-14 md:py-24 px-4 md:px-6 relative"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(4,4,4,0.88) 0%, rgba(22,16,10,0.84) 55%, rgba(4,4,4,0.88) 100%), url(${warmWoodBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
+      >
         <div className="max-w-4xl mx-auto text-center mb-12 md:mb-20">
           <h2
             className="text-3xl md:text-6xl font-bold mb-4 md:mb-6"
             style={{
               fontFamily: "'Playfair Display', serif",
-              color: colors.dark,
+              color: "#fff",
             }}
           >
             Why Choose Samriddhi Properties
@@ -789,7 +887,13 @@ export default function Construction({
           ].map((item, i) => (
             <div
               key={i}
-              className="p-5 md:p-8 rounded-2xl hover:bg-accent/5 transition-all group"
+              className="p-5 md:p-8 rounded-2xl transition-all group"
+              style={{
+                background:
+                  "linear-gradient(145deg, rgba(255,255,255,0.92) 0%, rgba(251,246,238,0.88) 100%)",
+                border: "1px solid rgba(232,149,110,0.24)",
+                boxShadow: "0 14px 28px rgba(0,0,0,0.18)",
+              }}
             >
               <item.icon className="w-12 h-12 md:w-16 md:h-16 text-accent mb-4 md:mb-6 group-hover:scale-110 transition-transform mx-auto" />
               <h3
@@ -808,7 +912,10 @@ export default function Construction({
         id="estimator"
         className="py-12 md:py-24 px-3 md:px-6 luxury-gradient relative overflow-x-hidden"
         style={{
-          background: `linear-gradient(135deg, #FAF8F5 0%, #F5E6D3 25%, #F0E8E0 50%, #E8DED5 75%, #FAF8F5 100%)`,
+          backgroundImage: `linear-gradient(135deg, rgba(4,4,4,0.90) 0%, rgba(22,16,10,0.86) 55%, rgba(4,4,4,0.90) 100%), url(${warmWoodBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
           overflow: "hidden",
         }}
       >
@@ -818,12 +925,12 @@ export default function Construction({
         <div className="float-shape float-shape-3" />
         <div className="max-w-4xl mx-auto text-center mb-7 md:mb-16">
           <h2
-            className="text-2xl md:text-5xl font-bold mb-3 md:mb-6 text-accent"
+            className="text-2xl md:text-5xl font-bold mb-3 md:mb-6 text-white"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Estimate Your Construction Cost
           </h2>
-          <p className="text-sm md:text-xl text-accent/80 px-2">
+          <p className="text-sm md:text-xl text-white/85 px-2">
             Better visibility into budget, built-up area and delivery timeline
           </p>
         </div>
@@ -929,7 +1036,9 @@ export default function Construction({
                     <p className="text-lg md:text-3xl font-extrabold text-accent leading-none">
                       ₹{rate}
                     </p>
-                    <p className="text-[10px] md:text-xs text-accent/70">per sq ft</p>
+                    <p className="text-[10px] md:text-xs text-accent/70">
+                      per sq ft
+                    </p>
                   </div>
                 ))}
               </div>
@@ -983,7 +1092,9 @@ export default function Construction({
                       >
                         <div className="flex items-center gap-2 md:gap-3 text-slate-700 min-w-0">
                           <item.icon className="w-5 h-5 text-orange-500" />
-                          <span className="font-semibold text-sm md:text-base break-words">{item.label}</span>
+                          <span className="font-semibold text-sm md:text-base break-words">
+                            {item.label}
+                          </span>
                         </div>
                         <span className="font-bold text-sm md:text-base text-slate-900 break-all text-left sm:text-right">
                           {item.value}
@@ -1012,12 +1123,12 @@ export default function Construction({
                   </div>
                 </>
               ) : (
-                  <div className="rounded-3xl bg-white border border-orange-200 p-5 md:p-8 text-center">
-                    <Calculator className="w-10 h-10 md:w-12 md:h-12 text-orange-500 mx-auto mb-3 md:mb-4" />
-                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">
+                <div className="rounded-3xl bg-white border border-orange-200 p-5 md:p-8 text-center">
+                  <Calculator className="w-10 h-10 md:w-12 md:h-12 text-orange-500 mx-auto mb-3 md:mb-4" />
+                  <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">
                     Start with your plot size
                   </h3>
-                    <p className="text-sm md:text-base text-slate-600">
+                  <p className="text-sm md:text-base text-slate-600">
                     Enter plot area, floors and package to generate a realistic
                     working estimate.
                   </p>
@@ -1039,13 +1150,21 @@ export default function Construction({
         </div>
       </section>
 
-      <section className="py-14 md:py-24 px-4 md:px-6 bg-cream">
+      <section
+        className="py-14 md:py-24 px-4 md:px-6"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(4,4,4,0.88) 0%, rgba(22,16,10,0.84) 55%, rgba(4,4,4,0.88) 100%), url(${warmWoodBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
+      >
         <div className="max-w-4xl mx-auto text-center mb-12 md:mb-20">
           <h2
             className="text-3xl md:text-6xl font-bold mb-4 md:mb-6"
             style={{
               fontFamily: "'Playfair Display', serif",
-              color: colors.dark,
+              color: "#fff",
             }}
           >
             What Our Clients Say
@@ -1092,7 +1211,7 @@ export default function Construction({
       <section
         className="relative py-20 md:py-32 px-4 md:px-6 overflow-hidden"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(26,26,26,0.8) 0%, rgba(232,149,110,0.4) 50%, rgba(26,26,26,0.8) 100%), url(${ctaBg})`,
+          backgroundImage: `linear-gradient(135deg, rgba(4,4,4,0.92) 0%, rgba(22,16,10,0.82) 50%, rgba(4,4,4,0.92) 100%), url(${warmWoodBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -1119,19 +1238,26 @@ export default function Construction({
 
       <section
         id="contact-construction"
-        className="py-8 md:py-20 px-4 md:px-6 max-w-4xl mx-auto"
+        className="py-8 md:py-20 px-4 md:px-6"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(4,4,4,0.88) 0%, rgba(22,16,10,0.84) 55%, rgba(4,4,4,0.88) 100%), url(${warmWoodBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
       >
+        <div className="max-w-4xl mx-auto">
         <div className="text-center mb-6 md:mb-14">
           <h2
             className="text-xl md:text-4xl font-bold mb-2 md:mb-5"
             style={{
               fontFamily: "'Playfair Display', serif",
-              color: colors.dark,
+              color: "#fff",
             }}
           >
             Submit Construction Inquiry
           </h2>
-          <p className="text-sm md:text-lg" style={{ color: colors.body }}>
+          <p className="text-sm md:text-lg" style={{ color: "#F5E6D3" }}>
             Use the common inquiry form below and select{" "}
             <span className="font-semibold">Construction</span> as the reason.
           </p>
@@ -1143,7 +1269,9 @@ export default function Construction({
         >
           <div className="grid md:grid-cols-2 gap-3 md:gap-6">
             <div>
-              <label className="block font-bold text-sm md:text-base mb-1.5 md:mb-3">Full Name</label>
+              <label className="block font-bold text-sm md:text-base mb-1.5 md:mb-3">
+                Full Name
+              </label>
               <input
                 name="name"
                 value={inquiryForm?.name || ""}
@@ -1260,6 +1388,7 @@ export default function Construction({
             </div>
           )}
         </form>
+        </div>
       </section>
     </section>
   );
