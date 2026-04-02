@@ -4312,7 +4312,7 @@ export default function App() {
         href="https://wa.me/919876543210?text=Hi%20Samriddhi%2C%20I%20want%20to%20discuss%20a%20property%20requirement."
         target="_blank"
         rel="noreferrer"
-        className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 group"
+        className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 group"
         style={{
           backgroundColor: "#25D366",
           boxShadow: "0 6px 20px rgba(37,211,102,0.4)",
