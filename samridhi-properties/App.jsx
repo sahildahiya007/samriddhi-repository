@@ -3444,14 +3444,19 @@ function AdminPanel({
   );
 }
 
-/* ── User Auth Side Pane (Register / Login for regular users) ── */
+/* ── User Auth Side Pane (Register / Login for regular users + Admin Login) ── */
 function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
   const [mode, setMode] = useState(initialMode || "login");
+  const [isAdminLogin, setIsAdminLogin] = useState(false);
   useEffect(() => {
-    if (isOpen && initialMode) setMode(initialMode);
+    if (isOpen && initialMode) {
+      setMode(initialMode);
+      setIsAdminLogin(false);
+    }
   }, [isOpen, initialMode]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
@@ -3461,6 +3466,7 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
   const reset = () => {
     setName("");
     setEmail("");
+    setUsername("");
     setPassword("");
     setError("");
   };
@@ -3470,6 +3476,18 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
     setLoading(true);
     setError("");
     try {
+      if (isAdminLogin) {
+        // Admin-specific login (username + password)
+        const res = await requestApi("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ username, password }),
+        });
+        if (!res?.token) throw new Error("Admin login failed");
+        if (onAdminAuth) onAdminAuth(res.token, res.user);
+        reset();
+        onClose();
+        return;
+      }
       if (mode === "register") {
         const res = await requestApi("/api/users/register", {
           method: "POST",
@@ -3539,7 +3557,12 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
                 border: "1px solid rgba(232,149,110,0.18)",
               }}
             >
-              {mode === "register" ? (
+              {isAdminLogin ? (
+                <Shield
+                  className="w-6 h-6"
+                  style={{ color: colors.accent }}
+                />
+              ) : mode === "register" ? (
                 <UserPlus
                   className="w-6 h-6"
                   style={{ color: colors.accent }}
@@ -3552,48 +3575,84 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
               className="text-3xl font-bold mb-2"
               style={{ fontFamily: "'Playfair Display', serif", color: "#fff" }}
             >
-              {mode === "register" ? "Create Account" : "Welcome Back"}
+              {isAdminLogin ? "Admin Login" : mode === "register" ? "Create Account" : "Welcome Back"}
             </h2>
             <p className="text-sm" style={{ color: "rgba(245,230,211,0.45)" }}>
-              {mode === "register"
-                ? "Sign up to save your favourite properties"
-                : "Login to access your wishlist"}
+              {isAdminLogin
+                ? "Enter your admin credentials to access the dashboard"
+                : mode === "register"
+                  ? "Sign up to save your favourite properties"
+                  : "Login to access your wishlist"}
             </p>
           </div>
 
-          {/* Toggle */}
-          <div
-            className="flex rounded-xl mb-6 p-1"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}
-          >
-            {["login", "register"].map((m) => (
-              <button
-                key={m}
-                onClick={() => {
-                  setMode(m);
-                  setError("");
-                }}
-                className="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all capitalize"
-                style={{
-                  backgroundColor:
-                    mode === m ? "rgba(232,149,110,0.18)" : "transparent",
-                  color: mode === m ? "#fff" : "rgba(245,230,211,0.45)",
-                  border:
-                    mode === m
-                      ? "1px solid rgba(232,149,110,0.25)"
-                      : "1px solid transparent",
-                }}
-              >
-                {m === "login" ? "Login" : "Sign Up"}
-              </button>
-            ))}
-          </div>
+          {/* Toggle — hide when in admin login mode */}
+          {!isAdminLogin && (
+            <div
+              className="flex rounded-xl mb-6 p-1"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.06)",
+              }}
+            >
+              {["login", "register"].map((m) => (
+                <button
+                  key={m}
+                  onClick={() => {
+                    setMode(m);
+                    setError("");
+                  }}
+                  className="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all capitalize"
+                  style={{
+                    backgroundColor:
+                      mode === m ? "rgba(232,149,110,0.18)" : "transparent",
+                    color: mode === m ? "#fff" : "rgba(245,230,211,0.45)",
+                    border:
+                      mode === m
+                        ? "1px solid rgba(232,149,110,0.25)"
+                        : "1px solid transparent",
+                  }}
+                >
+                  {m === "login" ? "Login" : "Sign Up"}
+                </button>
+              ))}
+            </div>
+          )}
 
           <form onSubmit={submit} className="space-y-4">
-            {mode === "register" && (
+            {/* Admin login fields */}
+            {isAdminLogin && (
+              <div>
+                <label
+                  className="block text-xs font-bold uppercase tracking-wider mb-2"
+                  style={{ color: "rgba(245,230,211,0.5)" }}
+                >
+                  Admin Username
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter admin username"
+                    required
+                    autoComplete="username"
+                    className="w-full px-4 py-3.5 pl-11 rounded-xl text-sm focus:outline-none transition-all"
+                    style={{
+                      backgroundColor: "rgba(255,255,255,0.06)",
+                      border: "1.5px solid rgba(232,149,110,0.15)",
+                      color: "#fff",
+                    }}
+                  />
+                  <Shield
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
+                    style={{ color: "rgba(245,230,211,0.25)" }}
+                  />
+                </div>
+              </div>
+            )}
+            {/* Regular user fields */}
+            {!isAdminLogin && mode === "register" && (
               <div>
                 <label
                   className="block text-xs font-bold uppercase tracking-wider mb-2"
@@ -3616,6 +3675,7 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
                 />
               </div>
             )}
+            {!isAdminLogin && (
             <div>
               <label
                 className="block text-xs font-bold uppercase tracking-wider mb-2"
@@ -3648,6 +3708,7 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
                 />
               </div>
             </div>
+            )}
             <div>
               <label
                 className="block text-xs font-bold uppercase tracking-wider mb-2"
@@ -3712,6 +3773,10 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
                   <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{" "}
                   Processing...
                 </>
+              ) : isAdminLogin ? (
+                <>
+                  <Shield className="w-4 h-4" /> Admin Login
+                </>
               ) : mode === "register" ? (
                 <>
                   <UserPlus className="w-4 h-4" /> Sign Up
@@ -3731,14 +3796,41 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
               border: "1px solid rgba(255,255,255,0.04)",
             }}
           >
-            <p
-              className="text-xs text-center"
-              style={{ color: "rgba(245,230,211,0.3)" }}
-            >
-              {mode === "login"
-                ? "Don't have an account? Switch to Sign Up above."
-                : "Already have an account? Switch to Login above."}
-            </p>
+            {isAdminLogin ? (
+              <p
+                className="text-xs text-center"
+                style={{ color: "rgba(245,230,211,0.3)" }}
+              >
+                Not an admin?{" "}
+                <button
+                  type="button"
+                  onClick={() => { setIsAdminLogin(false); setError(""); }}
+                  className="underline font-semibold hover:opacity-80 transition-opacity"
+                  style={{ color: colors.accent }}
+                >
+                  Back to User Login
+                </button>
+              </p>
+            ) : (
+              <div className="text-center space-y-2">
+                <p
+                  className="text-xs"
+                  style={{ color: "rgba(245,230,211,0.3)" }}
+                >
+                  {mode === "login"
+                    ? "Don't have an account? Switch to Sign Up above."
+                    : "Already have an account? Switch to Login above."}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => { setIsAdminLogin(true); setError(""); setUsername(""); setPassword(""); }}
+                  className="text-xs underline font-semibold hover:opacity-80 transition-opacity inline-flex items-center gap-1"
+                  style={{ color: colors.accent }}
+                >
+                  <Shield className="w-3 h-3" /> Admin Login
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

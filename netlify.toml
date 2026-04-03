@@ -5,6 +5,8 @@
 
 [functions]
   directory = "netlify/functions"
+  included_files = ["backend/**"]
+  node_bundler = "esbuild"
 
 [[redirects]]
   from   = "/api/*"
