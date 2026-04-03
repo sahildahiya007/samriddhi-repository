@@ -86,7 +86,6 @@ const bg = {
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 const NETLIFY_FUNCTIONS_API_BASE = "/.netlify/functions/api";
-const VERCEL_BACKEND_API_BASE = "/_/backend";
 
 function buildApiCandidates(path) {
   if (API_BASE) {
@@ -95,7 +94,6 @@ function buildApiCandidates(path) {
   if (path.startsWith("/api/")) {
     return [
       path,
-      `${VERCEL_BACKEND_API_BASE}${path}`,
       `${NETLIFY_FUNCTIONS_API_BASE}${path.replace(/^\/api/, "")}`,
     ];
   }
