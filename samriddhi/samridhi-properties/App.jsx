@@ -96,17 +96,17 @@ const ADMIN_USERS = [
     passwordHash:
       "31ceaeb92c5325e3eb867c84ef9f1c0684fe2f307ad8a1908828a4e98da02a61",
     email: "samriddhiproperties9@gmail.com",
-    phone: "+91 9971647910",
+    phone: "+91 8398979897",
     role: "prime-admin",
   },
   {
     id: 2,
-    name: "Jaide",
-    username: "subadmin1",
+    name: "lukeshdmin",
+    username: "lukeshdmin",
     passwordHash:
-      "acec0ee00c1052f498b569bbc5d7cebc13d7037ba53bffd7cb876dcd560f9f35",
+      "c6a804d1136e556062f2a2f48beb0fb74e168c8b18a80813965030cb4c82be7a",
     email: "jaide@example.com",
-    phone: "+91 9876543211",
+    phone: "+91 7678478209",
     role: "sub-admin",
   },
 ];
@@ -275,9 +275,9 @@ const defaultProperties = [
     amenities: ["Clubhouse", "Infinity Pool", "Gym", "3-Tier Security"],
     details: "Luxury high-floor home with skyline views and premium finishes.",
     contacts: {
-      sales: "+91 9876543210",
-      rent: "+91 9876543211",
-      leasing: "+91 9876543212",
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
     },
   },
   {
@@ -298,9 +298,9 @@ const defaultProperties = [
     amenities: ["EV Parking", "Co-working Lounge", "Kids Play Deck"],
     details: "Modern 2BHK designed for urban families and professionals.",
     contacts: {
-      sales: "+91 9876543220",
-      rent: "+91 9876543221",
-      leasing: "+91 9876543222",
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
     },
   },
   {
@@ -321,9 +321,9 @@ const defaultProperties = [
     amenities: ["Furnished", "Housekeeping", "Power Backup", "Metro Access"],
     details: "Premium lease apartment for executive living.",
     contacts: {
-      sales: "+91 9876543250",
-      rent: "+91 9876543251",
-      leasing: "+91 9876543252",
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
     },
   },
   {
@@ -344,9 +344,9 @@ const defaultProperties = [
     amenities: ["Pool", "Yoga Lawn", "Basement Parking"],
     details: "Sunlit apartment with urban Gurgaon aesthetics.",
     contacts: {
-      sales: "+91 9876543260",
-      rent: "+91 9876543261",
-      leasing: "+91 9876543262",
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
     },
   },
   {
@@ -373,9 +373,9 @@ const defaultProperties = [
     details:
       "End-to-end villa and custom home construction packages with planning, approvals, civil work and finishing support.",
     contacts: {
-      sales: "+91 9876543290",
-      rent: "+91 9876543291",
-      leasing: "+91 9876543292",
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
     },
   },
 ];
@@ -391,9 +391,9 @@ const normalize = (p) => ({
       ? p.images
       : [p.image].filter(Boolean),
   contacts: {
-    sales: p?.contacts?.sales || "+91 9876543210",
-    rent: p?.contacts?.rent || "+91 9876543211",
-    leasing: p?.contacts?.leasing || "+91 9876543212",
+    sales: p?.contacts?.sales || "+91 8398979897",
+    rent: p?.contacts?.rent || "+91 9968149329",
+    leasing: p?.contacts?.leasing || "+91 8448660575",
   },
 });
 
@@ -425,8 +425,8 @@ function Navbar({
   const [contactMenuOpen, setContactMenuOpen] = useState(false);
   const navRef = useRef(null);
   const inConstructionView = isConstructionHash(hash);
-  const phoneNumber = "+919876543210";
-  const whatsappHref = `https://wa.me/919876543210?text=${encodeURIComponent(
+  const phoneNumber = "+918398979897";
+  const whatsappHref = `https://wa.me/918398979897?text=${encodeURIComponent(
     "Hi Samriddhi Estates, I want to discuss a property requirement.",
   )}`;
   const links = [
@@ -1453,7 +1453,7 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
 
           <div className="grid grid-cols-2 gap-2">
             <a
-              href="tel:+919876543210"
+              href="tel:+918398979897"
               className="flex min-h-[50px] items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-center whitespace-nowrap"
               style={{ backgroundColor: colors.accent, color: "#fff" }}
               onClick={(e) => e.stopPropagation()}
@@ -2241,7 +2241,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
           >
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <a
-                href="tel:+919876543210"
+                href="tel:+918398979897"
                 className="flex items-center justify-center gap-1.5 py-3 rounded-xl font-semibold text-sm transition-all hover:scale-[1.02]"
                 style={{
                   backgroundColor: "rgba(232,149,110,0.08)",
@@ -2252,7 +2252,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
                 <Phone className="w-4 h-4" /> Call
               </a>
               <a
-                href="https://wa.me/919876543210"
+                href="https://wa.me/918398979897"
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center justify-center gap-1.5 py-3 rounded-xl font-semibold text-sm transition-all hover:scale-[1.02]"
@@ -2384,9 +2384,9 @@ function AdminPanel({
       image: images[0],
       rating: 4.6,
       contacts: {
-        sales: "+91 9876543210",
-        rent: "+91 9876543211",
-        leasing: "+91 9876543212",
+        sales: "+91 8398979897",
+        rent: "+91 9968149329",
+        leasing: "+91 8448660575",
       },
     });
     try {
@@ -4631,7 +4631,7 @@ function AppInner() {
       />
       {/* Floating WhatsApp Button */}
       <a
-        href="https://wa.me/919876543210?text=Hi%20Samriddhi%20Estates%2C%20I%20want%20to%20discuss%20a%20property%20requirement."
+        href="https://wa.me/918398979897?text=Hi%20Samriddhi%20Estates%2C%20I%20want%20to%20discuss%20a%20property%20requirement."
         target="_blank"
         rel="noreferrer"
         className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 group"
@@ -4711,12 +4711,12 @@ function AppInner() {
                 Get in Touch
               </h5>
               <a
-                href="tel:+919876543210"
+                href="tel:+918398979897"
                 className="flex items-center gap-2 text-sm mb-3 transition-colors hover:text-white"
                 style={{ color: "rgba(245,230,211,0.6)" }}
               >
                 <Phone className="w-4 h-4" style={{ color: colors.accent }} />{" "}
-                +91 98765 43210
+                +91 83989 79897
               </a>
               <a
                 href="mailto:samriddhiproperties9@gmail.com"
