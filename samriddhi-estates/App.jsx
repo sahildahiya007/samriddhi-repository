@@ -3520,10 +3520,14 @@ function AdminPanel({
 function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
   const [mode, setMode] = useState(initialMode || "login");
   const [isAdminLogin, setIsAdminLogin] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   useEffect(() => {
     if (isOpen && initialMode) {
       setMode(initialMode);
       setIsAdminLogin(false);
+      setIsForgotPassword(false);
+      setResetSent(false);
     }
   }, [isOpen, initialMode]);
   const [name, setName] = useState("");
@@ -3541,6 +3545,29 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
     setUsername("");
     setPassword("");
     setError("");
+    setIsForgotPassword(false);
+    setResetSent(false);
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const safeEmail = email.toLowerCase().trim();
+      if (!safeEmail || !EMAIL_RE.test(safeEmail)) {
+        throw new Error("Please enter a valid email address");
+      }
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(safeEmail, {
+        redirectTo: window.location.origin + "/#reset-password",
+      });
+      if (resetError) throw new Error(resetError.message);
+      setResetSent(true);
+    } catch (err) {
+      setError(err.message || "Failed to send reset email");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const submit = async (e) => {
@@ -3727,8 +3754,8 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
             </p>
           </div>
 
-          {/* Toggle — hide when in admin login mode */}
-          {!isAdminLogin && (
+          {/* Toggle — hide when in admin login mode or forgot password */}
+          {!isAdminLogin && !isForgotPassword && (
             <div
               className="flex rounded-xl mb-6 p-1"
               style={{
@@ -3760,6 +3787,112 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
             </div>
           )}
 
+          {/* Forgot Password Form */}
+          {isForgotPassword ? (
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              {resetSent ? (
+                <div
+                  className="p-5 rounded-xl text-center space-y-3"
+                  style={{
+                    backgroundColor: "rgba(34,197,94,0.08)",
+                    border: "1px solid rgba(34,197,94,0.18)",
+                  }}
+                >
+                  <CheckCircle2 className="w-10 h-10 mx-auto" style={{ color: "#22c55e" }} />
+                  <p className="text-sm font-semibold" style={{ color: "#22c55e" }}>
+                    Reset link sent!
+                  </p>
+                  <p className="text-xs" style={{ color: "rgba(245,230,211,0.55)" }}>
+                    Check your inbox for a password reset link. It may take a minute to arrive.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => { setIsForgotPassword(false); setResetSent(false); setError(""); }}
+                    className="mt-2 text-sm underline font-semibold hover:opacity-80 transition-opacity"
+                    style={{ color: colors.accent }}
+                  >
+                    Back to Login
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm mb-2" style={{ color: "rgba(245,230,211,0.6)" }}>
+                    Enter your email and we'll send you a link to reset your password.
+                  </p>
+                  <div>
+                    <label
+                      className="block text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "rgba(245,230,211,0.5)" }}
+                    >
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="you@email.com"
+                        required
+                        autoComplete="email"
+                        className="w-full px-4 py-3.5 pl-11 rounded-xl text-sm focus:outline-none transition-all"
+                        style={{
+                          backgroundColor: "rgba(255,255,255,0.06)",
+                          border: "1.5px solid rgba(232,149,110,0.15)",
+                          color: "#fff",
+                        }}
+                      />
+                      <Mail
+                        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
+                        style={{ color: "rgba(245,230,211,0.25)" }}
+                      />
+                    </div>
+                  </div>
+                  {error && (
+                    <div
+                      className="p-3.5 rounded-xl text-sm font-medium flex items-center gap-2"
+                      style={{
+                        backgroundColor: "rgba(239,68,68,0.10)",
+                        color: "#F87171",
+                        border: "1px solid rgba(239,68,68,0.15)",
+                      }}
+                    >
+                      <X className="w-4 h-4 shrink-0" />
+                      {error}
+                    </div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-4 font-bold text-base rounded-xl disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:shadow-lg flex items-center justify-center gap-2"
+                    style={{
+                      background: `linear-gradient(135deg, ${colors.accent} 0%, #c8713a 100%)`,
+                      color: "#fff",
+                      boxShadow: "0 6px 20px rgba(232,149,110,0.30)",
+                    }}
+                  >
+                    {loading ? (
+                      <>
+                        <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />{" "}
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="w-4 h-4" /> Send Reset Link
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setIsForgotPassword(false); setError(""); }}
+                    className="w-full text-center text-sm underline font-semibold hover:opacity-80 transition-opacity mt-2"
+                    style={{ color: colors.accent }}
+                  >
+                    Back to Login
+                  </button>
+                </>
+              )}
+            </form>
+          ) : (
           <form onSubmit={submit} className="space-y-4">
             {/* Admin login fields */}
             {isAdminLogin && (
@@ -3928,8 +4061,24 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
                 </>
               )}
             </button>
-          </form>
 
+            {/* Forgot Password link — only show in user login mode */}
+            {!isAdminLogin && mode === "login" && (
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => { setIsForgotPassword(true); setError(""); }}
+                  className="text-xs underline font-semibold hover:opacity-80 transition-opacity"
+                  style={{ color: colors.accent }}
+                >
+                  Forgot your password?
+                </button>
+              </div>
+            )}
+          </form>
+          )}
+
+          {!isForgotPassword && (
           <div
             className="mt-6 p-4 rounded-xl"
             style={{
@@ -3973,6 +4122,7 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
               </div>
             )}
           </div>
+          )}
         </div>
       </div>
     </>
@@ -4423,7 +4573,13 @@ function AppInner() {
         })
         .select()
         .single();
-      if (insertError) throw new Error(insertError.message);
+      if (insertError) {
+        // Provide user-friendly messages for common Supabase errors
+        if (insertError.code === "42501" || insertError.message?.includes("row-level security")) {
+          throw new Error("Unable to submit inquiry right now. Please call us directly at +91 8398979897.");
+        }
+        throw new Error(insertError.message || "Failed to submit your inquiry. Please try again.");
+      }
       setInquiries((prev) => [created, ...prev]);
       setInquiryForm(initialInquiryForm);
       return created;
