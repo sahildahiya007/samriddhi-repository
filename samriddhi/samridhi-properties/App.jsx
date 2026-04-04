@@ -514,18 +514,17 @@ function Navbar({
           <button
             type="button"
             onClick={() => handleAnchorClick("#home")}
-            className="text-[1.85rem] leading-none md:text-[2.2rem] font-bold text-left hover:opacity-85 transition truncate tracking-wide flex-shrink-0"
+            className="leading-none font-bold text-left hover:opacity-85 transition tracking-wide flex-shrink-0 flex flex-col"
             style={{
               fontFamily: "'Playfair Display', serif",
               color: darkMode ? "#fff" : colors.dark,
               letterSpacing: "0.01em",
               textShadow: darkMode ? "0 2px 8px rgba(0,0,0,0.3)" : "none",
+              lineHeight: 1,
             }}
           >
-            <span className="md:hidden">Samriddhi</span>
-            <span className="hidden md:inline">
-              Samriddhi <span style={{ color: colors.accent }}>Estates</span>
-            </span>
+            <span className="text-[1rem] md:text-[1.2rem]">Samriddhi</span>
+            <span className="text-[0.85rem] md:text-[1rem]" style={{ color: colors.accent }}>Estates</span>
           </button>
         </div>
         <div className="hidden md:flex items-center gap-6 flex-1 justify-center">
