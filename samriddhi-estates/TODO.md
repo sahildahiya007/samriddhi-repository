@@ -10,7 +10,7 @@
 
 ### [x] 4. Update index.html SEO Meta
 
-- Title: "Civil Contractor Gurgaon | Construction Services - Samridhi Properties"
+- Title: "Civil Contractor Gurgaon | Construction Services - Samriddhi Estates"
 - Meta description with keywords
 - Open Graph tags
 
@@ -18,7 +18,7 @@
 
 ✅ Verified: Navbar Construction link works, page renders fully matching luxury theme, responsive, all interactions functional (estimator, hovers, form submit to console).
 
-- Run `cd samridhi-properties && npm run dev` to test locally
+- Run `cd samriddhi-estates && npm run dev` to test locally
 
 ### [ ] 6. Optional Backend Integration
 

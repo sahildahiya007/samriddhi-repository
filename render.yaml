@@ -1,8 +1,8 @@
 services:
   - type: web
-    name: samridhi-properties-backend
+    name: samriddhi-estates-backend
     runtime: node
-    rootDir: samridhi-properties/backend
+    rootDir: samriddhi-estates/backend
     buildCommand: npm install
     startCommand: npm start
     envVars:

@@ -52,12 +52,12 @@ Login: `lukeshprime` / `K@9971647910`
 - In Render, create a new Blueprint service from the repo (it will use `render.yaml`).
 - Set environment variables:
   - `ADMIN_PASSWORD` = your admin login password
-  - `FRONTEND_ORIGIN` = your Vercel URL (for example `https://samridhi-properties.vercel.app`)
-- Deploy and copy the backend URL (for example `https://samridhi-properties-backend.onrender.com`).
+  - `FRONTEND_ORIGIN` = your Vercel URL (for example `https://samriddhi-estates.vercel.app`)
+- Deploy and copy the backend URL (for example `https://samriddhi-estates-backend.onrender.com`).
 
 ## 2. Deploy frontend to Vercel
 
-- Import `samridhi-properties` project in Vercel.
+- Import `samriddhi-estates` project in Vercel.
 - Add environment variable:
   - `VITE_API_BASE_URL` = your Render backend URL
 - Deploy.

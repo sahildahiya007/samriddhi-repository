@@ -251,7 +251,7 @@ const missingFields = (payload, fields) =>
 
 // Routes
 app.get("/api/health", (req, res) => {
-  res.json({ ok: true, service: "samridhi-properties-backend" });
+  res.json({ ok: true, service: "samriddhi-estates-backend" });
 });
 
 app.get("/api/properties", (req, res) => {
