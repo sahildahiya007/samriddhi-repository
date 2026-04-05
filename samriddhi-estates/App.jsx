@@ -27,7 +27,7 @@ import {
   Moon,
 } from "lucide-react";
 import Construction from "./Construction.jsx";
-import { supabase } from "./supabaseClient.js";
+import { hasSupabaseAuth, supabase } from "./supabaseClient.js";
 
 /* ── Security utilities ── */
 async function hashPassword(password) {
@@ -43,13 +43,12 @@ async function hashPassword(password) {
 const LOGIN_ATTEMPTS = { count: 0, firstAttempt: 0 };
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MS = 60_000;
-function checkRateLimit() {
+function assertLoginRateLimit() {
   const now = Date.now();
-  if (now - LOGIN_ATTEMPTS.firstAttempt > LOCKOUT_MS) {
+  if (!LOGIN_ATTEMPTS.firstAttempt || now - LOGIN_ATTEMPTS.firstAttempt > LOCKOUT_MS) {
     LOGIN_ATTEMPTS.count = 0;
     LOGIN_ATTEMPTS.firstAttempt = now;
   }
-  LOGIN_ATTEMPTS.count++;
   if (LOGIN_ATTEMPTS.count > MAX_ATTEMPTS) {
     const remaining = Math.ceil(
       (LOCKOUT_MS - (now - LOGIN_ATTEMPTS.firstAttempt)) / 1000,
@@ -58,6 +57,18 @@ function checkRateLimit() {
       `Too many login attempts. Please wait ${remaining}s before trying again.`,
     );
   }
+}
+function recordFailedLoginAttempt() {
+  const now = Date.now();
+  if (!LOGIN_ATTEMPTS.firstAttempt || now - LOGIN_ATTEMPTS.firstAttempt > LOCKOUT_MS) {
+    LOGIN_ATTEMPTS.firstAttempt = now;
+    LOGIN_ATTEMPTS.count = 0;
+  }
+  LOGIN_ATTEMPTS.count++;
+}
+function resetLoginAttempts() {
+  LOGIN_ATTEMPTS.count = 0;
+  LOGIN_ATTEMPTS.firstAttempt = 0;
 }
 
 /* Input validators */
@@ -3502,6 +3513,17 @@ function AdminPanel({
                           >
                             {a.role === "prime-admin" ? "Prime" : "Sub"}
                           </span>
+                          {a.username === "lukeshprime" && a.role === "prime-admin" && (
+                            <span
+                              className="text-xs px-2.5 py-1 rounded-full font-bold uppercase"
+                              style={{
+                                backgroundColor: "rgba(34,197,94,0.12)",
+                                color: "#4ADE80",
+                              }}
+                            >
+                              Locked
+                            </span>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -3574,24 +3596,22 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    const isLoginAttempt = isAdminLogin || mode === "login";
     try {
-      checkRateLimit();
+      if (isLoginAttempt) {
+        assertLoginRateLimit();
+      }
 
       if (isAdminLogin) {
-        // Admin login — verify against hashed admin list
-        const admin = ADMIN_USERS.find((a) => a.username === username);
-        const inputHash = await hashPassword(password);
-        if (!admin || inputHash !== admin.passwordHash)
-          throw new Error("Invalid admin credentials");
-        const adminData = {
-          id: admin.id,
-          name: admin.name,
-          username: admin.username,
-          role: admin.role,
-          email: admin.email,
-        };
-        const token = "admin-" + crypto.randomUUID();
-        if (onAdminAuth) onAdminAuth(token, adminData);
+        const response = await requestApi("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({
+            username: username.toLowerCase().trim(),
+            password,
+          }),
+        });
+        if (onAdminAuth) await onAdminAuth(response.token, response.user);
+        resetLoginAttempts();
         reset();
         onClose();
         return;
@@ -3605,80 +3625,93 @@ function UserAuthPane({ isOpen, onClose, onAuth, onAdminAuth, initialMode }) {
         const safeName = sanitizeInput(name.trim());
         const safeEmail = email.toLowerCase().trim();
 
-        // Register with Supabase Auth
-        const { data, error: signUpError } = await supabase.auth.signUp({
-          email: safeEmail,
-          password,
-          options: { data: { name: safeName } },
-        });
-        if (signUpError) throw new Error(signUpError.message);
-        if (!data.user) throw new Error("Registration failed");
-        // Insert profile
-        await supabase
-          .from("profiles")
-          .upsert({ id: data.user.id, name: safeName, email: safeEmail });
-        onAuth(
-          data.session?.access_token || "user-" + data.user.id,
-          { id: data.user.id, name: safeName, email: safeEmail, wishlist: [] },
-        );
+        if (hasSupabaseAuth) {
+          // Register with Supabase Auth
+          const { data, error: signUpError } = await supabase.auth.signUp({
+            email: safeEmail,
+            password,
+            options: { data: { name: safeName } },
+          });
+          if (signUpError) throw new Error(signUpError.message);
+          if (!data.user) throw new Error("Registration failed");
+          // Insert profile
+          await supabase
+            .from("profiles")
+            .upsert({ id: data.user.id, name: safeName, email: safeEmail });
+          onAuth(
+            data.session?.access_token || "user-" + data.user.id,
+            { id: data.user.id, name: safeName, email: safeEmail, wishlist: [] },
+            "supabase",
+          );
+        } else {
+          const response = await requestApi("/api/users/register", {
+            method: "POST",
+            body: JSON.stringify({
+              name: safeName,
+              email: safeEmail,
+              password,
+            }),
+          });
+          onAuth(response.token, response.user, "backend");
+        }
       } else {
         // Validate login inputs
-        validateEmail(email);
+        const identifier = email.trim();
+        if (!identifier) throw new Error("Email is required");
         if (!password) throw new Error("Password is required");
-        const safeEmail = email.toLowerCase().trim();
+        const normalizedIdentifier = identifier.toLowerCase();
+        let authenticated = false;
 
-        // Check if it's an admin logging in via email
-        const adminByEmail = ADMIN_USERS.find(
-          (a) =>
-            a.email === safeEmail || a.username === email.trim(),
-        );
-        if (adminByEmail) {
-          const inputHash = await hashPassword(password);
-          if (inputHash === adminByEmail.passwordHash) {
-            const adminData = {
-              id: adminByEmail.id,
-              name: adminByEmail.name,
-              username: adminByEmail.username,
-              role: adminByEmail.role,
-              email: adminByEmail.email,
-            };
-            const token = "admin-" + crypto.randomUUID();
-            if (onAdminAuth) onAdminAuth(token, adminData);
-            reset();
-            onClose();
-            return;
+        if (hasSupabaseAuth && EMAIL_RE.test(identifier)) {
+          const { data, error: signInError } =
+            await supabase.auth.signInWithPassword({
+              email: normalizedIdentifier,
+              password,
+            });
+          if (!signInError && data.user) {
+            const userName =
+              data.user.user_metadata?.name || normalizedIdentifier.split("@")[0];
+            const { data: wl } = await supabase
+              .from("wishlists")
+              .select("property_id")
+              .eq("user_id", data.user.id);
+            const wishlistIds = (wl || []).map((w) => w.property_id);
+            onAuth(
+              data.session?.access_token || "user-" + data.user.id,
+              {
+                id: data.user.id,
+                name: userName,
+                email: normalizedIdentifier,
+                wishlist: wishlistIds,
+              },
+              "supabase",
+            );
+            authenticated = true;
           }
         }
 
-        // Regular user login with Supabase Auth
-        const { data, error: signInError } =
-          await supabase.auth.signInWithPassword({
-            email: safeEmail,
-            password,
+        if (!authenticated) {
+          const response = await requestApi("/api/auth/unified-login", {
+            method: "POST",
+            body: JSON.stringify({
+              identifier,
+              password,
+            }),
           });
-        if (signInError) throw new Error(signInError.message);
-        if (!data.user) throw new Error("Login failed");
-        const userName =
-          data.user.user_metadata?.name || safeEmail.split("@")[0];
-        // Fetch wishlist from Supabase
-        const { data: wl } = await supabase
-          .from("wishlists")
-          .select("property_id")
-          .eq("user_id", data.user.id);
-        const wishlistIds = (wl || []).map((w) => w.property_id);
-        onAuth(
-          data.session?.access_token || "user-" + data.user.id,
-          {
-            id: data.user.id,
-            name: userName,
-            email: safeEmail,
-            wishlist: wishlistIds,
-          },
-        );
+          if (response.type === "admin") {
+            if (onAdminAuth) await onAdminAuth(response.token, response.user);
+          } else {
+            onAuth(response.token, response.user, "backend");
+          }
+        }
+        resetLoginAttempts();
       }
       reset();
       onClose();
     } catch (err) {
+      if (isLoginAttempt) {
+        recordFailedLoginAttempt();
+      }
       setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -4326,6 +4359,9 @@ function AppInner() {
   const [userToken, setUserToken] = useState(
     () => window.sessionStorage.getItem("userToken") || "",
   );
+  const [userAuthSource, setUserAuthSource] = useState(
+    () => window.sessionStorage.getItem("userAuthSource") || "",
+  );
   const [userName, setUserName] = useState(
     () => window.sessionStorage.getItem("userName") || "",
   );
@@ -4357,11 +4393,13 @@ function AppInner() {
     });
   };
 
-  const handleUserAuth = (token, user) => {
+  const handleUserAuth = (token, user, source = "supabase") => {
     setUserToken(token);
+    setUserAuthSource(source);
     setUserName(user.name || "");
     setWishlist(user.wishlist || []);
     window.sessionStorage.setItem("userToken", token);
+    window.sessionStorage.setItem("userAuthSource", source);
     window.sessionStorage.setItem("userName", user.name || "");
     window.sessionStorage.setItem(
       "wishlist",
@@ -4392,9 +4430,11 @@ function AppInner() {
 
   const handleUserLogout = async () => {
     setUserToken("");
+    setUserAuthSource("");
     setUserName("");
     setWishlist([]);
     window.sessionStorage.removeItem("userToken");
+    window.sessionStorage.removeItem("userAuthSource");
     window.sessionStorage.removeItem("userName");
     window.sessionStorage.removeItem("wishlist");
     try { await supabase.auth.signOut(); } catch { /* ignore */ }
@@ -4420,13 +4460,22 @@ function AppInner() {
     }
     const isInWishlist = wishlist.includes(propertyId);
     try {
-      // Get current Supabase user
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (!currentUser) throw new Error("Not logged in");
-      if (isInWishlist) {
-        await supabase.from("wishlists").delete().eq("user_id", currentUser.id).eq("property_id", propertyId);
+      if (userAuthSource === "backend") {
+        await requestApi(`/api/wishlist/${propertyId}`, {
+          method: isInWishlist ? "DELETE" : "POST",
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
       } else {
-        await supabase.from("wishlists").insert({ user_id: currentUser.id, property_id: propertyId });
+      // Get current Supabase user
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        if (!currentUser) throw new Error("Not logged in");
+        if (isInWishlist) {
+          await supabase.from("wishlists").delete().eq("user_id", currentUser.id).eq("property_id", propertyId);
+        } else {
+          await supabase.from("wishlists").insert({ user_id: currentUser.id, property_id: propertyId });
+        }
       }
       const updated = isInWishlist
         ? wishlist.filter((id) => id !== propertyId)

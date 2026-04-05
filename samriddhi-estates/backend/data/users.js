@@ -5,10 +5,11 @@ const users = [
     username: "lukeshprime",
     // bcrypt hash of the default admin password (K@9971647910)
     // Override by setting ADMIN_PASSWORD env var on the server
-    password: "$2a$10$shV6FIgka8iHhRHUqP57P.wonVSk.yi91Hcs4c88Yb1FCMQh2DZZm",
+    password: "$2a$10$ecuKv8ZyRaVmCsYZ10xoI.Ih.pxLdcWyIKiaLEPcHVMdTK8Otz3PC",
     email: "samriddhiproperties9@gmail.com",
     phone: "+91 9971647910",
     role: "prime-admin", // only id 1 is prime admin
+    immutable: true,
   },
   {
     id: 2,

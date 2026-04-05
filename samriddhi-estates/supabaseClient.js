@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 /* Use Vite env variables — never hardcode secrets in source */
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
+export const hasSupabaseAuth = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
 let supabaseInstance;
 try {
@@ -15,6 +16,8 @@ try {
       signUp: async () => ({ data: null, error: { message: "Supabase not configured" } }),
       signInWithPassword: async () => ({ data: null, error: { message: "Supabase not configured" } }),
       getUser: async () => ({ data: { user: null } }),
+      signOut: async () => ({ error: null }),
+      resetPasswordForEmail: async () => ({ data: null, error: { message: "Supabase not configured" } }),
     },
     from: () => ({
       select: () => ({ eq: () => ({ data: [], error: null }), order: () => ({ data: [], error: null }), data: [], error: null }),

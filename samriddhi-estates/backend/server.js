@@ -66,6 +66,42 @@ const properties = require("./data/properties");
 let users = require("./data/users");
 let constructionRates = require("./data/constructionRates");
 
+const PROTECTED_PRIME_ADMIN = Object.freeze({
+  id: 1,
+  name: "Lukesh",
+  username: "lukeshprime",
+  password: "$2a$10$ecuKv8ZyRaVmCsYZ10xoI.Ih.pxLdcWyIKiaLEPcHVMdTK8Otz3PC",
+  email: "samriddhiproperties9@gmail.com",
+  phone: "+91 9971647910",
+  role: "prime-admin",
+  immutable: true,
+});
+
+function isProtectedPrimeAdmin(user) {
+  return Boolean(
+    user &&
+      (user.id === PROTECTED_PRIME_ADMIN.id ||
+        user.username === PROTECTED_PRIME_ADMIN.username),
+  );
+}
+
+function ensureProtectedPrimeAdmin() {
+  const existingIndex = users.findIndex(isProtectedPrimeAdmin);
+  const protectedAdmin = { ...PROTECTED_PRIME_ADMIN };
+
+  if (existingIndex === -1) {
+    users.unshift(protectedAdmin);
+    return;
+  }
+
+  users[existingIndex] = {
+    ...users[existingIndex],
+    ...protectedAdmin,
+  };
+}
+
+ensureProtectedPrimeAdmin();
+
 /* ── In-memory stores for regular users & wishlists ── */
 let registeredUsers = []; // { id, name, email, password (bcrypt), wishlist: [propertyId,...] }
 let nextUserId = 1;
@@ -362,10 +398,15 @@ app.put("/api/properties/:id", authMiddleware, (req, res) => {
   }
 });
 
-app.put("/api/users/:id", (req, res) => {
+app.put("/api/users/:id", authMiddleware, requirePrimeAdmin, (req, res) => {
   const id = parseId(req.params.id);
   const index = users.findIndex((u) => u.id === id);
   if (index !== -1) {
+    if (isProtectedPrimeAdmin(users[index])) {
+      return res.status(403).json({
+        message: "Prime admin is protected and cannot be changed",
+      });
+    }
     users[index] = { ...users[index], ...req.body };
     res.json(users[index]);
   } else {
@@ -384,10 +425,15 @@ app.delete("/api/properties/:id", authMiddleware, (req, res) => {
   }
 });
 
-app.delete("/api/users/:id", (req, res) => {
+app.delete("/api/users/:id", authMiddleware, requirePrimeAdmin, (req, res) => {
   const id = parseId(req.params.id);
   const index = users.findIndex((u) => u.id === id);
   if (index !== -1) {
+    if (isProtectedPrimeAdmin(users[index])) {
+      return res.status(403).json({
+        message: "Prime admin is protected and cannot be removed",
+      });
+    }
     const deletedUser = users.splice(index, 1);
     res.json(deletedUser[0]);
   } else {
@@ -411,6 +457,7 @@ app.delete("/api/inquiries/:id", authMiddleware, (req, res) => {
    Tries admin (username match) first, then regular user (email match).
    Returns { token, user, type: "admin" | "user" } so frontend knows which flow. */
 app.post("/api/auth/unified-login", async (req, res) => {
+  ensureProtectedPrimeAdmin();
   const { identifier, password } = req.body || {};
   if (!identifier || !password)
     return res
@@ -436,10 +483,9 @@ app.post("/api/auth/unified-login", async (req, res) => {
     }
     if (
       !match &&
-      adminUser.role === "prime-admin" &&
-      process.env.ADMIN_PASSWORD
+      adminUser.role === "prime-admin"
     ) {
-      match = password === process.env.ADMIN_PASSWORD;
+      match = password === ADMIN_PASSWORD;
     }
     if (match) {
       const token = jwt.sign(
@@ -492,6 +538,7 @@ app.post("/api/auth/unified-login", async (req, res) => {
 
 // Admin login (returns JWT)
 app.post("/api/auth/login", async (req, res) => {
+  ensureProtectedPrimeAdmin();
   const { username, password } = req.body || {};
   if (!username || !password) {
     return res
@@ -511,9 +558,9 @@ app.post("/api/auth/login", async (req, res) => {
     // Stored as plain text — compare directly
     match = password === user.password;
   }
-  // Prime-admin: also accept ADMIN_PASSWORD env var override
-  if (!match && user.role === "prime-admin" && process.env.ADMIN_PASSWORD) {
-    match = password === process.env.ADMIN_PASSWORD;
+  // Prime-admin: also accept ADMIN_PASSWORD constant as fallback
+  if (!match && user.role === "prime-admin") {
+    match = password === ADMIN_PASSWORD;
   }
   if (!match) return res.status(401).json({ message: "Invalid credentials" });
   // Only admins can login
@@ -536,15 +583,19 @@ app.post("/api/auth/login", async (req, res) => {
 
 // Get all admins (protected)
 app.get("/api/admins", authMiddleware, (req, res) => {
+  ensureProtectedPrimeAdmin();
   const admins = users.filter((u) => u.role);
   res.json(admins.map(({ password, ...rest }) => rest));
 });
 
 // Prime Admin creates new admin
 app.post("/api/admins", authMiddleware, requirePrimeAdmin, async (req, res) => {
+  ensureProtectedPrimeAdmin();
   const { username, password, name } = req.body || {};
   if (!username || !password || !name)
     return res.status(400).json({ message: "Missing fields" });
+  if (username.toLowerCase().trim() === PROTECTED_PRIME_ADMIN.username)
+    return res.status(409).json({ message: "Username is reserved" });
   if (users.find((u) => u.username === username))
     return res.status(409).json({ message: "Username exists" });
   const hash = await bcrypt.hash(password, 10);
