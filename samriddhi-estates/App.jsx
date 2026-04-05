@@ -362,6 +362,29 @@ const defaultProperties = [
   },
   {
     id: 5,
+    title: "Premium 4BHK Independent Floor",
+    price: "Rs 1.10 Lakh/month",
+    rating: 4.7,
+    type: "rent",
+    image:
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600585152915-d208bec867a1?auto=format&fit=crop&w=1200&q=80",
+    ],
+    location: "South City 1, Gurgaon",
+    address: "Block E, South City 1, Sector 41, Gurgaon, Haryana",
+    amenities: ["Modular Kitchen", "Terrace Garden", "Covered Parking", "24x7 Security"],
+    details: "Spacious independent floor with private terrace, vastu-compliant design and premium Italian marble throughout.",
+    contacts: {
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
+    },
+  },
+  {
+    id: 6,
     title: "Custom Villa Construction Package",
     price: "Starting at Rs 3,000/sq ft",
     rating: 4.8,
@@ -2328,6 +2351,10 @@ function AdminPanel({
   adminToken,
   onAddAdmin,
   onRefreshUsers,
+  constructionProjects: incomingCProjects,
+  onAddProject,
+  onEditProject,
+  onDeleteProject,
 }) {
   const base = {
     title: "",
@@ -2352,8 +2379,47 @@ function AdminPanel({
   const [adminList, setAdminList] = useState([]);
   const [adminMsg, setAdminMsg] = useState("");
 
+  // Construction projects tab state
+  const projectBase = { name: "", image: "", location: "", type: "", size: "", status: "Ongoing" };
+  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [pf, setPf] = useState(projectBase);
+  const [projectUploading, setProjectUploading] = useState(false);
+
   const loadAdmins = () => {
     setAdminList(ADMIN_USERS.map(({ passwordHash, ...rest }) => rest));
+  };
+
+  const saveProject = async () => {
+    if (!pf.name || !pf.image) return alert("Project name and image are required");
+    try {
+      if (editingProjectId) {
+        await onEditProject(editingProjectId, pf);
+        setEditingProjectId(null);
+      } else {
+        await onAddProject(pf);
+      }
+      setPf(projectBase);
+    } catch (error) {
+      alert(error.message || "Failed to save project");
+    }
+  };
+
+  const editProject = (p) => {
+    setPf({ name: p.name, image: p.image, location: p.location || "", type: p.type || "", size: p.size || "", status: p.status || "Ongoing" });
+    setEditingProjectId(p.id);
+  };
+
+  const uploadProjectImage = async (file) => {
+    if (!file || !onUploadImage) return;
+    try {
+      setProjectUploading(true);
+      const uploaded = await onUploadImage(file);
+      if (uploaded?.url) setPf((prev) => ({ ...prev, image: uploaded.url }));
+    } catch (error) {
+      alert(error.message || "Failed to upload image");
+    } finally {
+      setProjectUploading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -2462,6 +2528,12 @@ function AdminPanel({
       label: "Construction",
       icon: "🏗️",
       count: totalConstruction,
+    },
+    {
+      id: "projects",
+      label: "Projects",
+      icon: "📸",
+      count: incomingCProjects?.length || 0,
     },
     {
       id: "inquiries",
@@ -2584,6 +2656,7 @@ function AdminPanel({
               >
                 {tab === "properties" && "Property Listings"}
                 {tab === "construction" && "Construction Listings"}
+                {tab === "projects" && "Recent Construction Projects"}
                 {tab === "inquiries" && "Client Inquiries"}
               </h2>
               <p
@@ -2592,7 +2665,9 @@ function AdminPanel({
               >
                 {tab === "inquiries"
                   ? `${inquiries.length} total inquiries`
-                  : `${visibleProperties.length} listings found`}
+                  : tab === "projects"
+                    ? `${incomingCProjects?.length || 0} projects`
+                    : `${visibleProperties.length} listings found`}
               </p>
             </div>
             <button
@@ -3108,6 +3183,223 @@ function AdminPanel({
                     </div>
                   ))
                 )}
+              </div>
+            )}
+            {tab === "projects" && (
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+                {/* Project Form — 2 cols */}
+                <div className="lg:col-span-2">
+                  <div
+                    className="p-5 sm:p-6 rounded-2xl sticky top-0"
+                    style={{
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(232,149,110,0.10)",
+                    }}
+                  >
+                    <h3
+                      className="text-base font-bold mb-5 flex items-center gap-2"
+                      style={{ color: "#fff" }}
+                    >
+                      <span
+                        className="w-2 h-2 rounded-full"
+                        style={{ backgroundColor: colors.accent }}
+                      />
+                      {editingProjectId ? "Edit Project" : "Add New Project"}
+                    </h3>
+                    <div className="space-y-3">
+                      <input
+                        value={pf.name}
+                        onChange={(e) => setPf({ ...pf, name: e.target.value })}
+                        placeholder="Project Name *"
+                        className="w-full px-4 py-3 text-sm focus:outline-none transition-all"
+                        style={inputStyle}
+                      />
+                      <div className="flex gap-2">
+                        <input
+                          value={pf.image}
+                          onChange={(e) => setPf({ ...pf, image: e.target.value })}
+                          placeholder="Image URL *"
+                          className="flex-1 px-4 py-3 text-sm focus:outline-none transition-all"
+                          style={inputStyle}
+                        />
+                        <label
+                          className="px-4 py-3 rounded-xl text-sm font-semibold cursor-pointer flex items-center shrink-0 transition-all hover:opacity-80"
+                          style={{
+                            backgroundColor: "rgba(232,149,110,0.15)",
+                            color: colors.accent,
+                          }}
+                        >
+                          {projectUploading ? "..." : "Upload"}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            disabled={projectUploading}
+                            onChange={(e) => {
+                              const selectedFile = e.target.files?.[0];
+                              uploadProjectImage(selectedFile);
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
+                      </div>
+                      {pf.image && (
+                        <img
+                          src={pf.image}
+                          alt="Preview"
+                          className="w-full h-32 object-cover rounded-xl"
+                          style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+                          onError={(e) => { e.target.style.display = "none"; }}
+                        />
+                      )}
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          value={pf.location}
+                          onChange={(e) => setPf({ ...pf, location: e.target.value })}
+                          placeholder="Location"
+                          className="w-full px-4 py-3 text-sm focus:outline-none transition-all"
+                          style={inputStyle}
+                        />
+                        <input
+                          value={pf.type}
+                          onChange={(e) => setPf({ ...pf, type: e.target.value })}
+                          placeholder="Type (Villa, Residential...)"
+                          className="w-full px-4 py-3 text-sm focus:outline-none transition-all"
+                          style={inputStyle}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          value={pf.size}
+                          onChange={(e) => setPf({ ...pf, size: e.target.value })}
+                          placeholder="Size (e.g. 5000 sqft)"
+                          className="w-full px-4 py-3 text-sm focus:outline-none transition-all"
+                          style={inputStyle}
+                        />
+                        <select
+                          value={pf.status}
+                          onChange={(e) => setPf({ ...pf, status: e.target.value })}
+                          className="w-full px-4 py-3 text-sm focus:outline-none transition-all"
+                          style={inputStyle}
+                        >
+                          <option value="Ongoing" style={{ color: "#000" }}>Ongoing</option>
+                          <option value="Completed" style={{ color: "#000" }}>Completed</option>
+                          <option value="Planning" style={{ color: "#000" }}>Planning</option>
+                        </select>
+                      </div>
+                      <div className="flex gap-2 pt-2">
+                        <button
+                          onClick={saveProject}
+                          className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all hover:shadow-lg"
+                          style={{
+                            background: `linear-gradient(135deg, ${colors.accent} 0%, #c8713a 100%)`,
+                            color: "#fff",
+                            boxShadow: "0 4px 14px rgba(232,149,110,0.3)",
+                          }}
+                        >
+                          {editingProjectId ? "Update Project" : "Add Project"}
+                        </button>
+                        {editingProjectId && (
+                          <button
+                            onClick={() => { setEditingProjectId(null); setPf(projectBase); }}
+                            className="px-5 py-3 rounded-xl font-semibold text-sm"
+                            style={{
+                              backgroundColor: "rgba(255,255,255,0.06)",
+                              color: "rgba(245,230,211,0.6)",
+                              border: "1px solid rgba(255,255,255,0.08)",
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Project Listings — 3 cols */}
+                <div className="lg:col-span-3 space-y-3">
+                  {(!incomingCProjects || incomingCProjects.length === 0) && (
+                    <div
+                      className="p-8 rounded-2xl text-center"
+                      style={{
+                        background: "rgba(255,255,255,0.03)",
+                        border: "1px solid rgba(255,255,255,0.06)",
+                      }}
+                    >
+                      <p className="text-sm" style={{ color: "rgba(245,230,211,0.4)" }}>
+                        No construction projects yet. Add your first project above.
+                      </p>
+                    </div>
+                  )}
+                  {(incomingCProjects || []).map((proj) => (
+                    <div
+                      key={proj.id}
+                      className="p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-4 transition-all hover:border-[rgba(232,149,110,0.20)]"
+                      style={{
+                        background: "rgba(255,255,255,0.03)",
+                        border: "1px solid rgba(232,149,110,0.08)",
+                      }}
+                    >
+                      {proj.image && (
+                        <img
+                          src={proj.image}
+                          alt={proj.name}
+                          className="w-full sm:w-24 h-20 object-cover rounded-xl shrink-0"
+                          style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+                        />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-sm text-white truncate">{proj.name}</h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs font-medium" style={{ color: colors.accent }}>{proj.location}</span>
+                          <span
+                            className="text-xs px-2 py-0.5 rounded-full uppercase"
+                            style={{
+                              backgroundColor: proj.status === "Completed" ? "rgba(52,211,153,0.12)" : "rgba(96,165,250,0.12)",
+                              color: proj.status === "Completed" ? "#34D399" : "#60A5FA",
+                              fontSize: 10,
+                              fontWeight: 700,
+                            }}
+                          >
+                            {proj.status}
+                          </span>
+                        </div>
+                        <p className="text-xs mt-0.5 truncate" style={{ color: "rgba(245,230,211,0.35)" }}>
+                          {proj.type} · {proj.size}
+                        </p>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <button
+                          onClick={() => editProject(proj)}
+                          className="px-4 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-80"
+                          style={{
+                            backgroundColor: "rgba(232,149,110,0.15)",
+                            color: colors.accent,
+                            border: "1px solid rgba(232,149,110,0.20)",
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (confirm("Delete this project?")) {
+                              try { await onDeleteProject(proj.id); } catch (error) { alert(error.message || "Failed to delete project"); }
+                            }
+                          }}
+                          className="px-4 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-80"
+                          style={{
+                            backgroundColor: "rgba(239,68,68,0.10)",
+                            color: "#F87171",
+                            border: "1px solid rgba(239,68,68,0.15)",
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             {tab === "analytics" && (
@@ -4411,19 +4703,27 @@ function AppInner() {
     window.sessionStorage.setItem("adminToken", token);
     window.sessionStorage.setItem("adminUser", JSON.stringify(user));
     setAdminToken(token);
-    // Load inquiries from Supabase
+    // Load inquiries — try backend API first, then Supabase fallback
     try {
-      const { data: adminInquiries } = await supabase.from("inquiries").select("*").order("created_at", { ascending: false });
-      // Map Supabase columns to the field names the UI expects
-      const mapped = (adminInquiries || []).map((inq) => ({
-        ...inq,
-        time: inq.preferred_time || "",
-        reason: inq.message || "",
-        submittedAt: inq.created_at,
-      }));
-      setInquiries(mapped);
+      const backendInquiries = await requestApi("/api/inquiries", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setInquiries(backendInquiries || []);
     } catch {
-      setInquiries([]);
+      try {
+        if (hasSupabaseAuth) {
+          const { data: adminInquiries } = await supabase.from("inquiries").select("*").order("created_at", { ascending: false });
+          const mapped = (adminInquiries || []).map((inq) => ({
+            ...inq,
+            time: inq.preferred_time || "",
+            reason: inq.message || "",
+            submittedAt: inq.created_at,
+          }));
+          setInquiries(mapped);
+        }
+      } catch {
+        setInquiries([]);
+      }
     }
     setIsAdminOpen(true);
   };
@@ -4493,13 +4793,32 @@ function AppInner() {
   };
 
   // Load registered users from Supabase profiles table
+  // Construction projects state
+  const [cProjects, setCProjects] = useState([]);
+
+  // Load construction projects from backend
+  useEffect(() => {
+    requestApi("/api/construction-projects")
+      .then((data) => setCProjects(data || []))
+      .catch(() => {});
+  }, []);
+
   const loadRegisteredUsers = async () => {
     if (!adminToken) return;
     try {
-      const { data: users } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+      const users = await requestApi("/api/registered-users", {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
       setRegisteredUsers(users || []);
     } catch {
-      setRegisteredUsers([]);
+      try {
+        if (hasSupabaseAuth) {
+          const { data: users } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+          setRegisteredUsers(users || []);
+        }
+      } catch {
+        setRegisteredUsers([]);
+      }
     }
   };
 
@@ -4612,26 +4931,47 @@ function AppInner() {
         throw new Error("Please enter a valid name");
       if (!safePhone || safePhone.length < 10)
         throw new Error("Please enter a valid 10-digit phone number");
-      const { data: created, error: insertError } = await supabase
-        .from("inquiries")
-        .insert({
-          name: safeName,
-          phone: safePhone,
-          preferred_time: safeTime,
-          message: safeMessage,
-        })
-        .select()
-        .single();
-      if (insertError) {
-        // Provide user-friendly messages for common Supabase errors
-        if (insertError.code === "42501" || insertError.message?.includes("row-level security")) {
-          throw new Error("Unable to submit inquiry right now. Please call us directly at +91 8398979897.");
+
+      // Try backend API first
+      try {
+        const created = await requestApi("/api/inquiries", {
+          method: "POST",
+          body: JSON.stringify({
+            name: safeName,
+            phone: safePhone,
+            time: safeTime,
+            reason: safeMessage,
+            reasonType: inquiryForm.reasonType || "",
+            submittedAt: new Date().toISOString(),
+          }),
+        });
+        setInquiries((prev) => [created, ...prev]);
+        setInquiryForm(initialInquiryForm);
+        return created;
+      } catch {
+        // Backend offline — try Supabase as fallback
+        if (hasSupabaseAuth) {
+          const { data: created, error: insertError } = await supabase
+            .from("inquiries")
+            .insert({
+              name: safeName,
+              phone: safePhone,
+              preferred_time: safeTime,
+              message: safeMessage,
+            })
+            .select()
+            .single();
+          if (insertError) throw new Error(insertError.message || "Failed to submit inquiry.");
+          setInquiries((prev) => [created, ...prev]);
+          setInquiryForm(initialInquiryForm);
+          return created;
         }
-        throw new Error(insertError.message || "Failed to submit your inquiry. Please try again.");
+        // No backend, no Supabase — save locally
+        const localInq = { id: Date.now(), name: safeName, phone: safePhone, time: safeTime, reason: safeMessage, reasonType: inquiryForm.reasonType || "", submittedAt: new Date().toISOString() };
+        setInquiries((prev) => [localInq, ...prev]);
+        setInquiryForm(initialInquiryForm);
+        return localInq;
       }
-      setInquiries((prev) => [created, ...prev]);
-      setInquiryForm(initialInquiryForm);
-      return created;
     } catch (submitError) {
       throw submitError;
     } finally {
@@ -4656,22 +4996,25 @@ function AppInner() {
     });
   };
 
-  const constructionProjects = properties.map((p) => ({
-    image: p.images?.[0] || p.image,
-    name: p.title,
-    location: p.location || p.address || "Gurgaon",
-    type:
-      p.type === "rent"
-        ? "Residential"
-        : p.type === "sale"
-          ? "Residential"
-          : "Construction",
-    size:
-      p.type === "construction"
-        ? p.price || "Custom quote"
-        : p.details || "Custom build support",
-    status: p.type === "construction" ? "Construction" : "Featured",
-  }));
+  // Use dedicated construction projects from backend; fall back to mapping properties only if empty
+  const constructionProjects = cProjects.length > 0
+    ? cProjects
+    : properties.map((p) => ({
+        image: p.images?.[0] || p.image,
+        name: p.title,
+        location: p.location || p.address || "Gurgaon",
+        type:
+          p.type === "rent"
+            ? "Residential"
+            : p.type === "sale"
+              ? "Residential"
+              : "Construction",
+        size:
+          p.type === "construction"
+            ? p.price || "Custom quote"
+            : p.details || "Custom build support",
+        status: p.type === "construction" ? "Construction" : "Featured",
+      }));
 
   const wishlistProperties = properties.filter((p) => wishlist.includes(p.id));
 
@@ -4782,9 +5125,9 @@ function AppInner() {
         inquiries={inquiries}
         onDeleteInquiry={async (id) => {
           try {
-            await supabase.from("inquiries").delete().eq("id", id);
+            await requestWithAuth(`/api/inquiries/${id}`, { method: "DELETE" });
           } catch {
-            // ignore
+            try { if (hasSupabaseAuth) await supabase.from("inquiries").delete().eq("id", id); } catch { /* ignore */ }
           }
           setInquiries((prev) => prev.filter((x) => x.id !== id));
         }}
@@ -4813,6 +5156,36 @@ function AppInner() {
           } catch {
             return { message: "Admin added (backend offline — will sync when available)" };
           }
+        }}
+        constructionProjects={cProjects}
+        onAddProject={async (p) => {
+          try {
+            const created = await requestWithAuth("/api/construction-projects", {
+              method: "POST",
+              body: JSON.stringify(p),
+            });
+            setCProjects((prev) => [...prev, created]);
+          } catch {
+            const local = { ...p, id: Date.now() };
+            setCProjects((prev) => [...prev, local]);
+          }
+        }}
+        onEditProject={async (id, p) => {
+          try {
+            const updated = await requestWithAuth(`/api/construction-projects/${id}`, {
+              method: "PUT",
+              body: JSON.stringify(p),
+            });
+            setCProjects((prev) => prev.map((x) => (x.id === id ? updated : x)));
+          } catch {
+            setCProjects((prev) => prev.map((x) => (x.id === id ? { ...x, ...p } : x)));
+          }
+        }}
+        onDeleteProject={async (id) => {
+          try {
+            await requestWithAuth(`/api/construction-projects/${id}`, { method: "DELETE" });
+          } catch { /* ignore */ }
+          setCProjects((prev) => prev.filter((x) => x.id !== id));
         }}
       />
 

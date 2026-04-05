@@ -65,6 +65,7 @@ app.use("/uploads", express.static(uploadsDir));
 const properties = require("./data/properties");
 let users = require("./data/users");
 let constructionRates = require("./data/constructionRates");
+const constructionProjects = require("./data/constructionProjects");
 
 const PROTECTED_PRIME_ADMIN = Object.freeze({
   id: 1,
@@ -269,6 +270,49 @@ app.put(
     res.json(constructionRates);
   },
 );
+
+// Construction Projects API (recent project photos gallery)
+app.get("/api/construction-projects", (req, res) => {
+  res.json(constructionProjects);
+});
+
+app.post("/api/construction-projects", authMiddleware, (req, res) => {
+  const { name, image, location, type, size, status } = req.body || {};
+  if (!name || !image) {
+    return res.status(400).json({ message: "Name and image are required" });
+  }
+  const newProject = {
+    id: nextId(constructionProjects),
+    name,
+    image,
+    location: location || "Gurgaon",
+    type: type || "Residential",
+    size: size || "",
+    status: status || "Ongoing",
+  };
+  constructionProjects.push(newProject);
+  res.status(201).json(newProject);
+});
+
+app.put("/api/construction-projects/:id", authMiddleware, (req, res) => {
+  const id = parseId(req.params.id);
+  const index = constructionProjects.findIndex((p) => p.id === id);
+  if (index === -1) {
+    return res.status(404).json({ message: "Project not found" });
+  }
+  constructionProjects[index] = { ...constructionProjects[index], ...req.body };
+  res.json(constructionProjects[index]);
+});
+
+app.delete("/api/construction-projects/:id", authMiddleware, (req, res) => {
+  const id = parseId(req.params.id);
+  const index = constructionProjects.findIndex((p) => p.id === id);
+  if (index === -1) {
+    return res.status(404).json({ message: "Project not found" });
+  }
+  const deleted = constructionProjects.splice(index, 1)[0];
+  res.json(deleted);
+});
 
 const requiredPropertyFields = [
   "title",
