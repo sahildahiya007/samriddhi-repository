@@ -2242,16 +2242,16 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
             disabled={submitting}
             className="w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg"
             style={{
-              background: `linear-gradient(135deg, ${colors.accent} 0%, #c8713a 100%)`,
+              background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
               color: "#fff",
-              boxShadow: "0 8px 24px rgba(232,149,110,0.35)",
+              boxShadow: "0 8px 24px rgba(37,211,102,0.35)",
             }}
           >
             {submitting ? (
               "Submitting..."
             ) : (
               <>
-                <Sparkles className="w-5 h-5" /> Submit Inquiry
+                <MessageCircle className="w-5 h-5" /> Send via WhatsApp
               </>
             )}
           </button>
@@ -4932,7 +4932,20 @@ function AppInner() {
       if (!safePhone || safePhone.length < 10)
         throw new Error("Please enter a valid 10-digit phone number");
 
-      // Try backend API first
+      // Build WhatsApp message and open it
+      const waLines = [
+        `*New Inquiry — Samriddhi Estates*`,
+        ``,
+        `*Name:* ${safeName}`,
+        `*Phone:* ${safePhone}`,
+        safeTime ? `*Callback Time:* ${safeTime}` : "",
+        inquiryForm.reasonType ? `*Interested In:* ${inquiryForm.reasonType}` : "",
+        safeMessage ? `*Requirement:* ${safeMessage}` : "",
+      ].filter(Boolean).join("\n");
+      const waUrl = `https://wa.me/918398979897?text=${encodeURIComponent(waLines)}`;
+      window.open(waUrl, "_blank");
+
+      // Also try saving to backend for admin records (fire-and-forget)
       try {
         const created = await requestApi("/api/inquiries", {
           method: "POST",
@@ -4946,32 +4959,13 @@ function AppInner() {
           }),
         });
         setInquiries((prev) => [created, ...prev]);
-        setInquiryForm(initialInquiryForm);
-        return created;
       } catch {
-        // Backend offline — try Supabase as fallback
-        if (hasSupabaseAuth) {
-          const { data: created, error: insertError } = await supabase
-            .from("inquiries")
-            .insert({
-              name: safeName,
-              phone: safePhone,
-              preferred_time: safeTime,
-              message: safeMessage,
-            })
-            .select()
-            .single();
-          if (insertError) throw new Error(insertError.message || "Failed to submit inquiry.");
-          setInquiries((prev) => [created, ...prev]);
-          setInquiryForm(initialInquiryForm);
-          return created;
-        }
-        // No backend, no Supabase — save locally
+        // Backend unavailable — WhatsApp is the primary channel, so this is fine
         const localInq = { id: Date.now(), name: safeName, phone: safePhone, time: safeTime, reason: safeMessage, reasonType: inquiryForm.reasonType || "", submittedAt: new Date().toISOString() };
         setInquiries((prev) => [localInq, ...prev]);
-        setInquiryForm(initialInquiryForm);
-        return localInq;
       }
+
+      setInquiryForm(initialInquiryForm);
     } catch (submitError) {
       throw submitError;
     } finally {

@@ -1367,11 +1367,11 @@ export default function Construction({
           <button
             type="submit"
             disabled={submitting}
-            className="w-full p-3.5 md:p-5 rounded-2xl md:rounded-3xl font-bold text-sm md:text-lg bg-gradient-to-r from-[#E8956E] to-[#D4A574] text-white transition-all shadow-lg flex items-center justify-center gap-2 md:gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
-            style={{ border: "1px solid rgba(232,149,110,0.65)" }}
+            className="w-full p-3.5 md:p-5 rounded-2xl md:rounded-3xl font-bold text-sm md:text-lg text-white transition-all shadow-lg flex items-center justify-center gap-2 md:gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+            style={{ background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)", border: "1px solid rgba(37,211,102,0.65)", boxShadow: "0 8px 24px rgba(37,211,102,0.30)" }}
           >
             <Send className="w-6 h-6" />
-            {submitting ? "Submitting..." : "Submit Inquiry"}
+            {submitting ? "Submitting..." : "Send via WhatsApp"}
           </button>
 
           {submitted && (
@@ -1383,7 +1383,7 @@ export default function Construction({
                 border: `1px solid ${colors.accent}`,
               }}
             >
-              Inquiry submitted successfully. Our construction team will contact
+              Your inquiry has been sent to WhatsApp. Our construction team will contact
               you shortly.
             </div>
           )}
