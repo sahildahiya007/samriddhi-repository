@@ -122,6 +122,44 @@ const ADMIN_USERS = [
   },
 ];
 
+/* ── 3D Tilt hook ── */
+function use3DTilt() {
+  const ref = useRef(null);
+  const onMove = (e) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width  - 0.5) * 10;
+    const y = ((e.clientY - rect.top)  / rect.height - 0.5) * -10;
+    el.style.transform = `perspective(600px) rotateX(${y}deg) rotateY(${x}deg) translateZ(4px)`;
+  };
+  const onLeave = () => {
+    if (ref.current) ref.current.style.transform = "perspective(600px) rotateX(0deg) rotateY(0deg) translateZ(0)";
+  };
+  return { ref, onMove, onLeave };
+}
+
+/* ── Skeleton card ── */
+function SkeletonCard() {
+  return (
+    <div className="rounded-2xl bg-white overflow-hidden" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}>
+      <div className="skeleton" style={{ height: 175 }} />
+      <div className="px-3 pt-2.5 pb-3 space-y-2">
+        <div className="skeleton h-3.5 w-3/4 rounded" />
+        <div className="skeleton h-2.5 w-1/2 rounded" />
+        <div className="flex gap-1.5 mt-1">
+          <div className="skeleton h-2 w-12 rounded-full" />
+          <div className="skeleton h-2 w-10 rounded-full" />
+        </div>
+        <div className="flex gap-1.5 pt-1">
+          <div className="skeleton flex-1 h-8 rounded-xl" />
+          <div className="skeleton flex-1 h-8 rounded-xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Premium scroll-reveal hook ── */
 function useReveal(threshold = 0.15) {
   const ref = useRef(null);
@@ -163,11 +201,13 @@ function useCounter(end, duration = 2000, start = false) {
 }
 
 const colors = {
-  accent: "#E8956E",
-  accentSoft: "#D4A574",
-  cream: "#F5E6D3",
-  dark: "#1a1a1a",
-  body: "#666B63",
+  accent: "#D97B50",
+  accentSoft: "#C99060",
+  accentGlow: "rgba(217,123,80,0.18)",
+  cream: "#F6EAD9",
+  creamDeep: "#EDD9BF",
+  dark: "#181512",
+  body: "#5C6058",
 };
 
 const bg = {
@@ -520,14 +560,14 @@ function Navbar({
       style={{
         background: darkMode
           ? "linear-gradient(135deg, #1a1714 0%, #221e18 60%, #1a1714 100%)"
-          : "linear-gradient(135deg, rgba(249,247,244,0.97) 0%, rgba(245,236,224,0.95) 60%, rgba(249,247,244,0.97) 100%)",
-        backdropFilter: "blur(24px) saturate(1.4)",
+          : "rgba(255,255,255,0.94)",
+        backdropFilter: "blur(20px) saturate(1.6)",
         borderBottom: darkMode
           ? "1px solid rgba(232,149,110,0.12)"
-          : "1px solid rgba(212,165,116,0.20)",
+          : "1px solid rgba(0,0,0,0.07)",
         boxShadow: darkMode
-          ? "0 4px 30px rgba(0,0,0,0.35), 0 1px 0 rgba(232,149,110,0.06) inset"
-          : "0 4px 20px rgba(0,0,0,0.06)",
+          ? "0 4px 30px rgba(0,0,0,0.35)"
+          : "0 1px 12px rgba(0,0,0,0.06)",
       }}
     >
       <div className="max-w-7xl mx-auto px-3 md:px-8 py-3 md:py-4 flex items-center justify-between gap-2 md:gap-6">
@@ -1129,213 +1169,257 @@ function ContactCard({ label, number, color }) {
 
 function PropertyModal({ property, isOpen, onClose }) {
   const [idx, setIdx] = useState(0);
+  const [wishlisted, setWishlisted] = useState(false);
   const swipeStartX = useRef(null);
   useEffect(() => setIdx(0), [property?.id]);
   if (!isOpen || !property) return null;
+  const images = property.images?.length ? property.images : [property.image];
 
-  const showPrev = () => {
-    setIdx((p) => (p - 1 + property.images.length) % property.images.length);
-  };
+  const showPrev = () => setIdx((p) => (p - 1 + images.length) % images.length);
+  const showNext = () => setIdx((p) => (p + 1) % images.length);
 
-  const showNext = () => {
-    setIdx((p) => (p + 1) % property.images.length);
-  };
-
-  const handleTouchStart = (event) => {
-    swipeStartX.current = event.touches[0]?.clientX ?? null;
-  };
-
-  const handleTouchEnd = (event) => {
-    const startX = swipeStartX.current;
-    if (startX === null) return;
-    const endX = event.changedTouches[0]?.clientX ?? startX;
-    const deltaX = endX - startX;
-    if (Math.abs(deltaX) > 45) {
-      if (deltaX > 0) showPrev();
-      else showNext();
-    }
+  const handleTouchStart = (e) => { swipeStartX.current = e.touches[0]?.clientX ?? null; };
+  const handleTouchEnd = (e) => {
+    const dx = (e.changedTouches[0]?.clientX ?? swipeStartX.current) - swipeStartX.current;
+    if (Math.abs(dx) > 45) dx > 0 ? showPrev() : showNext();
     swipeStartX.current = null;
   };
 
+  const typeLabel = property.type === "sale" ? "For Sale" : property.type === "rent" ? "For Rent" : "Construction";
+  const primaryContact = property.contacts?.sales || property.contacts?.rent || "+918398979897";
+
   return (
     <div
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end justify-center md:items-center"
+      style={{ backgroundColor: "rgba(0,0,0,0.55)", backdropFilter: "blur(10px)", animation: "fadeIn 0.15s ease" }}
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-none md:rounded-2xl max-w-4xl w-full h-[100dvh] md:h-auto md:max-h-[90vh] overflow-y-auto"
-        style={{ boxShadow: "0 25px 50px rgba(26, 26, 26, 0.3)" }}
+        className="relative w-full flex flex-col bg-white md:max-w-sm"
+        style={{
+          height: "92dvh",
+          maxHeight: 720,
+          borderRadius: "28px 28px 0 0",
+          boxShadow: "0 -24px 60px rgba(0,0,0,0.22)",
+          animation: "slideUp 0.32s cubic-bezier(0.34,1.4,0.64,1)",
+          overflow: "hidden",
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 md:top-6 md:right-6 z-10 p-2 rounded-full"
-          style={{
-            backgroundColor: "rgba(232,149,110,0.12)",
-            color: colors.accent,
-          }}
-        >
-          <X className="w-6 h-6" />
-        </button>
+        {/* ── IMAGE SECTION (top ~48%) ── */}
         <div
-          className="relative w-full h-[38vh] md:h-96 bg-gray-100 overflow-hidden"
+          className="relative shrink-0"
+          style={{ height: "46%" }}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
           <img
-            src={property.images[idx]}
+            src={images[idx]}
             alt={property.title}
             className="w-full h-full object-cover"
+            style={{ borderRadius: "28px 28px 0 0" }}
           />
-          <button
-            onClick={showPrev}
-            className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full hidden md:block"
-            style={{ backgroundColor: "rgba(26,26,26,0.75)", color: "#fff" }}
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button
-            onClick={showNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full hidden md:block"
-            style={{ backgroundColor: "rgba(26,26,26,0.75)", color: "#fff" }}
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
-            {property.images.map((_, imageIndex) => (
-              <span
-                key={imageIndex}
-                className="w-2 h-2 rounded-full"
-                style={{
-                  backgroundColor:
-                    imageIndex === idx
-                      ? "rgba(255,255,255,0.95)"
-                      : "rgba(255,255,255,0.45)",
-                }}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="p-4 md:p-8">
-          <h2
-            className="text-2xl md:text-4xl font-bold mb-2"
+
+          {/* Dark gradient bottom overlay */}
+          <div
+            className="absolute inset-x-0 bottom-0 pointer-events-none"
             style={{
-              fontFamily: "'Playfair Display', serif",
-              color: colors.dark,
+              height: "55%",
+              background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%)",
+            }}
+          />
+
+          {/* Back / close — top left circle */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 left-4 z-20 flex items-center justify-center"
+            style={{
+              width: 36, height: 36, borderRadius: "50%",
+              background: "rgba(255,255,255,0.88)",
+              backdropFilter: "blur(8px)",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.14)",
             }}
           >
-            {property.title}
-          </h2>
-          <p
-            className="text-base md:text-lg mb-2 flex items-start gap-2"
-            style={{ color: colors.body }}
+            <ChevronLeft style={{ width: 18, height: 18, color: colors.dark }} />
+          </button>
+
+          {/* Wishlist — top right circle */}
+          <button
+            onClick={() => setWishlisted((v) => !v)}
+            className="absolute top-4 right-4 z-20 flex items-center justify-center"
+            style={{
+              width: 36, height: 36, borderRadius: "50%",
+              background: "rgba(255,255,255,0.88)",
+              backdropFilter: "blur(8px)",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.14)",
+            }}
           >
-            <MapPin className="w-5 h-5 mt-0.5" />
-            {property.location}
-          </p>
-          <p className="text-sm mb-4 md:mb-6" style={{ color: colors.body }}>
-            {property.address}
-          </p>
-          <div className="flex gap-3 md:gap-4 items-center mb-4 md:mb-6">
-            <span
-              className="text-xl md:text-3xl font-bold px-4 md:px-6 py-2.5 md:py-3 rounded-xl"
-              style={{ backgroundColor: colors.cream, color: colors.dark }}
-            >
-              {property.price}
-            </span>
-            <span
-              className="flex items-center gap-2 text-base md:text-xl"
-              style={{ color: colors.accent }}
-            >
-              <Star className="w-6 h-6 fill-current" />
-              <span className="font-semibold">{property.rating}</span>
-            </span>
-          </div>
-          <p
-            className="text-lg mb-6 leading-relaxed"
-            style={{ color: colors.body }}
-          >
-            {property.details}
-          </p>
-          <div className="mb-8">
-            <h3
-              className="text-lg font-semibold mb-3"
-              style={{ color: colors.dark }}
-            >
-              Amenities
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {(property.amenities || []).map((a) => (
-                <span
-                  key={a}
-                  className="px-3 py-1.5 rounded-full text-sm font-medium"
-                  style={{ backgroundColor: colors.cream, color: colors.dark }}
-                >
-                  {a}
-                </span>
+            <Heart style={{ width: 17, height: 17, color: wishlisted ? colors.accent : colors.dark, fill: wishlisted ? colors.accent : "none" }} />
+          </button>
+
+          {/* Dot indicators */}
+          {images.length > 1 && (
+            <div className="absolute bottom-[4.5rem] left-1/2 -translate-x-1/2 flex gap-1.5">
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setIdx(i)}
+                  style={{
+                    width: i === idx ? 16 : 6, height: 6, borderRadius: 4,
+                    backgroundColor: i === idx ? "#fff" : "rgba(255,255,255,0.5)",
+                    transition: "all 0.25s ease",
+                  }}
+                />
               ))}
             </div>
-          </div>
-          <div
-            className="border-t-2 pt-8 mb-6"
-            style={{ borderColor: colors.cream }}
-          >
-            <h3
-              className="text-2xl font-bold mb-4"
+          )}
+
+          {/* Title + category overlaid on image */}
+          <div className="absolute inset-x-0 bottom-0 px-5 pb-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] mb-1" style={{ color: "rgba(255,255,255,0.7)" }}>
+              {typeLabel}
+            </p>
+            <h2
+              className="font-bold leading-tight"
               style={{
                 fontFamily: "'Playfair Display', serif",
-                color: colors.dark,
+                color: "#fff",
+                fontSize: "clamp(1.2rem, 5vw, 1.5rem)",
+                textShadow: "0 2px 8px rgba(0,0,0,0.4)",
               }}
             >
-              {property.type === "sale"
-                ? "Limited Availability - Contact Now"
-                : "Interested? Contact Us Today"}
-            </h3>
-            <div
-              className={`grid grid-cols-1 ${property.type === "sale" ? "md:grid-cols-3" : "md:grid-cols-2"} gap-4`}
-            >
-              {property.type === "sale" && (
-                <>
-                  <ContactCard
-                    label="For Buying"
-                    number={property.contacts.sales}
-                    color={colors.dark}
-                  />
-                  <ContactCard
-                    label="For Rental"
-                    number={property.contacts.rent}
-                    color={colors.accent}
-                  />
-                  <ContactCard
-                    label="For Leasing"
-                    number={property.contacts.leasing}
-                    color={colors.accentSoft}
-                  />
-                </>
-              )}
-              {property.type === "rent" && (
-                <>
-                  <ContactCard
-                    label="For Renting"
-                    number={property.contacts.rent}
-                    color={colors.dark}
-                  />
-                  <ContactCard
-                    label="For Leasing"
-                    number={property.contacts.leasing}
-                    color={colors.accent}
-                  />
-                </>
-              )}
+              {property.title}
+            </h2>
+          </div>
+        </div>
+
+        {/* ── INFO SECTION (scrollable middle) ── */}
+        <div
+          className="flex-1 overflow-y-auto px-5 pt-4"
+          style={{ scrollbarWidth: "none", backgroundColor: "#fff" }}
+        >
+          {/* Location */}
+          <p className="flex items-center gap-1.5 text-xs mb-3" style={{ color: colors.body }}>
+            <MapPin style={{ width: 12, height: 12, color: colors.accent }} />
+            {property.location}{property.address ? ` · ${property.address}` : ""}
+          </p>
+
+          {/* Rating */}
+          {property.rating && (
+            <div className="flex items-center gap-1.5 mb-3">
+              {[1,2,3,4,5].map((s) => (
+                <Star
+                  key={s}
+                  style={{
+                    width: 13, height: 13,
+                    fill: s <= Math.floor(property.rating) ? "#FFB830" : "#E5E5EA",
+                    color: s <= Math.floor(property.rating) ? "#FFB830" : "#E5E5EA",
+                  }}
+                />
+              ))}
+              <span className="text-xs font-semibold ml-0.5" style={{ color: colors.dark }}>{property.rating}</span>
             </div>
+          )}
+
+          {/* Details */}
+          {property.details && (
+            <p className="text-[12.5px] leading-relaxed mb-3.5" style={{ color: colors.body, letterSpacing: "-0.01em" }}>
+              {property.details}
+            </p>
+          )}
+
+          {/* Amenities label */}
+          {(property.amenities || []).length > 0 && (
+            <>
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: colors.body }}>Highlights</p>
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {(property.amenities || []).map((a) => (
+                  <span
+                    key={a}
+                    className="px-2.5 py-1 rounded-xl text-[11px] font-medium"
+                    style={{ backgroundColor: "#F2F2F7", color: colors.dark }}
+                  >
+                    {a}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Contact numbers */}
+          {property.type === "sale" && (
+            <div className="flex flex-col gap-1.5 mb-4">
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: colors.body }}>Contact</p>
+              {[["Buying", property.contacts?.sales], ["Rental", property.contacts?.rent], ["Leasing", property.contacts?.leasing]]
+                .filter(([, n]) => n)
+                .map(([label, num]) => (
+                  <a
+                    key={label}
+                    href={`tel:${num}`}
+                    className="flex items-center justify-between px-3.5 py-2.5 rounded-2xl"
+                    style={{ backgroundColor: "#F2F2F7" }}
+                  >
+                    <span className="text-[11px] font-semibold" style={{ color: colors.body }}>{label}</span>
+                    <span className="text-xs font-bold flex items-center gap-1.5" style={{ color: colors.dark }}>
+                      <Phone style={{ width: 11, height: 11, color: colors.accent }} />{num}
+                    </span>
+                  </a>
+                ))}
+            </div>
+          )}
+          {property.type === "rent" && (
+            <div className="flex flex-col gap-1.5 mb-4">
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: colors.body }}>Contact</p>
+              {[["Renting", property.contacts?.rent], ["Leasing", property.contacts?.leasing]]
+                .filter(([, n]) => n)
+                .map(([label, num]) => (
+                  <a
+                    key={label}
+                    href={`tel:${num}`}
+                    className="flex items-center justify-between px-3.5 py-2.5 rounded-2xl"
+                    style={{ backgroundColor: "#F2F2F7" }}
+                  >
+                    <span className="text-[11px] font-semibold" style={{ color: colors.body }}>{label}</span>
+                    <span className="text-xs font-bold flex items-center gap-1.5" style={{ color: colors.dark }}>
+                      <Phone style={{ width: 11, height: 11, color: colors.accent }} />{num}
+                    </span>
+                  </a>
+                ))}
+            </div>
+          )}
+          {/* bottom padding so content clears the sticky bar */}
+          <div style={{ height: 16 }} />
+        </div>
+
+        {/* ── STICKY BOTTOM BAR ── price + CTA ── */}
+        <div
+          className="shrink-0 flex items-center justify-between gap-3 px-5"
+          style={{
+            paddingTop: 12, paddingBottom: "max(16px, env(safe-area-inset-bottom))",
+            borderTop: "1px solid #F2F2F7",
+            backgroundColor: "#fff",
+          }}
+        >
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: colors.body }}>
+              {property.type === "rent" ? "Per Month" : "Price"}
+            </p>
+            <p className="font-bold text-lg leading-tight" style={{ fontFamily: "'Playfair Display', serif", color: colors.dark }}>
+              {property.price}
+            </p>
           </div>
           <a
-            href="#contact"
-            onClick={onClose}
-            className="w-full py-4 rounded-xl font-bold text-lg block text-center"
-            style={{ backgroundColor: colors.accent, color: "#fff" }}
+            href={`tel:${primaryContact}`}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl font-semibold text-sm"
+            style={{
+              background: "linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%)",
+              color: "#fff",
+              letterSpacing: "-0.01em",
+              boxShadow: "0 6px 20px rgba(0,0,0,0.22)",
+            }}
           >
-            Send Inquiry
+            <Phone style={{ width: 14, height: 14 }} />
+            Enquire Now
           </a>
         </div>
       </div>
@@ -1360,161 +1444,143 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
         : "Construction";
   return (
     <div
-      className="relative overflow-hidden cursor-pointer transition-all duration-500 group rounded-[20px]"
+      className="relative overflow-hidden cursor-pointer group rounded-2xl bg-white"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => onClick(property)}
       style={{
-        transform: hover ? "scale(1.015)" : "scale(1)",
-        border: "1.5px solid rgba(255,255,255,0.38)",
+        transition: "transform 0.28s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s ease",
+        transform: hover ? "translateY(-3px) scale(1.01)" : "translateY(0) scale(1)",
         boxShadow: hover
-          ? "0 20px 36px rgba(26,26,26,0.22)"
-          : "0 6px 18px rgba(26,26,26,0.12)",
+          ? "0 16px 36px rgba(26,26,26,0.16), 0 2px 8px rgba(217,123,80,0.10)"
+          : "0 2px 10px rgba(26,26,26,0.09)",
       }}
     >
-      <div className="h-[340px] md:h-[320px] overflow-hidden rounded-[20px]">
+      {/* Image */}
+      <div className="relative overflow-hidden rounded-t-2xl" style={{ height: 175 }}>
         <img
           src={property.image}
           alt={property.title}
-          className="w-full h-full object-cover transition-transform duration-700"
-          style={{ transform: hover ? "scale(1.06)" : "scale(1)" }}
+          className="w-full h-full object-cover"
+          style={{ transition: "transform 0.5s ease", transform: hover ? "scale(1.06)" : "scale(1)" }}
         />
-      </div>
-
-      <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
+        {/* Bottom gradient */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-16 pointer-events-none"
+          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.52) 0%, transparent 100%)" }}
+        />
+        {/* Type badge */}
         <span
-          className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest"
-          style={{ backgroundColor: colors.accent, color: "#fff" }}
+          className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-[0.08em]"
+          style={{
+            background: "linear-gradient(135deg, #D97B50 0%, #C96A38 100%)",
+            color: "#fff",
+            boxShadow: "0 2px 6px rgba(217,123,80,0.4)",
+          }}
         >
           {typeLabel}
         </span>
-      </div>
-
-      {/* Wishlist Heart */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleWishlist && onToggleWishlist(property.id);
-        }}
-        className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
-        style={{
-          backgroundColor: isWishlisted
-            ? "rgba(232,149,110,0.95)"
-            : "rgba(0,0,0,0.35)",
-          backdropFilter: "blur(8px)",
-          boxShadow: isWishlisted
-            ? "0 4px 14px rgba(232,149,110,0.4)"
-            : "0 2px 8px rgba(0,0,0,0.2)",
-        }}
-      >
-        <Heart
-          className="w-4.5 h-4.5"
+        {/* Price on image */}
+        <span
+          className="absolute bottom-2 left-2.5 text-[11px] font-bold"
+          style={{ color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}
+        >
+          {isRent ? rentPerMonth : property.price}
+        </span>
+        {/* Rating on image */}
+        {property.rating && (
+          <span
+            className="absolute bottom-2 right-2.5 flex items-center gap-0.5 text-[10px] font-semibold"
+            style={{ color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
+          >
+            <Star style={{ width: 10, height: 10, fill: "#FFD580", color: "#FFD580" }} />
+            {property.rating}
+          </span>
+        )}
+        {/* Wishlist */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleWishlist && onToggleWishlist(property.id); }}
+          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center"
           style={{
-            color: "#fff",
-            fill: isWishlisted ? "#fff" : "none",
-            width: 18,
-            height: 18,
-          }}
-        />
-      </button>
-
-      <div className="relative -mt-8 md:-mt-10 mx-3 mb-3 md:mx-4 md:mb-4 z-10">
-        <div
-          className="rounded-[22px] md:rounded-[24px] px-4 py-4 md:px-5 md:py-5"
-          style={{
-            backgroundColor: "rgba(255,255,255,0.98)",
-            boxShadow: "0 14px 24px rgba(26,26,26,0.16)",
+            transition: "transform 0.2s ease, background 0.2s ease",
+            backgroundColor: isWishlisted ? colors.accent : "rgba(0,0,0,0.30)",
+            backdropFilter: "blur(8px)",
+            boxShadow: isWishlisted ? "0 0 0 2px rgba(217,123,80,0.35)" : "none",
           }}
         >
-          <h2
-            className="font-bold text-xl md:text-2xl mb-1 leading-snug"
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              color: colors.dark,
-            }}
-          >
-            {property.title}
-          </h2>
-          <p
-            className="text-sm mb-3 flex items-center gap-1"
-            style={{ color: colors.body }}
-          >
-            <MapPin className="w-3.5 h-3.5" />
-            {property.location}
-          </p>
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {(property.amenities || []).slice(0, 3).map((a) => (
+          <Heart style={{ color: "#fff", fill: isWishlisted ? "#fff" : "none", width: 13, height: 13 }} />
+        </button>
+      </div>
+
+      {/* Info */}
+      <div className="px-3 pt-2.5 pb-3">
+        <h2
+          className="font-bold leading-snug mb-0.5 truncate"
+          style={{ fontFamily: "'Playfair Display', serif", color: colors.dark, fontSize: 13 }}
+        >
+          {property.title}
+        </h2>
+        <p className="flex items-center gap-1 mb-2 truncate" style={{ color: colors.body, fontSize: 10 }}>
+          <MapPin style={{ width: 10, height: 10, flexShrink: 0 }} />
+          {property.location}
+        </p>
+        {/* Amenity pills */}
+        {(property.amenities || []).length > 0 && (
+          <div className="flex gap-1 mb-2.5 overflow-hidden">
+            {(property.amenities || []).slice(0, 2).map((a) => (
               <span
                 key={a}
-                className="px-2.5 py-1 rounded-full text-xs font-semibold"
-                style={{
-                  backgroundColor: colors.cream,
-                  color: colors.dark,
-                }}
+                className="px-2 py-0.5 rounded-full whitespace-nowrap font-medium"
+                style={{ backgroundColor: colors.cream, color: colors.body, fontSize: 9 }}
               >
                 {a}
               </span>
             ))}
-          </div>
-          <div className="flex items-center justify-between gap-3 mb-3">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span
-                className="px-3 py-1 rounded-full text-xs font-semibold"
-                style={{
-                  backgroundColor: colors.cream,
-                  color: colors.dark,
-                }}
-              >
-                {isRent ? `Rent: ${rentPerMonth}` : `Price: ${property.price}`}
+            {(property.amenities || []).length > 2 && (
+              <span className="px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: colors.cream, color: colors.body, fontSize: 9 }}>
+                +{(property.amenities || []).length - 2}
               </span>
-              {isSale && (
-                <span
-                  className="px-3 py-1 rounded-full text-xs font-semibold"
-                  style={{
-                    backgroundColor: colors.cream,
-                    color: colors.dark,
-                  }}
-                >
-                  {(property.amenities || []).length} amenities
-                </span>
-              )}
-            </div>
-            <span className="text-xs" style={{ color: colors.body }}>
-              Swipe for more
-            </span>
+            )}
           </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <a
-              href="tel:+918398979897"
-              className="flex min-h-[50px] items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-center whitespace-nowrap"
-              style={{ backgroundColor: colors.accent, color: "#fff" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              Contact
-            </a>
-            <button
-              className="flex min-h-[50px] items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold whitespace-nowrap transition-all"
-              style={{
-                backgroundColor: "rgba(255,255,255,0.92)",
-                color: colors.dark,
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                onClick(property);
-              }}
-            >
-              <Eye className="w-4 h-4" />
-              Quick View
-            </button>
-          </div>
+        )}
+        {/* Action buttons */}
+        <div className="flex gap-1.5">
+          <a
+            href="tel:+918398979897"
+            className="flex-1 flex items-center justify-center gap-1 rounded-xl font-semibold"
+            style={{
+              background: "linear-gradient(135deg, #D97B50 0%, #C06030 100%)",
+              color: "#fff",
+              height: 32,
+              fontSize: 11,
+              boxShadow: "0 3px 10px rgba(217,123,80,0.30)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Phone style={{ width: 11, height: 11 }} />
+            Call
+          </a>
+          <button
+            className="flex-1 flex items-center justify-center gap-1 rounded-xl font-semibold"
+            style={{
+              backgroundColor: colors.cream,
+              color: colors.dark,
+              border: `1px solid ${colors.creamDeep}`,
+              height: 32,
+              fontSize: 11,
+            }}
+            onClick={(e) => { e.stopPropagation(); onClick(property); }}
+          >
+            <Eye style={{ width: 11, height: 11 }} />
+            Details
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-function PropertyCarousel({ properties, onClick, wishlist, onToggleWishlist }) {
+function PropertyCarousel({ properties, onClick, wishlist, onToggleWishlist, loading }) {
   const ref = useRef(null);
   const [left, setLeft] = useState(false);
   const [right, setRight] = useState(true);
@@ -1545,10 +1611,15 @@ function PropertyCarousel({ properties, onClick, wishlist, onToggleWishlist }) {
       {left && (
         <button
           onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full hidden md:block"
-          style={{ backgroundColor: "white", color: colors.accent }}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full hidden md:flex"
+          style={{
+            background: "linear-gradient(135deg, #fff 0%, #f6ead9 100%)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.14)",
+            color: colors.accent,
+            border: `1px solid ${colors.creamDeep}`,
+          }}
         >
-          <ChevronLeft className="w-6 h-6" />
+          <ChevronLeft className="w-5 h-5" />
         </button>
       )}
       <div
@@ -1561,45 +1632,45 @@ function PropertyCarousel({ properties, onClick, wishlist, onToggleWishlist }) {
         }}
         onScroll={check}
       >
-        {properties.map((p) => (
-          <div
-            key={p.id}
-            className="flex-shrink-0"
-            style={{
-              width: "clamp(250px, 70vw, 390px)",
-              scrollSnapAlign: "start",
-            }}
-          >
-            <PropertyCard
-              property={p}
-              onClick={onClick}
-              isWishlisted={wishlist?.includes(p.id)}
-              onToggleWishlist={onToggleWishlist}
-            />
-          </div>
-        ))}
+        {loading
+          ? [1,2,3].map((n) => (
+              <div key={n} className="flex-shrink-0" style={{ width: "clamp(210px,58vw,265px)", scrollSnapAlign: "start" }}>
+                <SkeletonCard />
+              </div>
+            ))
+          : properties.map((p) => (
+              <div key={p.id} className="flex-shrink-0" style={{ width: "clamp(210px,58vw,265px)", scrollSnapAlign: "start" }}>
+                <PropertyCard property={p} onClick={onClick} isWishlisted={wishlist?.includes(p.id)} onToggleWishlist={onToggleWishlist} />
+              </div>
+            ))
+        }
       </div>
       {right && (
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full hidden md:block"
-          style={{ backgroundColor: "white", color: colors.accent }}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full hidden md:flex"
+          style={{
+            background: "linear-gradient(135deg, #fff 0%, #f6ead9 100%)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.14)",
+            color: colors.accent,
+            border: `1px solid ${colors.creamDeep}`,
+          }}
         >
-          <ChevronRight className="w-6 h-6" />
+          <ChevronRight className="w-5 h-5" />
         </button>
       )}
     </div>
   );
 }
 
-function PropertyGrid({ properties, onClick, wishlist, onToggleWishlist }) {
+function PropertyGrid({ properties, onClick, wishlist, onToggleWishlist, loading }) {
   const sale = properties.filter((p) => p.type === "sale");
   const [ref, visible] = useReveal(0.12);
   return (
     <section
       id="sale"
       ref={ref}
-      className="relative py-24 px-2 md:px-6 overflow-hidden"
+      className="relative py-10 md:py-14 px-2 md:px-6 overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(138deg, rgba(24,22,20,0.82) 0%, rgba(38,32,26,0.78) 52%, rgba(56,38,24,0.74) 100%), radial-gradient(circle at 18% 10%, rgba(232,149,110,0.18) 0%, rgba(232,149,110,0) 42%), url('${bg.sale}')`,
         backgroundSize: "cover",
@@ -1609,7 +1680,7 @@ function PropertyGrid({ properties, onClick, wishlist, onToggleWishlist }) {
     >
       <div className="max-w-7xl mx-auto relative z-10">
         <div
-          className="text-center mb-16"
+          className="text-center mb-8"
           style={{
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(25px)",
@@ -1617,7 +1688,7 @@ function PropertyGrid({ properties, onClick, wishlist, onToggleWishlist }) {
           }}
         >
           <span
-            className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-5"
+            className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-3"
             style={{
               backgroundColor: "rgba(232,149,110,0.12)",
               color: colors.accent,
@@ -1627,7 +1698,7 @@ function PropertyGrid({ properties, onClick, wishlist, onToggleWishlist }) {
             Premium Collection
           </span>
           <h3
-            className="text-5xl md:text-6xl font-bold mb-4"
+            className="text-3xl md:text-5xl font-bold mb-2"
             style={{
               fontFamily: "'Playfair Display', serif",
               color: "#fff",
@@ -1636,7 +1707,7 @@ function PropertyGrid({ properties, onClick, wishlist, onToggleWishlist }) {
           >
             Premium Homes in Gurugram
           </h3>
-          <p className="text-lg" style={{ color: colors.cream }}>
+          <p className="text-base" style={{ color: colors.cream }}>
             Curated sale listings with clear pricing and amenity highlights.
           </p>
         </div>
@@ -1646,6 +1717,7 @@ function PropertyGrid({ properties, onClick, wishlist, onToggleWishlist }) {
             onClick={onClick}
             wishlist={wishlist}
             onToggleWishlist={onToggleWishlist}
+            loading={loading}
           />
         ) : (
           <p className="text-center text-xl" style={{ color: colors.cream }}>
@@ -1657,14 +1729,14 @@ function PropertyGrid({ properties, onClick, wishlist, onToggleWishlist }) {
   );
 }
 
-function RentalsShowcase({ properties, onClick, wishlist, onToggleWishlist }) {
+function RentalsShowcase({ properties, onClick, wishlist, onToggleWishlist, loading }) {
   const rent = properties.filter((p) => p.type === "rent");
   const [ref, visible] = useReveal(0.12);
   return (
     <section
       id="rentals"
       ref={ref}
-      className="relative px-2 md:px-6 py-24 overflow-hidden"
+      className="relative px-2 md:px-6 py-10 md:py-14 overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(136deg, rgba(18,18,18,0.84) 0%, rgba(34,34,34,0.80) 44%, rgba(58,41,30,0.75) 100%), radial-gradient(circle at 82% 14%, rgba(232,149,110,0.20) 0%, rgba(232,149,110,0) 38%), url('${bg.rent}')`,
         backgroundSize: "cover",
@@ -1674,7 +1746,7 @@ function RentalsShowcase({ properties, onClick, wishlist, onToggleWishlist }) {
     >
       <div className="max-w-7xl mx-auto w-full relative z-10">
         <div
-          className="text-center mb-16"
+          className="text-center mb-8"
           style={{
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(25px)",
@@ -1682,7 +1754,7 @@ function RentalsShowcase({ properties, onClick, wishlist, onToggleWishlist }) {
           }}
         >
           <span
-            className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-5"
+            className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-3"
             style={{
               backgroundColor: "rgba(232,149,110,0.15)",
               color: colors.accent,
@@ -1694,31 +1766,32 @@ function RentalsShowcase({ properties, onClick, wishlist, onToggleWishlist }) {
           <h2
             style={{
               fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(2.4rem, 8vw, 4rem)",
+              fontSize: "clamp(1.8rem, 6vw, 3rem)",
               fontWeight: "bold",
               color: "#fff",
-              marginBottom: 14,
+              marginBottom: 8,
             }}
           >
             Premium Rental Properties in Gurugram
           </h2>
           <p
             style={{
-              fontSize: 18,
+              fontSize: 15,
               color: colors.cream,
-              maxWidth: 640,
+              maxWidth: 540,
               margin: "0 auto",
             }}
           >
             Premium apartments for flexible, elegant city living.
           </p>
         </div>
-        {rent.length > 0 ? (
+        {(loading || rent.length > 0) ? (
           <PropertyCarousel
             properties={rent}
             onClick={onClick}
             wishlist={wishlist}
             onToggleWishlist={onToggleWishlist}
+            loading={loading}
           />
         ) : (
           <p className="text-center text-lg" style={{ color: colors.cream }}>
@@ -1735,7 +1808,7 @@ function ConstructionPreviewSection() {
   return (
     <section
       ref={ref}
-      className="relative py-20 md:py-24 px-3 sm:px-6 overflow-hidden"
+      className="relative py-10 md:py-14 px-3 sm:px-6 overflow-hidden"
       style={{
         backgroundImage:
           "linear-gradient(120deg, rgba(9,9,9,0.76) 0%, rgba(34,25,20,0.58) 44%, rgba(13,13,13,0.72) 100%), radial-gradient(circle at 84% 18%, rgba(232,149,110,0.20) 0%, rgba(232,149,110,0) 42%), url('https://images.unsplash.com/photo-1616594039964-3f27e9f0a9a2?auto=format&fit=crop&w=1800&q=80')",
@@ -1746,7 +1819,7 @@ function ConstructionPreviewSection() {
     >
       <div className="w-full max-w-6xl mx-auto relative z-10">
         <div
-          className="text-center mb-10 md:mb-14"
+          className="text-center mb-7 md:mb-10"
           style={{
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(25px)",
@@ -1913,7 +1986,7 @@ function TrustStatsBar() {
   return (
     <section
       ref={ref}
-      className="relative py-16 md:py-20 px-4 sm:px-6 overflow-hidden"
+      className="relative py-10 md:py-14 px-4 sm:px-6 overflow-hidden"
       style={{
         background:
           "linear-gradient(135deg, #1a1714 0%, #2a2218 50%, #1a1714 100%)",
@@ -1930,7 +2003,7 @@ function TrustStatsBar() {
 
       <div className="max-w-6xl mx-auto relative z-10">
         <div
-          className="text-center mb-12"
+          className="text-center mb-8"
           style={{
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(20px)",
@@ -2028,7 +2101,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
     <section
       id="contact"
       ref={formRef}
-      className="relative py-14 sm:py-20 md:py-28 px-3 sm:px-6 overflow-hidden"
+      className="relative py-10 sm:py-14 md:py-20 px-3 sm:px-6 overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(140deg, rgba(12,10,8,0.90) 0%, rgba(28,22,16,0.86) 52%, rgba(42,28,18,0.82) 100%), radial-gradient(circle at 86% 18%, rgba(232,149,110,0.14) 0%, rgba(232,149,110,0) 40%), url('${bg.contact}')`,
         backgroundSize: "cover",
@@ -2047,7 +2120,7 @@ function InquiryForm({ form, onChange, onSubmit, submitting }) {
 
       <div className="w-full max-w-3xl mx-auto relative z-10">
         <div
-          className="text-center mb-8 sm:mb-14"
+          className="text-center mb-7 sm:mb-10"
           style={{
             opacity: formVisible ? 1 : 0,
             transform: formVisible ? "translateY(0)" : "translateY(30px)",
@@ -4667,11 +4740,11 @@ function AppInner() {
   const [isUserAuthOpen, setIsUserAuthOpen] = useState(false);
   const [userAuthMode, setUserAuthMode] = useState("login");
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [propertiesLoading, setPropertiesLoading] = useState(true);
 
-  // ── Dark mode state ──
   const [darkMode, setDarkMode] = useState(() => {
-    const saved = window.localStorage.getItem("darkMode");
-    return saved !== null ? saved === "true" : true; // default to night mode (current theme)
+    const saved = window.localStorage.getItem("darkMode_v2");
+    return saved !== null ? saved === "true" : false; // default to day mode
   });
 
   // ── Registered users for admin analytics ──
@@ -4680,7 +4753,7 @@ function AppInner() {
   const toggleDarkMode = () => {
     setDarkMode((prev) => {
       const next = !prev;
-      window.localStorage.setItem("darkMode", String(next));
+      window.localStorage.setItem("darkMode_v2", String(next));
       return next;
     });
   };
@@ -4854,6 +4927,8 @@ function AppInner() {
       } catch {
         // Backend unavailable — use default properties (no error shown)
         setError("");
+      } finally {
+        setPropertiesLoading(false);
       }
     };
     load();
@@ -5015,7 +5090,7 @@ function AppInner() {
   return (
     <div
       className="min-h-screen transition-colors duration-300"
-      style={{ backgroundColor: darkMode ? "#1a1714" : "#F9F7F4" }}
+      style={{ backgroundColor: darkMode ? "#1a1714" : "#F5F5F7" }}
     >
       <Navbar
         onAdminClick={() => setIsAdminOpen(true)}
@@ -5053,12 +5128,14 @@ function AppInner() {
             onClick={openProperty}
             wishlist={wishlist}
             onToggleWishlist={toggleWishlist}
+            loading={propertiesLoading}
           />
           <RentalsShowcase
             properties={properties}
             onClick={openProperty}
             wishlist={wishlist}
             onToggleWishlist={toggleWishlist}
+            loading={propertiesLoading}
           />
           <ConstructionPreviewSection />
           <TrustStatsBar />
