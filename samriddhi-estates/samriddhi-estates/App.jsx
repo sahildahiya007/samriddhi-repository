@@ -4924,11 +4924,16 @@ function AppInner() {
     });
   };
 
+  const reloadProperties = async () => {
+    const propertyData = await requestApi("/api/properties");
+    setProperties(propertyData.map(normalize));
+    return propertyData;
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
-        const propertyData = await requestApi("/api/properties");
-        setProperties(propertyData.map(normalize));
+        await reloadProperties();
         setError("");
       } catch {
         // Backend unavailable — use default properties (no error shown)
@@ -5168,9 +5173,9 @@ function AppInner() {
               method: "POST",
               body: JSON.stringify(p),
             });
-            setProperties((prev) => [...prev, normalize(created)]);
+            await reloadProperties();
+            return created;
           } catch (err) {
-            alert(err.message || "Property could not be saved. Please check durable storage setup.");
             throw err;
           }
         }}
@@ -5180,20 +5185,17 @@ function AppInner() {
               method: "PUT",
               body: JSON.stringify(p),
             });
-            setProperties((prev) =>
-              prev.map((x) => (x.id === id ? normalize(updated) : x)),
-            );
+            await reloadProperties();
+            return updated;
           } catch (err) {
-            alert(err.message || "Property changes could not be saved.");
             throw err;
           }
         }}
         onDelete={async (id) => {
           try {
             await requestWithAuth(`/api/properties/${id}`, { method: "DELETE" });
-            setProperties((prev) => prev.filter((x) => x.id !== id));
+            await reloadProperties();
           } catch (err) {
-            alert(err.message || "Property could not be deleted.");
             throw err;
           }
         }}

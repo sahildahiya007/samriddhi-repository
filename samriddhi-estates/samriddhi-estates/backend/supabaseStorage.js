@@ -104,27 +104,33 @@ async function deleteProperty(id) {
 }
 
 function normalizeProperty(property) {
+  const { amenitiesText, ...propertyFields } = property || {};
   const images =
-    Array.isArray(property.images) && property.images.length
-      ? property.images
-      : [property.image].filter(Boolean);
+    Array.isArray(propertyFields.images) && propertyFields.images.length
+      ? propertyFields.images
+      : [propertyFields.image].filter(Boolean);
 
   return {
-    ...property,
-    type: property.type || "sale",
-    location: property.location || "Gurgaon",
-    address: property.address || property.location || "Gurgaon",
+    ...propertyFields,
+    type: propertyFields.type || "sale",
+    location: propertyFields.location || "Gurgaon",
+    address: propertyFields.address || propertyFields.location || "Gurgaon",
     images,
-    amenities: Array.isArray(property.amenities) ? property.amenities : [],
-    highlights: Array.isArray(property.highlights) ? property.highlights : [],
-    nearbyPlaces: Array.isArray(property.nearbyPlaces)
-      ? property.nearbyPlaces
+    image: propertyFields.image || images[0] || "",
+    amenities: Array.isArray(propertyFields.amenities)
+      ? propertyFields.amenities
+      : typeof amenitiesText === "string"
+        ? amenitiesText.split(",").map((item) => item.trim()).filter(Boolean)
+        : [],
+    highlights: Array.isArray(propertyFields.highlights) ? propertyFields.highlights : [],
+    nearbyPlaces: Array.isArray(propertyFields.nearbyPlaces)
+      ? propertyFields.nearbyPlaces
       : [],
-    contacts: property.contacts || {},
-    showOnHomepage: property.showOnHomepage ?? true,
-    isFeatured: property.isFeatured ?? false,
-    isPublished: property.isPublished ?? true,
-    isLuxury: property.isLuxury ?? false,
+    contacts: propertyFields.contacts || {},
+    showOnHomepage: propertyFields.showOnHomepage ?? true,
+    isFeatured: propertyFields.isFeatured ?? false,
+    isPublished: propertyFields.isPublished ?? true,
+    isLuxury: propertyFields.isLuxury ?? false,
   };
 }
 

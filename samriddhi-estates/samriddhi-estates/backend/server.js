@@ -477,7 +477,9 @@ app.post(
       return res.status(400).json({ message: "Image file is required" });
     }
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+    const protocol =
+      req.headers["x-forwarded-proto"] || (isVercel ? "https" : req.protocol);
+    const imageUrl = `${protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     return res.status(201).json({
       message: "Image uploaded",
       url: imageUrl,
