@@ -63,8 +63,8 @@ const upload = multer({
 app.use("/uploads", express.static(uploadsDir));
 
 // Import persistent storage
-const storage = require("./storage");
-const persistentDb = storage.getDb();
+const persistentStorage = require("./storage");
+const persistentDb = persistentStorage.getDb();
 
 // Use persistent storage instead of in-memory arrays
 let properties = persistentDb.properties;
@@ -76,14 +76,14 @@ let nextUserId = persistentDb.nextUserId;
 
 // Utility to save changes to disk
 function saveChanges() {
-  storage.getDb().properties = properties;
-  storage.getDb().users = users;
-  storage.getDb().constructionRates = constructionRates;
-  storage.getDb().constructionProjects = constructionProjects;
-  storage.getDb().inquiries = inquiries;
-  storage.getDb().registeredUsers = registeredUsers;
-  storage.getDb().nextUserId = nextUserId;
-  storage.saveDb();
+  persistentStorage.getDb().properties = properties;
+  persistentStorage.getDb().users = users;
+  persistentStorage.getDb().constructionRates = constructionRates;
+  persistentStorage.getDb().constructionProjects = constructionProjects;
+  persistentStorage.getDb().inquiries = inquiries;
+  persistentStorage.getDb().registeredUsers = registeredUsers;
+  persistentStorage.getDb().nextUserId = nextUserId;
+  persistentStorage.saveDb();
 }
 
 const PROTECTED_PRIME_ADMIN = Object.freeze({
@@ -123,9 +123,6 @@ function ensureProtectedPrimeAdmin() {
 ensureProtectedPrimeAdmin();
 
 /* ── In-memory stores for regular users & wishlists ── */
-let registeredUsers = []; // { id, name, email, password (bcrypt), wishlist: [propertyId,...] }
-let nextUserId = 1;
-
 /* ── Auth middleware (admin JWT) ── */
 function authMiddleware(req, res, next) {
   const auth = req.headers.authorization;
