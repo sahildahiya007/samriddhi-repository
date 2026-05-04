@@ -19,3 +19,7 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 .vercel
+
+# Persistent user data (live database)
+backend/persistent-data/
+backend/uploads/

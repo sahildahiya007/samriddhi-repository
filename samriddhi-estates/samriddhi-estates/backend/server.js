@@ -62,10 +62,29 @@ const upload = multer({
 
 app.use("/uploads", express.static(uploadsDir));
 
-const properties = require("./data/properties");
-let users = require("./data/users");
-let constructionRates = require("./data/constructionRates");
-const constructionProjects = require("./data/constructionProjects");
+// Import persistent storage
+const storage = require("./storage");
+const persistentDb = storage.getDb();
+
+// Use persistent storage instead of in-memory arrays
+let properties = persistentDb.properties;
+let users = persistentDb.users;
+let constructionRates = persistentDb.constructionRates;
+let constructionProjects = persistentDb.constructionProjects || require("./data/constructionProjects");
+let registeredUsers = persistentDb.registeredUsers;
+let nextUserId = persistentDb.nextUserId;
+
+// Utility to save changes to disk
+function saveChanges() {
+  storage.getDb().properties = properties;
+  storage.getDb().users = users;
+  storage.getDb().constructionRates = constructionRates;
+  storage.getDb().constructionProjects = constructionProjects;
+  storage.getDb().inquiries = inquiries;
+  storage.getDb().registeredUsers = registeredUsers;
+  storage.getDb().nextUserId = nextUserId;
+  storage.saveDb();
+}
 
 const PROTECTED_PRIME_ADMIN = Object.freeze({
   id: 1,
@@ -140,7 +159,8 @@ function requirePrimeAdmin(req, res, next) {
   return res.status(403).json({ message: "Only Prime Admin allowed" });
 }
 
-const inquiries = require("./data/inquiries");
+// Load inquiries from persistent storage
+let inquiries = persistentDb.inquiries || require("./data/inquiries");
 
 /* ── User Registration & Login ── */
 app.post("/api/users/register", async (req, res) => {
@@ -163,6 +183,7 @@ app.post("/api/users/register", async (req, res) => {
     wishlist: [],
   };
   registeredUsers.push(newUser);
+  saveChanges();
   const token = jwt.sign(
     { id: newUser.id, email: newUser.email, type: "user" },
     JWT_SECRET,
@@ -224,6 +245,7 @@ app.post("/api/wishlist/:propertyId", userAuthMiddleware, (req, res) => {
   if (!user) return res.status(404).json({ message: "User not found" });
   const propId = Number(req.params.propertyId);
   if (!user.wishlist.includes(propId)) user.wishlist.push(propId);
+  saveChanges();
   return res.json({ wishlist: user.wishlist });
 });
 
@@ -232,6 +254,7 @@ app.delete("/api/wishlist/:propertyId", userAuthMiddleware, (req, res) => {
   if (!user) return res.status(404).json({ message: "User not found" });
   const propId = Number(req.params.propertyId);
   user.wishlist = user.wishlist.filter((id) => id !== propId);
+  saveChanges();
   return res.json({ wishlist: user.wishlist });
 });
 
@@ -267,6 +290,7 @@ app.put(
       return res.status(400).json({ message: "All rates must be numbers." });
     }
     constructionRates = { standard, premium, luxury };
+    saveChanges();
     res.json(constructionRates);
   },
 );
@@ -291,6 +315,7 @@ app.post("/api/construction-projects", authMiddleware, (req, res) => {
     status: status || "Ongoing",
   };
   constructionProjects.push(newProject);
+  saveChanges();
   res.status(201).json(newProject);
 });
 
@@ -301,6 +326,7 @@ app.put("/api/construction-projects/:id", authMiddleware, (req, res) => {
     return res.status(404).json({ message: "Project not found" });
   }
   constructionProjects[index] = { ...constructionProjects[index], ...req.body };
+  saveChanges();
   res.json(constructionProjects[index]);
 });
 
@@ -311,6 +337,7 @@ app.delete("/api/construction-projects/:id", authMiddleware, (req, res) => {
     return res.status(404).json({ message: "Project not found" });
   }
   const deleted = constructionProjects.splice(index, 1)[0];
+  saveChanges();
   res.json(deleted);
 });
 
@@ -375,6 +402,7 @@ app.post("/api/properties", authMiddleware, (req, res) => {
     ...req.body,
   };
   properties.push(newProperty);
+  saveChanges();
   res.status(201).json(newProperty);
 });
 
@@ -402,6 +430,7 @@ app.post("/api/users", (req, res) => {
     ...req.body,
   };
   users.push(newUser);
+  saveChanges();
   res.status(201).json(newUser);
 });
 
@@ -428,6 +457,7 @@ app.post("/api/inquiries", (req, res) => {
     ...req.body,
   };
   inquiries.push(newInquiry);
+  saveChanges();
   return res.status(201).json(newInquiry);
 });
 
@@ -436,6 +466,7 @@ app.put("/api/properties/:id", authMiddleware, (req, res) => {
   const index = properties.findIndex((p) => p.id === id);
   if (index !== -1) {
     properties[index] = { ...properties[index], ...req.body };
+    saveChanges();
     res.json(properties[index]);
   } else {
     res.status(404).json({ message: "Property not found" });
@@ -452,6 +483,7 @@ app.put("/api/users/:id", authMiddleware, requirePrimeAdmin, (req, res) => {
       });
     }
     users[index] = { ...users[index], ...req.body };
+    saveChanges();
     res.json(users[index]);
   } else {
     res.status(404).json({ message: "User not found" });
@@ -463,6 +495,7 @@ app.delete("/api/properties/:id", authMiddleware, (req, res) => {
   const index = properties.findIndex((p) => p.id === id);
   if (index !== -1) {
     const deletedProperty = properties.splice(index, 1);
+    saveChanges();
     res.json(deletedProperty[0]);
   } else {
     res.status(404).json({ message: "Property not found" });
@@ -479,6 +512,7 @@ app.delete("/api/users/:id", authMiddleware, requirePrimeAdmin, (req, res) => {
       });
     }
     const deletedUser = users.splice(index, 1);
+    saveChanges();
     res.json(deletedUser[0]);
   } else {
     res.status(404).json({ message: "User not found" });
@@ -493,6 +527,7 @@ app.delete("/api/inquiries/:id", authMiddleware, (req, res) => {
   }
 
   const deletedInquiry = inquiries.splice(index, 1)[0];
+  saveChanges();
   return res.json(deletedInquiry);
 });
 
@@ -651,6 +686,7 @@ app.post("/api/admins", authMiddleware, requirePrimeAdmin, async (req, res) => {
     role: "sub-admin",
   };
   users.push(newAdmin);
+  saveChanges();
   res.status(201).json({
     id: newAdmin.id,
     username: newAdmin.username,
