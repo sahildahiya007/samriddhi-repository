@@ -41,25 +41,32 @@ const LuxuryCard = ({ property, onViewDetails, onCall }) => {
           {/* Gradient Overlay */}
           <div className="absolute bottom-0 left-0 right-0 h-[120px] bg-gradient-to-t from-black/70 to-transparent"></div>
 
-          {/* Type Badge */}
-          <div
-            className={`absolute top-[18px] left-[18px] h-[34px] px-4 rounded-full text-white font-bold text-[13px] flex items-center ${
-              property.type === 'sale' ? 'bg-orange-500' : 'bg-green-600'
-            }`}
-          >
-            {property.type === 'sale' ? 'FOR SALE' : 'FOR RENT'}
-          </div>
-
           {/* Wishlist Button */}
           <button
             onClick={() => setIsWishlisted(!isWishlisted)}
-            className="absolute top-[18px] right-[18px] w-[46px] h-[46px] rounded-full bg-white shadow-md flex items-center justify-center hover:scale-110 transition"
+            className="absolute top-[18px] left-[18px] w-[46px] h-[46px] rounded-full bg-white shadow-md flex items-center justify-center hover:scale-110 transition"
           >
             <Heart
               size={24}
               className={isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}
             />
           </button>
+
+          {/* Top Dots */}
+          <div className="absolute top-[18px] right-[18px] flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-white/80" />
+            <span className="w-3 h-3 rounded-full bg-white/70" />
+            <span className="w-3 h-3 rounded-full bg-white/50" />
+          </div>
+
+          {/* Type Badge */}
+          <div
+            className={`absolute top-[70px] left-[18px] h-[34px] px-4 rounded-full text-white font-bold text-[13px] flex items-center ${
+              property.type === 'sale' ? 'bg-orange-500' : 'bg-green-600'
+            }`}
+          >
+            {property.type === 'sale' ? 'FOR SALE' : 'FOR RENT'}
+          </div>
 
           {/* Carousel Dots */}
           {images.length > 1 && (
