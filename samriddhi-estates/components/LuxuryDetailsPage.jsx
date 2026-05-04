@@ -150,10 +150,21 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
         {/* Overview Section */}
         <div className="mb-8">
           <h2 className="text-xl font-bold mb-3 text-gray-900">Overview</h2>
-          <p className="text-gray-700 leading-relaxed text-[15px]">
-            {property.details ||
-              'Premium luxury apartment with world-class amenities, located in the heart of the city. Experience sophisticated living with premium finishes and exclusive facilities.'}
-          </p>
+          {property.detailsSections ? (
+            <div className="space-y-6 text-gray-700 text-[15px] leading-relaxed">
+              {property.detailsSections.map((section, idx) => (
+                <div key={idx}>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{section.heading}</h3>
+                  <p>{section.text}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-700 leading-relaxed text-[15px]">
+              {property.details ||
+                'Premium luxury apartment with world-class amenities, located in the heart of the city. Experience sophisticated living with premium finishes and exclusive facilities.'}
+            </p>
+          )}
         </div>
 
         {/* Property Details Grid */}
