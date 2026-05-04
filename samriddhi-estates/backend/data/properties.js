@@ -126,11 +126,11 @@ const properties = [
     detailsSections: [
       {
         heading: "About Sobha Sector 63A",
-        text: "NEW ULTRA-LUXURY RESIDENTIAL PROJECT BY SOBHA LIMITED IN SECTOR 63A, GURUGRAM. Sobha Limited proudly presents a new ultra-luxury residential project in Sector 63A, Golf Course Extension Road, Gurugram. Known for unmatched construction quality and timely delivery, Sobha Limited brings a premium lifestyle destination designed for those who value space, privacy, and excellence. This upcoming launch is set to become one of the most sought-after luxury addresses in Gurugram.",
+        text: "NEW ULTRA-LUXURY RESIDENTIAL PROJECT BY SOBHA LIMITED IN SECTOR 63A, GURUGRAM.\n\nSobha Limited proudly presents a new ultra-luxury residential project in Sector 63A, Golf Course Extension Road, Gurugram. Known for unmatched construction quality and timely delivery, Sobha Limited brings a premium lifestyle destination designed for those who value space, privacy, and excellence. This upcoming launch is set to become one of the most sought-after luxury addresses in Gurugram.",
       },
       {
         heading: "Prime Location – Sector 63A, Golf Course Extension Road",
-        text: "The project is strategically located in Sector 63A, just 5 minutes from Golf Course Road, offering seamless connectivity to major business hubs, premium schools, hospitals, and entertainment zones. Surrounded by high-end developments and robust social infrastructure, the location ensures both convenience and long-term appreciation. Location advantages: Close to Golf Course Road & Golf Course Extension Road, Excellent connectivity to NH-48 and Sohna Road, Proximity to top schools, hospitals & business districts, Peaceful surroundings with Aravalli hill views.",
+        text: "The project is strategically located in Sector 63A, just 5 minutes from Golf Course Road, offering seamless connectivity to major business hubs, premium schools, hospitals, and entertainment zones. Surrounded by high-end developments and robust social infrastructure, the location ensures both convenience and long-term appreciation.\n\nLocation advantages:\n• Close to Golf Course Road & Golf Course Extension Road\n• Excellent connectivity to NH-48 and Sohna Road\n• Proximity to top schools, hospitals & business districts\n• Peaceful surroundings with Aravalli hill views.",
       },
       {
         heading: "Project Overview – Low-Density Ultra-Luxury Living",
@@ -157,7 +157,7 @@ const properties = [
   {
     id: 9,
     title: "Tenino Lamborghini Residence",
-    price: "₹9.50 Cr",
+    price: "Rs. 9.50 Cr",
     rating: 4.9,
     type: "sale",
     image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",

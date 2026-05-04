@@ -155,7 +155,7 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
               {property.detailsSections.map((section, idx) => (
                 <div key={idx}>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{section.heading}</h3>
-                  <p>{section.text}</p>
+                  <p className="whitespace-pre-wrap">{section.text}</p>
                 </div>
               ))}
             </div>
