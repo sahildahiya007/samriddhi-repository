@@ -85,13 +85,18 @@ const LuxuryCard = ({ property, onViewDetails, onCall }) => {
 
           {/* Text Overlay on Image Bottom */}
           <div className="absolute bottom-0 left-0 right-0 p-[22px] text-white">
-            <h3 className="text-[34px] font-bold mb-6 leading-tight line-clamp-2">
+            {property.badge && (
+              <div className="inline-flex items-center rounded-full bg-orange-500/95 px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.14em] mb-3">
+                {property.badge}
+              </div>
+            )}
+            <h3 className="text-[28px] md:text-[34px] font-bold mb-3 leading-tight line-clamp-2">
               {property.title}
             </h3>
-            <p className="text-[15px] mb-[22px] flex items-center gap-1">
-              <MapPin size={14} />
-              {property.location}
+            <p className="text-[14px] text-orange-100 mb-2">
+              {property.subtitle || property.location}
             </p>
+            {property.typeText && <p className="text-[15px] text-white/90 mb-4">{property.typeText}</p>}
             <p className="text-[24px] font-bold">{property.price}</p>
           </div>
         </div>
