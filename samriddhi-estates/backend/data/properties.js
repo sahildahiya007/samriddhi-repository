@@ -127,6 +127,10 @@ const properties = [
       "https://res.cloudinary.com/dse4d1tua/image/upload/v1777923968/videoframe_2442_xi86go.png",
       "https://res.cloudinary.com/dse4d1tua/image/upload/v1777923968/videoframe_2442_xi86go.png",
     ],
+    floorPlans: [
+      "https://images.openai.com/static-rsc-4/FKwZBfkE7791Zy9oaLjcz7PkI1ipDlcPjrhF0TMIIX0n2Ud3-AlrQoUgoFdCiE_9FdNlnpsHQfIbtRz8S5cbTV7zTVn6VU9LGnZMOvbtWHK50FkzTMZ3WOtPW1qMpFAfJtlgdmsE0q_VcY2prrl9_JgeNUBP5MNURHR3fSPvw8MYnNGyYYOKknhkRcRgM22m?purpose=fullsize",
+      "https://images.openai.com/static-rsc-4/hpc_mQ5gNoRXe0Rt_CNlZlgn7-MZURDCnksiEw8MsrocekQoIlKK0ZA2-EbAqCJJifh49lSBjbPNgE9jbkgwmaXa9lBW5sjh6tYPJNpTHYBsHMy7dT4TqApRVX0INcwyo12oMc9jsndHGY9uQJsnghm65gLx54houaiLAVXeiU841whp8jlQwrHTIxgwER_L?purpose=fullsize",
+    ],
     location: "Dwarka Expressway, Gurgaon",
     address: "Sector 106, Dwarka Expressway, Gurugram, Haryana",
     amenities: [
