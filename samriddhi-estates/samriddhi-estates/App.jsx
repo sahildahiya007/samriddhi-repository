@@ -1410,7 +1410,7 @@ function PropertyModal({ property, isOpen, onClose }) {
             <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: colors.body }}>
               {property.type === "rent" ? "Per Month" : "Price"}
             </p>
-            <p className="font-bold text-lg leading-tight" style={{ fontFamily: "'Playfair Display', serif", color: colors.dark }}>
+            <p className="price-text font-bold text-lg leading-tight" style={{ color: colors.dark }}>
               {property.price}
             </p>
           </div>
@@ -1488,7 +1488,7 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
         </span>
         {/* Price on image */}
         <span
-          className="absolute bottom-2 left-2.5 text-[11px] font-bold"
+          className="price-text absolute bottom-2 left-2.5 text-[11px] font-bold"
           style={{ color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}
         >
           {isRent ? rentPerMonth : property.price}
@@ -3041,7 +3041,7 @@ function AdminPanel({
                         </h4>
                         <div className="flex items-center gap-2 mt-1">
                           <span
-                            className="text-xs font-medium"
+                            className="price-text text-xs font-medium"
                             style={{ color: colors.accent }}
                           >
                             {p.price}
@@ -4647,7 +4647,7 @@ function WishlistPane({
                       {p.title}
                     </h4>
                     <p
-                      className="text-xs mt-0.5"
+                      className="price-text text-xs mt-0.5"
                       style={{ color: colors.accent }}
                     >
                       {p.price}
