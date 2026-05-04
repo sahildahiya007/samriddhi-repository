@@ -273,6 +273,7 @@ const properties = [
   {
     id: 9,
     title: "Tenino Lamborghini Residence",
+    highlight: true,
     price: "Rs. 9.50 Cr",
     rating: 4.9,
     type: "sale",
