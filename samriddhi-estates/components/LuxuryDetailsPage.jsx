@@ -106,10 +106,21 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
 
         {/* Luxury Badge & Title Overlay */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent pt-20 pb-8 px-6">
-          <div className="inline-block bg-yellow-600 text-white px-4 py-2 rounded-full text-sm font-bold mb-4">
-            LUXURY PROPERTY
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            {property.badge && (
+              <div className="inline-flex items-center rounded-full bg-orange-500 px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.18em] text-white">
+                {property.badge}
+              </div>
+            )}
+            {property.status && (
+              <div className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-[12px] font-semibold text-white">
+                {property.status}
+              </div>
+            )}
           </div>
           <h1 className="text-white text-4xl font-bold mb-2">{property.title}</h1>
+          <p className="text-gray-200 text-sm mb-2">{property.subtitle || property.location}</p>
+          {property.typeText && <p className="text-orange-100 text-sm mb-3">{property.typeText}</p>}
           <p className="text-gray-200 flex items-center gap-2">
             <MapPin size={18} />
             {property.address}
@@ -127,10 +138,12 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
       <motion.div
         initial={{ y: 26 }}
         animate={{ y: -26 }}
-        className="relative bg-white rounded-t-[32px] -mt-[26px] pt-[22px] px-[22px] pb-[120px]"
+        className="relative bg-white rounded-t-[32px] -mt-[40px] pb-[120px]"
       >
-        {/* Highlights Section */}
-        <div className="mb-8">
+        <div className="mx-auto mt-4 mb-6 h-1.5 w-16 rounded-full bg-gray-300" />
+        <div className="px-[22px] max-h-[calc(100vh-170px)] overflow-y-auto">
+          {/* Highlights Section */}
+          <div className="mb-8">
           <h2 className="text-xl font-bold mb-4 text-gray-900">Highlights</h2>
           <div className="flex flex-wrap gap-[10px]">
             {highlights.map((highlight, idx) => (
@@ -201,9 +214,23 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
           </div>
         </div>
 
+        {/* Unit Configurations */}
+        {property.unitConfigs && property.unitConfigs.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Unit Configurations</h2>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {property.unitConfigs.map((config, idx) => (
+                <div key={idx} className="rounded-2xl border border-gray-200 p-4 bg-gray-50">
+                  <p className="text-gray-500 text-sm font-semibold">{config.type}</p>
+                  <p className="text-gray-900 font-bold mt-2">{config.size}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Nearby Section */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold mb-4 text-gray-900">Nearby Locations</h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {nearbyPlaces.map((place, idx) => (
               <motion.div
