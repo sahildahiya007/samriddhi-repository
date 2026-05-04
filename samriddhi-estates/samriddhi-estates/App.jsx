@@ -5163,10 +5163,9 @@ function AppInner() {
               body: JSON.stringify(p),
             });
             setProperties((prev) => [...prev, normalize(created)]);
-          } catch {
-            // Backend offline — add locally
-            const newProp = { ...p, id: Date.now() };
-            setProperties((prev) => [...prev, normalize(newProp)]);
+          } catch (err) {
+            alert(err.message || "Property could not be saved. Please check durable storage setup.");
+            throw err;
           }
         }}
         onEdit={async (id, p) => {
@@ -5178,20 +5177,19 @@ function AppInner() {
             setProperties((prev) =>
               prev.map((x) => (x.id === id ? normalize(updated) : x)),
             );
-          } catch {
-            // Backend offline — edit locally
-            setProperties((prev) =>
-              prev.map((x) => (x.id === id ? normalize({ ...x, ...p }) : x)),
-            );
+          } catch (err) {
+            alert(err.message || "Property changes could not be saved.");
+            throw err;
           }
         }}
         onDelete={async (id) => {
           try {
             await requestWithAuth(`/api/properties/${id}`, { method: "DELETE" });
-          } catch {
-            // Backend offline — continue with local delete
+            setProperties((prev) => prev.filter((x) => x.id !== id));
+          } catch (err) {
+            alert(err.message || "Property could not be deleted.");
+            throw err;
           }
-          setProperties((prev) => prev.filter((x) => x.id !== id));
         }}
         inquiries={inquiries}
         onDeleteInquiry={async (id) => {

@@ -64,6 +64,7 @@ app.use("/uploads", express.static(uploadsDir));
 
 // Import persistent storage
 const persistentStorage = require("./storage");
+const propertyStorage = require("./supabaseStorage");
 const persistentDb = persistentStorage.getDb();
 
 // Use persistent storage instead of in-memory arrays
@@ -158,6 +159,34 @@ function requirePrimeAdmin(req, res, next) {
 
 // Load inquiries from persistent storage
 let inquiries = persistentDb.inquiries || require("./data/inquiries");
+
+const isVercel = Boolean(process.env.VERCEL || process.env.NOW_REGION);
+
+async function loadCurrentProperties() {
+  if (propertyStorage.hasSupabase) {
+    properties = await propertyStorage.loadProperties();
+  }
+  return properties;
+}
+
+function requireDurablePropertyStorage(res) {
+  if (!propertyStorage.hasSupabase && isVercel) {
+    res.status(503).json({
+      message:
+        "Property changes need Supabase storage on Vercel. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+    });
+    return false;
+  }
+  return true;
+}
+
+function sendStorageError(res, error) {
+  console.error("Property storage error:", error);
+  return res.status(500).json({
+    message: "Could not save property changes",
+    error: error.message,
+  });
+}
 
 /* ── User Registration & Login ── */
 app.post("/api/users/register", async (req, res) => {
@@ -358,21 +387,32 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, service: "samriddhi-estates-backend" });
 });
 
-app.get("/api/properties", (req, res) => {
-  res.json(properties);
+app.get("/api/properties", async (req, res) => {
+  try {
+    const currentProperties = await loadCurrentProperties();
+    res.json(currentProperties);
+  } catch (error) {
+    sendStorageError(res, error);
+  }
 });
 
 app.get("/api/users", (req, res) => {
   res.json(users);
 });
 
-app.get("/api/properties/:id", (req, res) => {
+app.get("/api/properties/:id", async (req, res) => {
   const id = parseId(req.params.id);
-  const property = properties.find((p) => p.id === id);
-  if (property) {
-    res.json(property);
-  } else {
-    res.status(404).json({ message: "Property not found" });
+  try {
+    const property = propertyStorage.hasSupabase
+      ? await propertyStorage.getPropertyById(id)
+      : properties.find((p) => p.id === id);
+    if (property) {
+      res.json(property);
+    } else {
+      res.status(404).json({ message: "Property not found" });
+    }
+  } catch (error) {
+    sendStorageError(res, error);
   }
 });
 
@@ -386,7 +426,9 @@ app.get("/api/users/:id", (req, res) => {
   }
 });
 
-app.post("/api/properties", authMiddleware, (req, res) => {
+app.post("/api/properties", authMiddleware, async (req, res) => {
+  if (!requireDurablePropertyStorage(res)) return;
+
   const missing = missingFields(req.body, requiredPropertyFields);
   if (missing.length > 0) {
     return res
@@ -394,13 +436,23 @@ app.post("/api/properties", authMiddleware, (req, res) => {
       .json({ message: "Missing required property fields", missing });
   }
 
-  const newProperty = {
-    id: nextId(properties),
-    ...req.body,
-  };
-  properties.push(newProperty);
-  saveChanges();
-  res.status(201).json(newProperty);
+  try {
+    if (propertyStorage.hasSupabase) {
+      const newProperty = await propertyStorage.createProperty(req.body);
+      await loadCurrentProperties();
+      return res.status(201).json(newProperty);
+    }
+
+    const newProperty = {
+      id: nextId(properties),
+      ...req.body,
+    };
+    properties.push(newProperty);
+    saveChanges();
+    return res.status(201).json(newProperty);
+  } catch (error) {
+    return sendStorageError(res, error);
+  }
 });
 
 app.post(
@@ -458,15 +510,29 @@ app.post("/api/inquiries", (req, res) => {
   return res.status(201).json(newInquiry);
 });
 
-app.put("/api/properties/:id", authMiddleware, (req, res) => {
+app.put("/api/properties/:id", authMiddleware, async (req, res) => {
+  if (!requireDurablePropertyStorage(res)) return;
+
   const id = parseId(req.params.id);
-  const index = properties.findIndex((p) => p.id === id);
-  if (index !== -1) {
-    properties[index] = { ...properties[index], ...req.body };
-    saveChanges();
-    res.json(properties[index]);
-  } else {
-    res.status(404).json({ message: "Property not found" });
+  try {
+    if (propertyStorage.hasSupabase) {
+      const updatedProperty = await propertyStorage.updateProperty(id, req.body);
+      if (!updatedProperty) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+      await loadCurrentProperties();
+      return res.json(updatedProperty);
+    }
+
+    const index = properties.findIndex((p) => p.id === id);
+    if (index !== -1) {
+      properties[index] = { ...properties[index], ...req.body };
+      saveChanges();
+      return res.json(properties[index]);
+    }
+    return res.status(404).json({ message: "Property not found" });
+  } catch (error) {
+    return sendStorageError(res, error);
   }
 });
 
@@ -487,15 +553,30 @@ app.put("/api/users/:id", authMiddleware, requirePrimeAdmin, (req, res) => {
   }
 });
 
-app.delete("/api/properties/:id", authMiddleware, (req, res) => {
+app.delete("/api/properties/:id", authMiddleware, async (req, res) => {
+  if (!requireDurablePropertyStorage(res)) return;
+
   const id = parseId(req.params.id);
-  const index = properties.findIndex((p) => p.id === id);
-  if (index !== -1) {
-    const deletedProperty = properties.splice(index, 1);
-    saveChanges();
-    res.json(deletedProperty[0]);
-  } else {
-    res.status(404).json({ message: "Property not found" });
+  try {
+    if (propertyStorage.hasSupabase) {
+      const property = await propertyStorage.getPropertyById(id);
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+      await propertyStorage.deleteProperty(id);
+      await loadCurrentProperties();
+      return res.json(property);
+    }
+
+    const index = properties.findIndex((p) => p.id === id);
+    if (index !== -1) {
+      const deletedProperty = properties.splice(index, 1);
+      saveChanges();
+      return res.json(deletedProperty[0]);
+    }
+    return res.status(404).json({ message: "Property not found" });
+  } catch (error) {
+    return sendStorageError(res, error);
   }
 });
 
