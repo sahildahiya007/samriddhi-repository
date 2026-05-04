@@ -284,21 +284,27 @@ async function requestApi(path, options = {}) {
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
     try {
-      const payload = await response.json();
-      message = payload.message || message;
-    } catch {
-      try {
-        const responseText = await response.text();
-        if (
-          response.status === 404 &&
-          /<!doctype html>|<html/i.test(responseText)
-        ) {
-          message =
-            "API route not found. Configure VITE_API_BASE_URL to your backend URL.";
+      const responseText = await response.text();
+      if (responseText) {
+        try {
+          const payload = JSON.parse(responseText);
+          message = payload.error
+            ? `${payload.message || message}: ${payload.error}`
+            : payload.message || message;
+        } catch {
+          if (
+            response.status === 404 &&
+            /<!doctype html>|<html/i.test(responseText)
+          ) {
+            message =
+              "API route not found. Configure VITE_API_BASE_URL to your backend URL.";
+          } else if (!/<!doctype html>|<html/i.test(responseText)) {
+            message = responseText.slice(0, 300);
+          }
         }
-      } catch {
-        // Keep fallback message.
       }
+    } catch {
+      // Keep fallback message.
     }
     throw new Error(message);
   }

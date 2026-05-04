@@ -387,6 +387,19 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, service: "samriddhi-estates-backend" });
 });
 
+app.get("/api/storage/status", async (_req, res) => {
+  try {
+    const currentProperties = await loadCurrentProperties();
+    res.json({
+      ok: true,
+      durablePropertyStorage: propertyStorage.hasSupabase,
+      propertyCount: currentProperties.length,
+    });
+  } catch (error) {
+    sendStorageError(res, error);
+  }
+});
+
 app.get("/api/properties", async (req, res) => {
   try {
     const currentProperties = await loadCurrentProperties();
