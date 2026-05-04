@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "npm --prefix samriddhi-estates ci && npm --prefix samriddhi-estates run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

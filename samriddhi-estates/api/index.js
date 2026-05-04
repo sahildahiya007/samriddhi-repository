@@ -1,10 +1,10 @@
-// Vercel Serverless Function - wraps the nested Express backend.
+// Vercel Serverless Function — wraps the Express backend
 let app;
-
 try {
-  app = require("../samriddhi-estates/backend/server");
+  app = require("../backend/server");
 } catch (err) {
-  module.exports = (_req, res) => {
+  // If the backend fails to load, return a helpful 500
+  module.exports = (req, res) => {
     res.status(500).json({
       message: "Backend failed to initialize",
       error: err.message,

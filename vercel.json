@@ -1,13 +1,13 @@
 {
   "framework": "vite",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
+  "outputDirectory": "samriddhi-estates/dist",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" }
   ],
   "functions": {
     "api/index.js": {
-      "includeFiles": "backend/**",
+      "includeFiles": "samriddhi-estates/backend/**",
       "maxDuration": 10
     }
   }
