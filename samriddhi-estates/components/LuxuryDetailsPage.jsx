@@ -4,10 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentFloorPlanIndex, setCurrentFloorPlanIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [showContactPopup, setShowContactPopup] = useState(false);
 
   const images = property.images || [property.image];
+  const floorPlans = property.floorPlans || [];
+  const heroHeight = window.innerWidth < 768 ? 46 : 52;
 
   const highlights = property.highlights || [
     'Clubhouse',
@@ -39,7 +42,7 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 z-50 overflow-y-auto"
+      className="fixed inset-0 bg-black/50 z-50 overflow-hidden"
     >
       {/* Hero Image Section */}
       <div className="relative w-full bg-gray-900" style={{ height: window.innerWidth < 768 ? '46vh' : '60vh' }}>
@@ -138,10 +141,14 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
       <motion.div
         initial={{ y: 26 }}
         animate={{ y: -26 }}
-        className="relative bg-white rounded-t-[32px] -mt-[40px] pb-[120px]"
+        className="relative bg-white rounded-t-[32px] -mt-[40px]"
+        style={{
+          maxHeight: `calc(100vh - ${heroHeight}vh)`,
+          overflowY: 'auto',
+        }}
       >
         <div className="mx-auto mt-4 mb-6 h-1.5 w-16 rounded-full bg-gray-300" />
-        <div className="px-[22px] max-h-[calc(100vh-170px)] overflow-y-auto">
+        <div className="px-[22px] pb-[120px]">
           {/* Highlights Section */}
           <div className="mb-8">
           <h2 className="text-xl font-bold mb-4 text-gray-900">Highlights</h2>
