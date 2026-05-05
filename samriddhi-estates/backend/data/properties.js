@@ -275,6 +275,75 @@ const properties = [
     contacts: { sales: "+91 8398979897", rent: "+91 9968149329", leasing: "+91 8448660575" },
   },
   {
+    id: 11,
+    title: "Sobha Sector 63A",
+    badge: "New Launch",
+    subtitle: "Sector 63A Gurugram",
+    typeText: "3/4 BHK Luxury Apartments",
+    developer: "SOBHA Limited",
+    reraNumber: "NA",
+    status: "New Launch",
+    startingPrice: "₹6.00 Cr",
+    priceRange: "3 BHK: ₹5.40 Cr – ₹6.10 Cr • 4 BHK: ₹6.00 Cr – ₹7.00 Cr",
+    price: "₹6.00 Cr",
+    rating: 4.8,
+    type: "sale",
+    image: "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+    ],
+    location: "Golf Course Extension Road, Gurgaon",
+    address: "Sector 63A, Golf Course Extension Road, Gurugram, Haryana",
+    amenities: [
+      "Low-density luxury layout",
+      "Grand entrance and lobby",
+      "Premium clubhouse and leisure decks",
+      "Aravalli-facing open greens",
+    ],
+    details: "New Ultra-Luxury Residential Project by Sobha Limited in Sector 63A, Gurugram. Known for unmatched construction quality and timely delivery, this new launch delivers premium living for homebuyers who value space, privacy, and excellence.",
+    highlights: [
+      "Prime Sector 63A location on Golf Course Extension Road",
+      "New launch by SOBHA Limited with luxury finishes",
+      "Low-density project with premium open spaces",
+      "Ultra-luxury 3/4 BHK apartments with smart living features",
+    ],
+    detailsSections: [
+      {
+        heading: "About Sobha Sector 63A",
+        text: "New Ultra-Luxury Residential Project by Sobha Limited in Sector 63A, Gurugram. Sobha Limited proudly presents a new ultra-luxury residential project designed for those who value space, privacy, and excellence. This upcoming launch is set to become one of the most sought-after luxury addresses in Gurugram.",
+      },
+      {
+        heading: "Prime Location",
+        text: "Located on Golf Course Extension Road, Sector 63A, this project offers seamless connectivity to Golf Course Road, NH-48, Sohna Road, premium schools, hospitals, and business districts. It is surrounded by high-end developments and strong social infrastructure.",
+      },
+      {
+        heading: "Project Overview",
+        text: "This 12-acre low-density residential development is thoughtfully planned with only around 600 exclusive units, ensuring privacy and expansive open spaces. The project features premium towers, grand entry, superior ventilation, and views toward the Aravalli hills.",
+      },
+      {
+        heading: "Location Advantages",
+        text: "Close to Golf Course Road & Golf Course Extension Road\nExcellent connectivity to NH-48 and Sohna Road\nProximity to top schools, hospitals & business districts\nPeaceful surroundings with Aravalli hill views",
+      },
+    ],
+    bedrooms: 4,
+    bathrooms: 4,
+    area: "3,025",
+    floor: "High-rise towers",
+    furnishing: "Luxury Finish",
+    parking: "2 Covered",
+    facing: "North-East",
+    isLuxury: true,
+    nearbyPlaces: [
+      { name: 'Golf Course Road', distance: '10 mins' },
+      { name: 'Cyber City', distance: '15 mins' },
+      { name: 'IGI Airport', distance: '25 mins' },
+      { name: 'Top Schools', distance: 'Nearby' },
+      { name: 'Hospitals', distance: 'Nearby' },
+    ],
+    contacts: { sales: "+91 7838777017", email: "enquire@sobhalimited.com" },
+  },
+  {
     id: 9,
     title: "Tenino Lamborghini Residence",
     highlight: false,
@@ -310,12 +379,25 @@ const properties = [
   },
 ];
 
-const visiblePropertyTitles = new Set([
-  "Elan The Emperor",
-  "Sobha Crescent",
-  "Tenino Lamborghini Residence",
-]);
+const fs = require("fs");
+const path = require("path");
 
-module.exports = properties.filter((property) =>
-  visiblePropertyTitles.has(property.title),
-);
+const postingsPath = path.resolve(__dirname, "../postings");
+const posterProperties = [];
+try {
+  if (fs.existsSync(postingsPath)) {
+    const files = fs.readdirSync(postingsPath).filter((file) => file.endsWith(".js"));
+    for (const file of files) {
+      try {
+        const posting = require(path.join(postingsPath, file));
+        posterProperties.push(posting.default || posting);
+      } catch (error) {
+        console.warn(`Could not load posting file ${file}:`, error.message);
+      }
+    }
+  }
+} catch (error) {
+  console.warn("Could not load postings directory:", error.message);
+}
+
+module.exports = [...properties, ...posterProperties.filter(Boolean)];

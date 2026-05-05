@@ -7,25 +7,16 @@ const LuxuryCard = ({ property, onViewDetails, onCall }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const images = property.images || [property.image];
-  const isMobile = window.innerWidth < 768;
-
-  const cardWidth = isMobile ? '340px' : window.innerWidth < 1024 ? '380px' : '420px';
-  const cardHeight = isMobile ? '470px' : window.innerWidth < 1024 ? '520px' : '560px';
-  const imageHeight = isMobile ? '351px' : window.innerWidth < 1024 ? '386px' : '416px';
 
   return (
     <motion.div
       whileHover={{ scale: 1.03 }}
       transition={{ duration: 0.35 }}
-      className="flex-shrink-0"
-      style={{ width: cardWidth }}
+      className="w-full"
     >
-      <div
-        className="relative bg-white rounded-[26px] overflow-hidden shadow-lg"
-        style={{ height: cardHeight }}
-      >
+      <div className="relative bg-white rounded-[26px] overflow-hidden shadow-lg h-full">
         {/* Image Container */}
-        <div className="relative w-full" style={{ height: imageHeight }}>
+        <div className="relative w-full aspect-[4/3]">
           {/* Image with hover zoom */}
           <motion.img
             src={images[currentImageIndex]}

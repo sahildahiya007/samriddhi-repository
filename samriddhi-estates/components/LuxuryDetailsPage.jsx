@@ -7,10 +7,19 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
   const [currentFloorPlanIndex, setCurrentFloorPlanIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [showContactPopup, setShowContactPopup] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== 'undefined' ? window.innerWidth : 1024,
+  );
+
+  React.useEffect(() => {
+    const handler = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   const images = property.images || [property.image];
   const floorPlans = property.floorPlans || [];
-  const heroHeight = window.innerWidth < 768 ? 46 : 52;
+  const heroHeight = windowWidth < 768 ? 46 : 52;
 
   const highlights = property.highlights || [
     'Clubhouse',
@@ -45,7 +54,7 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
       className="fixed inset-0 bg-black/50 z-50 overflow-hidden"
     >
       {/* Hero Image Section */}
-      <div className="relative w-full bg-gray-900" style={{ height: window.innerWidth < 768 ? '46vh' : '60vh' }}>
+      <div className="relative w-full min-h-[46vh] md:min-h-[60vh] bg-gray-900">
         <img
           src={images[currentImageIndex]}
           alt={property.title}
@@ -149,108 +158,107 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
       >
         <div className="mx-auto mt-4 mb-6 h-1.5 w-16 rounded-full bg-gray-300" />
         <div className="px-[22px] pb-[120px]">
-          {/* Highlights Section */}
-          <div className="mb-8">
-          <h2 className="text-xl font-bold mb-4 text-gray-900">Highlights</h2>
-          <div className="flex flex-wrap gap-[10px]">
-            {highlights.map((highlight, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.05 }}
-                className="h-[42px] rounded-full bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 px-4 flex items-center text-orange-700 font-semibold text-[14px]"
-              >
-                {highlight}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Overview Section */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold mb-3 text-gray-900">Overview</h2>
-          {property.detailsSections ? (
-            <div className="space-y-6 text-gray-700 text-[15px] leading-relaxed">
-              {property.detailsSections.map((section, idx) => (
-                <div key={idx}>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{section.heading}</h3>
-                  <p className="whitespace-pre-wrap">{section.text}</p>
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.3fr_0.85fr]">
+            <div className="space-y-8">
+              {/* Highlights Section */}
+              <div className="mb-8">
+                <h2 className="text-xl font-bold mb-4 text-gray-900">Highlights</h2>
+                <div className="flex flex-wrap gap-[10px]">
+                  {highlights.map((highlight, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.05 }}
+                      className="h-[42px] rounded-full bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 px-4 flex items-center text-orange-700 font-semibold text-[14px]"
+                    >
+                      {highlight}
+                    </motion.div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-700 leading-relaxed text-[15px]">
-              {property.details ||
-                'Premium luxury apartment with world-class amenities, located in the heart of the city. Experience sophisticated living with premium finishes and exclusive facilities.'}
-            </p>
-          )}
-        </div>
-
-        {/* Property Details Grid */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold mb-4 text-gray-900">Property Details</h2>
-          <div
-            className="grid gap-0"
-            style={{
-              gridTemplateColumns: window.innerWidth < 768 ? '1fr' : window.innerWidth < 1024 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
-            }}
-          >
-            {[
-              { label: 'Type', value: property.type === 'sale' ? 'Apartment' : 'Flat' },
-              { label: 'Bedrooms', value: `${property.bedrooms || 3} BHK` },
-              { label: 'Bathrooms', value: `${property.bathrooms || 2}` },
-              { label: 'Built-up Area', value: `${property.area || '1,850'} sq ft` },
-              { label: 'Floor', value: property.floor || '8 of 20' },
-              { label: 'Furnishing', value: property.furnishing || 'Furnished' },
-              { label: 'Parking', value: property.parking || '1 Covered' },
-              { label: 'RERA Number', value: property.reraNumber || 'HRERA-1234-5678' },
-              { label: 'Facing', value: property.facing || 'East' },
-            ].map((detail, idx) => (
-              <div
-                key={idx}
-                className="py-[14px] border-b border-gray-200 px-2"
-                style={{
-                  borderRight: window.innerWidth < 1024 && idx % 2 === 0 ? '1px solid #e5e7eb' : 'none',
-                }}
-              >
-                <p className="text-gray-500 text-[13px] font-semibold mb-1">{detail.label}</p>
-                <p className="text-gray-900 font-bold text-[16px]">{detail.value}</p>
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Unit Configurations */}
-        {property.unitConfigs && property.unitConfigs.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-bold mb-4 text-gray-900">Unit Configurations</h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {property.unitConfigs.map((config, idx) => (
-                <div key={idx} className="rounded-2xl border border-gray-200 p-4 bg-gray-50">
-                  <p className="text-gray-500 text-sm font-semibold">{config.type}</p>
-                  <p className="text-gray-900 font-bold mt-2">{config.size}</p>
-                </div>
-              ))}
+              {/* Overview Section */}
+              <div className="mb-8">
+                <h2 className="text-xl font-bold mb-3 text-gray-900">Overview</h2>
+                {property.detailsSections ? (
+                  <div className="space-y-6 text-gray-700 text-[15px] leading-relaxed">
+                    {property.detailsSections.map((section, idx) => (
+                      <div key={idx}>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{section.heading}</h3>
+                        <p className="whitespace-pre-wrap">{section.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-700 leading-relaxed text-[15px]">
+                    {property.details ||
+                      'Premium luxury apartment with world-class amenities, located in the heart of the city. Experience sophisticated living with premium finishes and exclusive facilities.'}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        )}
 
-        {/* Nearby Section */}
-        <div className="mb-8">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {nearbyPlaces.map((place, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg text-center hover:shadow-md transition"
-              >
-                <p className="text-gray-700 font-semibold text-[14px]">{place.name}</p>
-                <p className="text-orange-600 font-bold text-[13px] mt-1">{place.distance}</p>
-              </motion.div>
-            ))}
+            <div className="space-y-8">
+              {/* Property Details Grid */}
+              <div className="mb-8">
+                <h2 className="text-xl font-bold mb-4 text-gray-900">Property Details</h2>
+                <div className="grid grid-cols-1 gap-0 md:grid-cols-2 lg:grid-cols-3">
+                  {[
+                    { label: 'Type', value: property.type === 'sale' ? 'Apartment' : 'Flat' },
+                    { label: 'Bedrooms', value: `${property.bedrooms || 3} BHK` },
+                    { label: 'Bathrooms', value: `${property.bathrooms || 2}` },
+                    { label: 'Built-up Area', value: `${property.area || '1,850'} sq ft` },
+                    { label: 'Floor', value: property.floor || '8 of 20' },
+                    { label: 'Furnishing', value: property.furnishing || 'Furnished' },
+                    { label: 'Parking', value: property.parking || '1 Covered' },
+                    { label: 'RERA Number', value: property.reraNumber || 'HRERA-1234-5678' },
+                    { label: 'Facing', value: property.facing || 'East' },
+                  ].map((detail, idx) => (
+                    <div
+                      key={idx}
+                      className="py-[14px] border-b border-gray-200 px-2 lg:border-r lg:last:border-r-0 lg:last:border-b-0"
+                    >
+                      <p className="text-gray-500 text-[13px] font-semibold mb-1">{detail.label}</p>
+                      <p className="text-gray-900 font-bold text-[16px]">{detail.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Unit Configurations */}
+              {property.unitConfigs && property.unitConfigs.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-bold mb-4 text-gray-900">Unit Configurations</h2>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {property.unitConfigs.map((config, idx) => (
+                      <div key={idx} className="rounded-2xl border border-gray-200 p-4 bg-gray-50">
+                        <p className="text-gray-500 text-sm font-semibold">{config.type}</p>
+                        <p className="text-gray-900 font-bold mt-2">{config.size}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Nearby Section */}
+              <div className="mb-8">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                  {nearbyPlaces.map((place, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg text-center hover:shadow-md transition"
+                    >
+                      <p className="text-gray-700 font-semibold text-[14px]">{place.name}</p>
+                      <p className="text-orange-600 font-bold text-[13px] mt-1">{place.distance}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>

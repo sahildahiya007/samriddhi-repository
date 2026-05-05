@@ -466,6 +466,9 @@ const defaultProperties = [
       leasing: "+91 8448660575",
     },
   },
+  ...Object.values(import.meta.glob("./postings/*.js", { eager: true }))
+    .map((module) => module.default || module)
+    .filter(Boolean),
 ];
 
 const normalize = (p) => ({

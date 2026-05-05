@@ -119,7 +119,7 @@ const LuxurySection = () => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="overflow-x-auto -mx-5 md:-mx-10 px-5 md:px-10"
+            className="px-5 md:px-10"
           >
             <LuxurySlider
               properties={luxuryProperties}
