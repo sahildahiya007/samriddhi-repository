@@ -1745,17 +1745,8 @@ function PropertyCarousel({ properties, onClick, wishlist, onToggleWishlist, loa
   );
 }
 
-const featuredSaleTitles = new Set([
-  "elan the emperor",
-  "sobha crescent",
-  "tenino lamborghini residence",
-  "tanino lamborghini residence",
-]);
-
 function PropertyGrid({ properties, onClick, wishlist, onToggleWishlist, loading }) {
-  const sale = properties.filter(
-    (p) => p.type === "sale" && featuredSaleTitles.has((p.title || "").toLowerCase()),
-  );
+  const sale = properties.filter((p) => p.type === "sale");
   const [ref, visible] = useReveal(0.12);
   return (
     <section
