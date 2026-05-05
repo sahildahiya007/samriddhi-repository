@@ -277,7 +277,7 @@ const properties = [
   {
     id: 9,
     title: "Tenino Lamborghini Residence",
-    highlight: true,
+    highlight: false,
     price: "Rs. 9.50 Cr",
     rating: 4.9,
     type: "sale",
@@ -310,4 +310,12 @@ const properties = [
   },
 ];
 
-module.exports = properties;
+const visiblePropertyTitles = new Set([
+  "Elan The Emperor",
+  "Sobha Crescent",
+  "Tenino Lamborghini Residence",
+]);
+
+module.exports = properties.filter((property) =>
+  visiblePropertyTitles.has(property.title),
+);

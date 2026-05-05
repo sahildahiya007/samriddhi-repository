@@ -14,6 +14,7 @@ const supabase = hasSupabase
 
 const STATE_TABLE = "app_state";
 const PROPERTIES_KEY = "properties";
+const STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || "property-images";
 
 async function loadProperties() {
   if (!hasSupabase) return null;
@@ -103,6 +104,32 @@ async function deleteProperty(id) {
   return deletedProperty;
 }
 
+async function uploadPropertyImage(file) {
+  if (!hasSupabase || !file) return null;
+
+  const extension = (file.originalname || "").split(".").pop() || "jpg";
+  const safeExtension = extension.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+  const filePath = `properties/${Date.now()}-${Math.round(
+    Math.random() * 1e9,
+  )}.${safeExtension}`;
+
+  const { error } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .upload(filePath, file.buffer, {
+      contentType: file.mimetype || "image/jpeg",
+      upsert: false,
+    });
+
+  if (error) throw error;
+
+  const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+  return {
+    url: data.publicUrl,
+    filename: filePath,
+    bucket: STORAGE_BUCKET,
+  };
+}
+
 function normalizeProperty(property) {
   const { amenitiesText, ...propertyFields } = property || {};
   const images =
@@ -145,4 +172,5 @@ module.exports = {
   createProperty,
   updateProperty,
   deleteProperty,
+  uploadPropertyImage,
 };

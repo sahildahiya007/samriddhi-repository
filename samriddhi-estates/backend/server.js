@@ -36,7 +36,7 @@ try {
   // Non-writable filesystem (serverless) — disk upload will use /tmp fallback
 }
 
-const storage = multer.diskStorage({
+const diskStorage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadsDir),
   filename: (_req, file, cb) => {
     const extension = path.extname(file.originalname || "").toLowerCase();
@@ -48,8 +48,17 @@ const storage = multer.diskStorage({
   },
 });
 
+// Import persistent storage
+const persistentStorage = require("./storage");
+const propertyStorage = require("./supabaseStorage");
+const persistentDb = persistentStorage.getDb();
+
+const uploadStorage = propertyStorage.hasSupabase
+  ? multer.memoryStorage()
+  : diskStorage;
+
 const upload = multer({
-  storage,
+  storage: uploadStorage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     if ((file.mimetype || "").startsWith("image/")) {
@@ -61,11 +70,6 @@ const upload = multer({
 });
 
 app.use("/uploads", express.static(uploadsDir));
-
-// Import persistent storage
-const persistentStorage = require("./storage");
-const propertyStorage = require("./supabaseStorage");
-const persistentDb = persistentStorage.getDb();
 
 // Use persistent storage instead of in-memory arrays
 let properties = persistentDb.properties;
@@ -477,19 +481,38 @@ app.post(
   "/api/uploads/property-image",
   authMiddleware,
   upload.single("image"),
-  (req, res) => {
+  async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "Image file is required" });
     }
 
-    const protocol =
-      req.headers["x-forwarded-proto"] || (isVercel ? "https" : req.protocol);
-    const imageUrl = `${protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-    return res.status(201).json({
-      message: "Image uploaded",
-      url: imageUrl,
-      filename: req.file.filename,
-    });
+    try {
+      if (propertyStorage.hasSupabase) {
+        const uploaded = await propertyStorage.uploadPropertyImage(req.file);
+        return res.status(201).json({
+          message: "Image uploaded",
+          ...uploaded,
+        });
+      }
+
+      if (isVercel) {
+        return res.status(503).json({
+          message:
+            "Image uploads need Supabase Storage on Vercel. Add SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and a public SUPABASE_STORAGE_BUCKET.",
+        });
+      }
+
+      const protocol =
+        req.headers["x-forwarded-proto"] || (isVercel ? "https" : req.protocol);
+      const imageUrl = `${protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+      return res.status(201).json({
+        message: "Image uploaded",
+        url: imageUrl,
+        filename: req.file.filename,
+      });
+    } catch (error) {
+      return sendStorageError(res, error);
+    }
   },
 );
 

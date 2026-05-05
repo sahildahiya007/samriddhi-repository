@@ -6,7 +6,6 @@ import {
   X,
   Menu,
   ChevronLeft,
-  ChevronRight,
   ArrowLeft,
   MapPin,
   MessageCircle,
@@ -1460,7 +1459,7 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
         ? "For Rent"
         : "Construction";
   const displayPrice = formatPriceDisplay(isRent ? rentPerMonth : property.price);
-  const highlighted = Boolean(property.highlight || property.isHighlight || property.isHighlighted);
+  const highlighted = false;
 
   if (highlighted && (isSale || isRent)) {
     return (
@@ -1721,102 +1720,39 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
 }
 
 function PropertyCarousel({ properties, onClick, wishlist, onToggleWishlist, loading }) {
-  const ref = useRef(null);
-  const [left, setLeft] = useState(false);
-  const [right, setRight] = useState(true);
-  const check = () => {
-    if (!ref.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = ref.current;
-    setLeft(scrollLeft > 0);
-    setRight(scrollLeft < scrollWidth - clientWidth - 10);
-  };
-  useEffect(() => {
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, [properties]);
-  const scroll = (direction) => {
-    if (!ref.current) return;
-    const firstCard = ref.current.firstElementChild;
-    const cardWidth = firstCard?.getBoundingClientRect().width || 320;
-    const gap = window.innerWidth < 768 ? 12 : 24;
-    const amount = cardWidth + gap;
-    ref.current.scrollBy({
-      left: direction === "left" ? -amount : amount,
-      behavior: "smooth",
-    });
-  };
   return (
-    <div className="relative px-0 md:px-14">
-      {left && (
-        <button
-          onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full hidden md:flex"
-          style={{
-            background: "linear-gradient(135deg, #fff 0%, #f6ead9 100%)",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.14)",
-            color: colors.accent,
-            border: `1px solid ${colors.creamDeep}`,
-          }}
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-      )}
+    <div className="relative">
       <div
-        ref={ref}
-        className="flex gap-3 md:gap-6 overflow-x-auto pl-3 pr-3 md:pl-0 md:pr-0"
-        style={{
-          scrollBehavior: "smooth",
-          scrollSnapType: "x mandatory",
-          scrollbarWidth: "none",
-        }}
-        onScroll={check}
+        className="grid gap-4 px-3 sm:grid-cols-2 md:gap-6 md:px-0"
       >
         {loading
-          ? [1,2,3].map((n) => (
-              <div key={n} className="flex-shrink-0" style={{ width: "clamp(210px,58vw,265px)", scrollSnapAlign: "start" }}>
+          ? [1,2,3,4].map((n) => (
+              <div key={n} className="min-w-0">
                 <SkeletonCard />
               </div>
             ))
-          : properties.map((p) => {
-              const highlighted = Boolean(p.highlight || p.isHighlight || p.isHighlighted);
-              return (
-              <div
-                key={p.id}
-                className="flex-shrink-0"
-                style={{
-                  width: highlighted
-                    ? "clamp(340px, 78vw, 420px)"
-                    : "clamp(210px,58vw,265px)",
-                  scrollSnapAlign: "start",
-                }}
-              >
+          : properties.map((p) => (
+              <div key={p.id} className="min-w-0">
                 <PropertyCard property={p} onClick={onClick} isWishlisted={wishlist?.includes(p.id)} onToggleWishlist={onToggleWishlist} />
               </div>
-              );
-            })
+            ))
         }
       </div>
-      {right && (
-        <button
-          onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full hidden md:flex"
-          style={{
-            background: "linear-gradient(135deg, #fff 0%, #f6ead9 100%)",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.14)",
-            color: colors.accent,
-            border: `1px solid ${colors.creamDeep}`,
-          }}
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
-      )}
     </div>
   );
 }
 
+const featuredSaleTitles = new Set([
+  "elan the emperor",
+  "sobha crescent",
+  "tenino lamborghini residence",
+  "tanino lamborghini residence",
+]);
+
 function PropertyGrid({ properties, onClick, wishlist, onToggleWishlist, loading }) {
-  const sale = properties.filter((p) => p.type === "sale");
+  const sale = properties.filter(
+    (p) => p.type === "sale" && featuredSaleTitles.has((p.title || "").toLowerCase()),
+  );
   const [ref, visible] = useReveal(0.12);
   return (
     <section
