@@ -5064,7 +5064,18 @@ function AppInner() {
 
   const reloadProperties = async () => {
     const propertyData = await requestApi("/api/properties");
-    setProperties(propertyData.map(normalize));
+    const backendProperties = Array.isArray(propertyData) ? propertyData : [];
+    const mergedProperties = [...defaultProperties, ...backendProperties].map(normalize);
+    const uniqueProperties = mergedProperties.reduce((acc, property) => {
+      const existingIndex = acc.findIndex((item) => item.id === property.id);
+      if (existingIndex === -1) {
+        acc.push(property);
+      } else {
+        acc[existingIndex] = { ...acc[existingIndex], ...property };
+      }
+      return acc;
+    }, []);
+    setProperties(uniqueProperties);
     return propertyData;
   };
 
@@ -5074,7 +5085,8 @@ function AppInner() {
         await reloadProperties();
         setError("");
       } catch {
-        // Backend unavailable — use default properties (no error shown)
+        // Backend unavailable or empty response — preserve default and local postings
+        setProperties(defaultProperties.map(normalize));
         setError("");
       } finally {
         setPropertiesLoading(false);
