@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm --prefix samriddhi-estates/samriddhi-estates ci && npm --prefix samriddhi-estates/samriddhi-estates run build",
+    "build": "npm --prefix samriddhi-estates/samriddhi-estates ci && npm --prefix samriddhi-estates/samriddhi-estates run build && node -e \"const fs=require('fs'); const path=require('path'); const src=path.resolve('samriddhi-estates/samriddhi-estates/dist'); const dest=path.resolve('dist'); fs.rmSync(dest,{recursive:true,force:true}); fs.mkdirSync(path.dirname(dest),{recursive:true}); fs.cpSync(src,dest,{recursive:true});\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
