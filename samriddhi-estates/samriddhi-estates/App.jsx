@@ -322,23 +322,206 @@ async function requestApi(path, options = {}) {
 }
 
 const JSON_PROPERTIES_PATH = "/data/properties.json";
+const SHEET_API_URL = (
+  import.meta.env.VITE_SHEET_API_URL ||
+  import.meta.env.NEXT_PUBLIC_SHEET_API_URL ||
+  ""
+).trim();
+const SHEET_CACHE_KEY = "samriddhi.sheet.properties.cache.v1";
+const SHEET_CACHE_TTL_MS = 10 * 60 * 1000;
+const FALLBACK_IMAGE_URL =
+  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80";
+
+function parseBoolean(value) {
+  if (typeof value === "boolean") return value;
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  return normalized === "true" || normalized === "yes" || normalized === "1";
+}
+
+function splitByPipeOrComma(value) {
+  return String(value || "")
+    .split(/[|,]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function normalizePhoneNumber(value, fallback) {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (!digits) return fallback;
+  return digits;
+}
+
+function toDirectImageUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  const driveMatch = raw.match(/\/file\/d\/([^/]+)/);
+  if (driveMatch?.[1]) {
+    return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+  }
+  return raw;
+}
+
+function mapSheetTypeToPropertyType(rawType) {
+  const value = String(rawType || "").trim().toLowerCase();
+  if (!value) return "sale";
+  if (value.includes("rent")) return "rent";
+  if (value.includes("construction")) return "construction";
+  return "sale";
+}
+
+function normalizeSheetRow(row, index) {
+  const coverImage = toDirectImageUrl(row.cover_image) || FALLBACK_IMAGE_URL;
+  const galleryImages = splitByPipeOrComma(row.gallery_images).map(toDirectImageUrl);
+  const allImages = [coverImage, ...galleryImages].filter(Boolean);
+  const amenities = splitByPipeOrComma(row.features);
+  const rawType = String(row.type || "sale").trim();
+  const callNumber = normalizePhoneNumber(row.call_number, "918398979897");
+  const whatsappNumber = normalizePhoneNumber(row.whatsapp_number, callNumber);
+  const bhkValue = Number(String(row.bhk || "").replace(/[^\d.]/g, ""));
+  const areaValue = String(row.area_sqft || "").trim();
+  const slug = String(row.slug || "")
+    .trim()
+    .toLowerCase();
+
+  return {
+    id: String(row.id || slug || `sheet-${index + 1}`),
+    slug: slug || `property-${index + 1}`,
+    title: row.title || "Untitled Property",
+    subtitle: row.location || "Gurgaon",
+    price: row.price || "",
+    location: row.location || "Gurgaon",
+    address: row.location || "Gurgaon",
+    type: mapSheetTypeToPropertyType(rawType),
+    listingType: rawType || "Sale",
+    image: coverImage,
+    images: allImages.length ? allImages : [FALLBACK_IMAGE_URL],
+    bedrooms: Number.isFinite(bhkValue) && bhkValue > 0 ? bhkValue : undefined,
+    area: areaValue || undefined,
+    status: row.status || "",
+    builder: row.builder || "",
+    details: row.description || "",
+    description: row.description || "",
+    amenities,
+    highlights: amenities,
+    isLuxury: /luxury/i.test(rawType),
+    contacts: {
+      sales: `+${callNumber}`,
+      rent: `+${callNumber}`,
+      leasing: `+${callNumber}`,
+    },
+    whatsappNumber,
+    callNumber,
+  };
+}
+
+function getCachedSheetProperties() {
+  try {
+    const cached = window.localStorage.getItem(SHEET_CACHE_KEY);
+    if (!cached) return null;
+    const parsed = JSON.parse(cached);
+    if (
+      !parsed ||
+      !Array.isArray(parsed.items) ||
+      typeof parsed.timestamp !== "number"
+    ) {
+      return null;
+    }
+    if (Date.now() - parsed.timestamp > SHEET_CACHE_TTL_MS) return null;
+    return parsed.items;
+  } catch {
+    return null;
+  }
+}
+
+function setCachedSheetProperties(items) {
+  try {
+    window.localStorage.setItem(
+      SHEET_CACHE_KEY,
+      JSON.stringify({
+        timestamp: Date.now(),
+        items,
+      }),
+    );
+  } catch {
+    // Ignore storage errors.
+  }
+}
+
+async function fetchWithTimeout(url, timeoutMs = 9000) {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
+async function fetchSheetProperties() {
+  if (!SHEET_API_URL) {
+    throw new Error("Google Sheet API URL is not configured");
+  }
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const response = await fetchWithTimeout(SHEET_API_URL, 9000);
+      if (!response.ok) {
+        throw new Error(`Sheet request failed (${response.status})`);
+      }
+      const rows = await response.json();
+      const activeRawRows = Array.isArray(rows)
+        ? rows.filter((row) => parseBoolean(row?.is_active))
+        : [];
+      const activeRows = activeRawRows.map((row, index) =>
+        normalizeSheetRow(row, index),
+      );
+      if (activeRows.length) {
+        return activeRows;
+      }
+      throw new Error("Sheet returned no active properties");
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError || new Error("Unable to load properties from sheet");
+}
 
 const normalize = (p) => ({
   ...p,
   type: p.type || "sale",
+  slug: p.slug || String(p.id || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, ""),
+  image: p.image || p.images?.[0] || FALLBACK_IMAGE_URL,
   price: formatPriceDisplay(p.price),
   highlight: Boolean(p.highlight || p.isHighlight || p.isHighlighted),
   location: p.location || "Gurgaon",
   address: p.address || p.location || "Gurgaon",
-  amenities: Array.isArray(p.amenities) ? p.amenities : [],
+  amenities: Array.isArray(p.amenities)
+    ? p.amenities
+    : splitByPipeOrComma(p.features),
   images:
     Array.isArray(p.images) && p.images.length
       ? p.images
-      : [p.image].filter(Boolean),
+      : [p.image || FALLBACK_IMAGE_URL].filter(Boolean),
+  bedrooms: p.bedrooms || Number(p.bhk) || null,
+  area: p.area || p.area_sqft || "",
+  status: p.status || "",
+  builder: p.builder || "",
+  details: p.details || p.description || "",
+  description: p.description || p.details || "",
+  whatsappNumber: normalizePhoneNumber(
+    p.whatsappNumber || p.whatsapp_number,
+    "918398979897",
+  ),
+  callNumber: normalizePhoneNumber(p.callNumber || p.call_number, "918398979897"),
   contacts: {
-    sales: p?.contacts?.sales || "+91 8398979897",
-    rent: p?.contacts?.rent || "+91 9968149329",
-    leasing: p?.contacts?.leasing || "+91 8448660575",
+    sales: p?.contacts?.sales || `+${normalizePhoneNumber(p.callNumber || p.call_number, "918398979897")}`,
+    rent: p?.contacts?.rent || `+${normalizePhoneNumber(p.callNumber || p.call_number, "918398979897")}`,
+    leasing: p?.contacts?.leasing || `+${normalizePhoneNumber(p.callNumber || p.call_number, "918398979897")}`,
   },
 });
 
@@ -1058,6 +1241,15 @@ function PropertyModal({ property, isOpen, onClose }) {
 
   const typeLabel = property.type === "sale" ? "For Sale" : property.type === "rent" ? "For Rent" : "Construction";
   const primaryContact = property.contacts?.sales || property.contacts?.rent || "+918398979897";
+  const callNumber =
+    property.callNumber ||
+    String(primaryContact || "")
+      .replace(/\D/g, "") ||
+    "918398979897";
+  const whatsappNumber = property.whatsappNumber || callNumber;
+  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+    `Hi, I am interested in ${property.title} on Samriddhi Estates.`,
+  )}`;
 
   return (
     <div
@@ -1199,6 +1391,35 @@ function PropertyModal({ property, isOpen, onClose }) {
             </p>
           )}
 
+          {(property.bedrooms || property.area || property.builder || property.status) && (
+            <div className="grid grid-cols-2 gap-1.5 mb-4">
+              {property.bedrooms ? (
+                <div className="px-3.5 py-2.5 rounded-2xl" style={{ backgroundColor: "#F2F2F7" }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: colors.body }}>BHK</p>
+                  <p className="text-xs font-bold" style={{ color: colors.dark }}>{property.bedrooms}</p>
+                </div>
+              ) : null}
+              {property.area ? (
+                <div className="px-3.5 py-2.5 rounded-2xl" style={{ backgroundColor: "#F2F2F7" }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: colors.body }}>Area (sq ft)</p>
+                  <p className="text-xs font-bold" style={{ color: colors.dark }}>{property.area}</p>
+                </div>
+              ) : null}
+              {property.builder ? (
+                <div className="px-3.5 py-2.5 rounded-2xl" style={{ backgroundColor: "#F2F2F7" }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: colors.body }}>Builder</p>
+                  <p className="text-xs font-bold" style={{ color: colors.dark }}>{property.builder}</p>
+                </div>
+              ) : null}
+              {property.status ? (
+                <div className="px-3.5 py-2.5 rounded-2xl" style={{ backgroundColor: "#F2F2F7" }}>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: colors.body }}>Status</p>
+                  <p className="text-xs font-bold" style={{ color: colors.dark }}>{property.status}</p>
+                </div>
+              ) : null}
+            </div>
+          )}
+
           {/* Amenities label */}
           {(property.amenities || []).length > 0 && (
             <>
@@ -1280,7 +1501,7 @@ function PropertyModal({ property, isOpen, onClose }) {
             </p>
           </div>
           <a
-            href={`tel:${primaryContact}`}
+            href={`tel:+${callNumber}`}
             className="flex items-center gap-2 px-6 py-3 rounded-2xl font-semibold text-sm"
             style={{
               background: "linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%)",
@@ -1291,6 +1512,21 @@ function PropertyModal({ property, isOpen, onClose }) {
           >
             <Phone style={{ width: 14, height: 14 }} />
             Enquire Now
+          </a>
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 px-4 py-3 rounded-2xl font-semibold text-sm"
+            style={{
+              background: "#25D366",
+              color: "#fff",
+              letterSpacing: "-0.01em",
+              boxShadow: "0 6px 20px rgba(37,211,102,0.35)",
+            }}
+          >
+            <MessageCircle style={{ width: 14, height: 14 }} />
+            WhatsApp
           </a>
         </div>
       </div>
@@ -1314,6 +1550,15 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
         ? "For Rent"
         : "Construction";
   const displayPrice = formatPriceDisplay(isRent ? rentPerMonth : property.price);
+  const callNumber =
+    property.callNumber ||
+    String(property.contacts?.sales || property.contacts?.rent || "")
+      .replace(/\D/g, "") ||
+    "918398979897";
+  const whatsappNumber = property.whatsappNumber || callNumber;
+  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+    `Hi, I am interested in ${property.title} on Samriddhi Estates.`,
+  )}`;
   const highlighted = false;
 
   if (highlighted && (isSale || isRent)) {
@@ -1540,7 +1785,7 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
         {/* Action buttons */}
         <div className="flex gap-1.5">
           <a
-            href="tel:+918398979897"
+            href={`tel:+${callNumber}`}
             className="flex-1 flex items-center justify-center gap-1 rounded-xl font-semibold"
             style={{
               background: "linear-gradient(135deg, #D97B50 0%, #C06030 100%)",
@@ -1554,7 +1799,10 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
             <Phone style={{ width: 11, height: 11 }} />
             Call
           </a>
-          <button
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noreferrer"
             className="flex-1 flex items-center justify-center gap-1 rounded-xl font-semibold"
             style={{
               backgroundColor: colors.cream,
@@ -1563,11 +1811,11 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
               height: 32,
               fontSize: 11,
             }}
-            onClick={(e) => { e.stopPropagation(); onClick(property); }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <Eye style={{ width: 11, height: 11 }} />
-            Details
-          </button>
+            <MessageCircle style={{ width: 11, height: 11 }} />
+            WhatsApp
+          </a>
         </div>
       </div>
     </div>
@@ -4913,6 +5161,26 @@ function AppInner() {
   };
 
   const reloadProperties = async () => {
+    const cachedSheet = getCachedSheetProperties();
+    if (cachedSheet?.length) {
+      setProperties(cachedSheet.map(normalize));
+      console.log("Loaded from Google Sheet cache");
+      return cachedSheet;
+    }
+
+    try {
+      const sheetProperties = await fetchSheetProperties();
+      if (!sheetProperties.length) {
+        throw new Error("Sheet returned no active properties");
+      }
+      setCachedSheetProperties(sheetProperties);
+      setProperties(sheetProperties.map(normalize));
+      console.log("Loaded from Google Sheet");
+      return sheetProperties;
+    } catch (sheetError) {
+      // Continue to Supabase/backend fallback.
+    }
+
     try {
       const propertyData = await requestApi("/api/properties");
       const backendProperties = Array.isArray(propertyData) ? propertyData : [];

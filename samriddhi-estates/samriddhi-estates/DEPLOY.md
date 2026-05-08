@@ -10,10 +10,12 @@
    ADMIN_PASSWORD = K@9971647910
    JWT_SECRET = samridhi_jwt_secret_2025
    VITE_API_BASE_URL = (leave empty)
+   VITE_SHEET_API_URL = https://opensheet.elk.sh/<SHEET_ID>/<TAB_NAME>
    SUPABASE_URL = https://your-project.supabase.co
    SUPABASE_SERVICE_ROLE_KEY = <your-service-role-key>
    ```
    If you want property changes to persist in production, you must set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
+   If you want Google Sheet-driven listings, set `VITE_SHEET_API_URL` and keep `is_active` as `TRUE` for live rows.
 3. **Deploy** ✓
 
 ### Admin Login
