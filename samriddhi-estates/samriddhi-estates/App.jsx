@@ -340,6 +340,24 @@ function parseBoolean(value) {
   return normalized === "true" || normalized === "yes" || normalized === "1";
 }
 
+function getRowField(row, ...aliases) {
+  if (!row || typeof row !== "object") return "";
+  const entries = Object.entries(row);
+  const normalizeKey = (key) =>
+    String(key || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[\s_-]+/g, "");
+  const normalizedMap = new Map(
+    entries.map(([key, value]) => [normalizeKey(key), value]),
+  );
+  for (const alias of aliases) {
+    const match = normalizedMap.get(normalizeKey(alias));
+    if (match !== undefined && match !== null) return match;
+  }
+  return "";
+}
+
 function splitByPipeOrComma(value) {
   return String(value || "")
     .split(/[|,]/)
@@ -372,37 +390,54 @@ function mapSheetTypeToPropertyType(rawType) {
 }
 
 function normalizeSheetRow(row, index) {
-  const coverImage = toDirectImageUrl(row.cover_image) || FALLBACK_IMAGE_URL;
-  const galleryImages = splitByPipeOrComma(row.gallery_images).map(toDirectImageUrl);
+  const coverImage =
+    toDirectImageUrl(getRowField(row, "cover_image", "coverimage", "image")) ||
+    FALLBACK_IMAGE_URL;
+  const galleryImages = splitByPipeOrComma(
+    getRowField(row, "gallery_images", "galleryimages", "gallery"),
+  ).map(toDirectImageUrl);
   const allImages = [coverImage, ...galleryImages].filter(Boolean);
-  const amenities = splitByPipeOrComma(row.features);
-  const rawType = String(row.type || "sale").trim();
-  const callNumber = normalizePhoneNumber(row.call_number, "918398979897");
-  const whatsappNumber = normalizePhoneNumber(row.whatsapp_number, callNumber);
-  const bhkValue = Number(String(row.bhk || "").replace(/[^\d.]/g, ""));
-  const areaValue = String(row.area_sqft || "").trim();
-  const slug = String(row.slug || "")
+  const amenities = splitByPipeOrComma(getRowField(row, "features", "amenities"));
+  const rawType = String(getRowField(row, "type") || "sale").trim();
+  const callNumber = normalizePhoneNumber(
+    getRowField(row, "call_number", "callnumber", "phone"),
+    "918398979897",
+  );
+  const whatsappNumber = normalizePhoneNumber(
+    getRowField(row, "whatsapp_number", "whatsappnumber"),
+    callNumber,
+  );
+  const bhkValue = Number(
+    String(getRowField(row, "bhk", "bedrooms", "bedroom") || "").replace(
+      /[^\d.]/g,
+      "",
+    ),
+  );
+  const areaValue = String(
+    getRowField(row, "area_sqft", "areasqft", "area"),
+  ).trim();
+  const slug = String(getRowField(row, "slug") || "")
     .trim()
     .toLowerCase();
 
   return {
-    id: String(row.id || slug || `sheet-${index + 1}`),
+    id: String(getRowField(row, "id") || slug || `sheet-${index + 1}`),
     slug: slug || `property-${index + 1}`,
-    title: row.title || "Untitled Property",
-    subtitle: row.location || "Gurgaon",
-    price: row.price || "",
-    location: row.location || "Gurgaon",
-    address: row.location || "Gurgaon",
+    title: getRowField(row, "title") || "Untitled Property",
+    subtitle: getRowField(row, "location") || "Gurgaon",
+    price: getRowField(row, "price") || "",
+    location: getRowField(row, "location") || "Gurgaon",
+    address: getRowField(row, "location", "address") || "Gurgaon",
     type: mapSheetTypeToPropertyType(rawType),
     listingType: rawType || "Sale",
     image: coverImage,
     images: allImages.length ? allImages : [FALLBACK_IMAGE_URL],
     bedrooms: Number.isFinite(bhkValue) && bhkValue > 0 ? bhkValue : undefined,
     area: areaValue || undefined,
-    status: row.status || "",
-    builder: row.builder || "",
-    details: row.description || "",
-    description: row.description || "",
+    status: getRowField(row, "status") || "",
+    builder: getRowField(row, "builder") || "",
+    details: getRowField(row, "description", "details") || "",
+    description: getRowField(row, "description", "details") || "",
     amenities,
     highlights: amenities,
     isLuxury: /luxury/i.test(rawType),
@@ -472,7 +507,9 @@ async function fetchSheetProperties() {
       }
       const rows = await response.json();
       const activeRawRows = Array.isArray(rows)
-        ? rows.filter((row) => parseBoolean(row?.is_active))
+        ? rows.filter((row) =>
+            parseBoolean(getRowField(row, "is_active", "isactive", "active")),
+          )
         : [];
       const activeRows = activeRawRows.map((row, index) =>
         normalizeSheetRow(row, index),
@@ -480,6 +517,9 @@ async function fetchSheetProperties() {
       if (activeRows.length) {
         return activeRows;
       }
+      console.warn(
+        "Google Sheet returned rows but none active. Check is_active column values are TRUE.",
+      );
       throw new Error("Sheet returned no active properties");
     } catch (error) {
       lastError = error;
