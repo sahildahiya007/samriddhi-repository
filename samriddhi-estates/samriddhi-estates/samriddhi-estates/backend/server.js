@@ -36,7 +36,7 @@ try {
   // Non-writable filesystem (serverless) — disk upload will use /tmp fallback
 }
 
-const diskStorage = multer.diskStorage({
+const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadsDir),
   filename: (_req, file, cb) => {
     const extension = path.extname(file.originalname || "").toLowerCase();
@@ -48,17 +48,8 @@ const diskStorage = multer.diskStorage({
   },
 });
 
-// Import persistent storage
-const persistentStorage = require("./storage");
-const propertyStorage = require("./supabaseStorage");
-const persistentDb = persistentStorage.getDb();
-
-const uploadStorage = propertyStorage.hasSupabase
-  ? multer.memoryStorage()
-  : diskStorage;
-
 const upload = multer({
-  storage: uploadStorage,
+  storage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     if ((file.mimetype || "").startsWith("image/")) {
@@ -70,6 +61,11 @@ const upload = multer({
 });
 
 app.use("/uploads", express.static(uploadsDir));
+
+// Import persistent storage
+const persistentStorage = require("./storage");
+const propertyStorage = require("./supabaseStorage");
+const persistentDb = persistentStorage.getDb();
 
 // Use persistent storage instead of in-memory arrays
 let properties = persistentDb.properties;
@@ -164,12 +160,7 @@ function requirePrimeAdmin(req, res, next) {
 // Load inquiries from persistent storage
 let inquiries = persistentDb.inquiries || require("./data/inquiries");
 
-const isServerless = Boolean(
-  process.env.VERCEL ||
-  process.env.NOW_REGION ||
-  process.env.NETLIFY ||
-  process.env.NETLIFY_DEV,
-);
+const isVercel = Boolean(process.env.VERCEL || process.env.NOW_REGION);
 
 async function loadCurrentProperties() {
   if (propertyStorage.hasSupabase) {
@@ -179,10 +170,10 @@ async function loadCurrentProperties() {
 }
 
 function requireDurablePropertyStorage(res) {
-  if (!propertyStorage.hasSupabase && isServerless) {
+  if (!propertyStorage.hasSupabase && isVercel) {
     res.status(503).json({
       message:
-        "Property changes need Supabase storage in serverless deployment. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        "Property changes need Supabase storage on Vercel. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
     });
     return false;
   }
@@ -481,38 +472,19 @@ app.post(
   "/api/uploads/property-image",
   authMiddleware,
   upload.single("image"),
-  async (req, res) => {
+  (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "Image file is required" });
     }
 
-    try {
-      if (propertyStorage.hasSupabase) {
-        const uploaded = await propertyStorage.uploadPropertyImage(req.file);
-        return res.status(201).json({
-          message: "Image uploaded",
-          ...uploaded,
-        });
-      }
-
-      if (isVercel) {
-        return res.status(503).json({
-          message:
-            "Image uploads need Supabase Storage on Vercel. Add SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and a public SUPABASE_STORAGE_BUCKET.",
-        });
-      }
-
-      const protocol =
-        req.headers["x-forwarded-proto"] || (isVercel ? "https" : req.protocol);
-      const imageUrl = `${protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-      return res.status(201).json({
-        message: "Image uploaded",
-        url: imageUrl,
-        filename: req.file.filename,
-      });
-    } catch (error) {
-      return sendStorageError(res, error);
-    }
+    const protocol =
+      req.headers["x-forwarded-proto"] || (isVercel ? "https" : req.protocol);
+    const imageUrl = `${protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+    return res.status(201).json({
+      message: "Image uploaded",
+      url: imageUrl,
+      filename: req.file.filename,
+    });
   },
 );
 

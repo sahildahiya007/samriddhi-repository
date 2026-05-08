@@ -10,10 +10,7 @@
    ADMIN_PASSWORD = K@9971647910
    JWT_SECRET = samridhi_jwt_secret_2025
    VITE_API_BASE_URL = (leave empty)
-   SUPABASE_URL = https://your-project.supabase.co
-   SUPABASE_SERVICE_ROLE_KEY = <your-service-role-key>
    ```
-   If you want property changes to persist in production, you must set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
 3. **Deploy** ✓
 
 ### Admin Login

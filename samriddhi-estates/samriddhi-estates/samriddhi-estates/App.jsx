@@ -6,6 +6,7 @@ import {
   X,
   Menu,
   ChevronLeft,
+  ChevronRight,
   ArrowLeft,
   MapPin,
   MessageCircle,
@@ -209,15 +210,6 @@ const colors = {
   body: "#5C6058",
 };
 
-function formatPriceDisplay(price) {
-  const value = String(price || "").trim();
-  if (!value) return "";
-  const cleaned = value
-    .replace(/â‚¹/g, "₹")
-    .replace(/\bRs\.?\s*/gi, "₹");
-  return /^[0-9]/.test(cleaned) ? `₹${cleaned}` : cleaned;
-}
-
 const bg = {
   hero: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1800&q=80",
   sale: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80",
@@ -321,13 +313,156 @@ async function requestApi(path, options = {}) {
   return response.json();
 }
 
-const JSON_PROPERTIES_PATH = "/data/properties.json";
+const defaultProperties = [
+  {
+    id: 1,
+    title: "Skyline 3BHK Residence",
+    price: "Rs 1.95 Cr",
+    rating: 4.9,
+    type: "sale",
+    image:
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600607688066-890987f18a86?auto=format&fit=crop&w=1200&q=80",
+    ],
+    location: "Golf Course Extension Road, Gurgaon",
+    address: "Tower 7, Sector 65, Gurgaon, Haryana",
+    amenities: ["Clubhouse", "Infinity Pool", "Gym", "3-Tier Security"],
+    details: "Luxury high-floor home with skyline views and premium finishes.",
+    contacts: {
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
+    },
+  },
+  {
+    id: 2,
+    title: "Urban Luxe 2BHK",
+    price: "Rs 1.25 Cr",
+    rating: 4.7,
+    type: "sale",
+    image:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1617098474202-0d0d7f60d8fd?auto=format&fit=crop&w=1200&q=80",
+    ],
+    location: "MG Road, Gurgaon",
+    address: "Skyline Heights, Sector 28, Gurgaon, Haryana",
+    amenities: ["EV Parking", "Co-working Lounge", "Kids Play Deck"],
+    details: "Modern 2BHK designed for urban families and professionals.",
+    contacts: {
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
+    },
+  },
+  {
+    id: 3,
+    title: "Executive 3BHK Lease",
+    price: "Rs 1.6 Lakh/month",
+    rating: 4.8,
+    type: "rent",
+    image:
+      "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600585152915-d208bec867a1?auto=format&fit=crop&w=1200&q=80",
+    ],
+    location: "Cyber Hub, Gurgaon",
+    address: "Sector 43, Gurgaon, Haryana",
+    amenities: ["Furnished", "Housekeeping", "Power Backup", "Metro Access"],
+    details: "Premium lease apartment for executive living.",
+    contacts: {
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
+    },
+  },
+  {
+    id: 4,
+    title: "Designer 2BHK Rental",
+    price: "Rs 78,000/month",
+    rating: 4.6,
+    type: "rent",
+    image:
+      "https://images.unsplash.com/photo-1616594039964-3d0dd0b4f184?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1616594039964-3d0dd0b4f184?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1615874959474-d609969a20ed?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80",
+    ],
+    location: "Sushant Lok, Gurgaon",
+    address: "Sector 57, Gurgaon, Haryana",
+    amenities: ["Pool", "Yoga Lawn", "Basement Parking"],
+    details: "Sunlit apartment with urban Gurgaon aesthetics.",
+    contacts: {
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
+    },
+  },
+  {
+    id: 5,
+    title: "Premium 4BHK Independent Floor",
+    price: "Rs 1.10 Lakh/month",
+    rating: 4.7,
+    type: "rent",
+    image:
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600585152915-d208bec867a1?auto=format&fit=crop&w=1200&q=80",
+    ],
+    location: "South City 1, Gurgaon",
+    address: "Block E, South City 1, Sector 41, Gurgaon, Haryana",
+    amenities: ["Modular Kitchen", "Terrace Garden", "Covered Parking", "24x7 Security"],
+    details: "Spacious independent floor with private terrace, vastu-compliant design and premium Italian marble throughout.",
+    contacts: {
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
+    },
+  },
+  {
+    id: 6,
+    title: "Custom Villa Construction Package",
+    price: "Starting at Rs 3,000/sq ft",
+    rating: 4.8,
+    type: "construction",
+    image:
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
+    ],
+    location: "New Gurgaon & Golf Course Extension",
+    address: "Custom build support across Gurgaon",
+    amenities: [
+      "Turnkey Execution",
+      "Architect Support",
+      "BOQ Planning",
+      "Premium Finishes",
+    ],
+    details:
+      "End-to-end villa and custom home construction packages with planning, approvals, civil work and finishing support.",
+    contacts: {
+      sales: "+91 8398979897",
+      rent: "+91 9968149329",
+      leasing: "+91 8448660575",
+    },
+  },
+];
 
 const normalize = (p) => ({
   ...p,
   type: p.type || "sale",
-  price: formatPriceDisplay(p.price),
-  highlight: Boolean(p.highlight || p.isHighlight || p.isHighlighted),
   location: p.location || "Gurgaon",
   address: p.address || p.location || "Gurgaon",
   amenities: Array.isArray(p.amenities) ? p.amenities : [],
@@ -1276,7 +1411,7 @@ function PropertyModal({ property, isOpen, onClose }) {
               {property.type === "rent" ? "Per Month" : "Price"}
             </p>
             <p className="price-text font-bold text-lg leading-tight" style={{ color: colors.dark }}>
-              {formatPriceDisplay(property.price)}
+              {property.price}
             </p>
           </div>
           <a
@@ -1313,129 +1448,6 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
       : property.type === "rent"
         ? "For Rent"
         : "Construction";
-  const displayPrice = formatPriceDisplay(isRent ? rentPerMonth : property.price);
-  const highlighted = false;
-
-  if (highlighted && (isSale || isRent)) {
-    return (
-      <div
-        className="relative overflow-hidden cursor-pointer group bg-white"
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        onClick={() => onClick(property)}
-        style={{
-          height: "clamp(470px, 74vw, 560px)",
-          borderRadius: 26,
-          boxShadow: hover
-            ? "0 24px 56px rgba(0,0,0,0.20)"
-            : "0 20px 45px rgba(0,0,0,0.14)",
-          transform: hover ? "translateY(-4px) scale(1.03)" : "translateY(0) scale(1)",
-          transition: "transform 0.35s ease, box-shadow 0.35s ease",
-        }}
-      >
-        <div className="relative overflow-hidden" style={{ height: "74%" }}>
-          <img
-            src={property.image}
-            alt={property.title}
-            className="w-full h-full object-cover"
-            style={{
-              borderRadius: "26px 26px 0 0",
-              transition: "transform 0.35s ease",
-              transform: hover ? "scale(1.08)" : "scale(1)",
-            }}
-          />
-          <div
-            className="absolute inset-x-0 bottom-0 pointer-events-none"
-            style={{
-              height: 150,
-              background:
-                "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.34) 58%, transparent 100%)",
-            }}
-          />
-          <span
-            className="absolute top-[18px] left-[18px] h-[34px] px-4 rounded-full text-[13px] font-bold uppercase tracking-wide flex items-center"
-            style={{
-              background: "linear-gradient(135deg, #D87A43 0%, #B86635 100%)",
-              color: "#fff",
-              boxShadow: "0 10px 20px rgba(216,122,67,0.22)",
-            }}
-          >
-            {typeLabel}
-          </span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleWishlist && onToggleWishlist(property.id);
-            }}
-            className="absolute top-[18px] right-[18px] w-[46px] h-[46px] rounded-full flex items-center justify-center transition-transform hover:scale-105"
-            style={{
-              background: "rgba(255,255,255,0.92)",
-              boxShadow: "0 10px 22px rgba(0,0,0,0.16)",
-            }}
-          >
-            <Heart
-              style={{
-                width: 22,
-                height: 22,
-                color: isWishlisted ? colors.accent : colors.dark,
-                fill: isWishlisted ? colors.accent : "none",
-              }}
-            />
-          </button>
-          <div className="absolute left-[22px] right-[22px] bottom-[22px] text-white">
-            <h2
-              className="font-bold leading-tight mb-2"
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(1.85rem, 7.5vw, 2.5rem)",
-                textShadow: "0 3px 12px rgba(0,0,0,0.42)",
-              }}
-            >
-              {property.title}
-            </h2>
-            <p className="flex items-center gap-1.5 mb-1.5 text-[15px]">
-              <MapPin style={{ width: 15, height: 15, flexShrink: 0 }} />
-              <span className="truncate">{property.location}</span>
-            </p>
-            <p className="price-text text-[24px] font-bold leading-tight">
-              {displayPrice}
-            </p>
-          </div>
-        </div>
-        <div className="p-[18px] flex gap-[14px]" style={{ height: "26%" }}>
-          <a
-            href="tel:+918398979897"
-            className="flex-1 h-[56px] rounded-[16px] font-semibold text-[20px] flex items-center justify-center gap-2"
-            style={{
-              background: "linear-gradient(135deg, #D87A43 0%, #C36834 100%)",
-              color: "#fff",
-              boxShadow: "0 10px 20px rgba(216,122,67,0.22)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Phone style={{ width: 20, height: 20 }} />
-            Call
-          </a>
-          <button
-            className="flex-1 h-[56px] rounded-[16px] font-semibold text-[20px] flex items-center justify-center gap-2"
-            style={{
-              backgroundColor: "#F8F4EE",
-              color: colors.dark,
-              border: "1px solid rgba(201,162,39,0.18)",
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick(property);
-            }}
-          >
-            <Eye style={{ width: 21, height: 21 }} />
-            Details
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       className="relative overflow-hidden cursor-pointer group rounded-2xl bg-white"
@@ -1479,7 +1491,7 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
           className="price-text absolute bottom-2 left-2.5 text-[11px] font-bold"
           style={{ color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}
         >
-          {displayPrice}
+          {isRent ? rentPerMonth : property.price}
         </span>
         {/* Rating on image */}
         {property.rating && (
@@ -1575,24 +1587,84 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
 }
 
 function PropertyCarousel({ properties, onClick, wishlist, onToggleWishlist, loading }) {
+  const ref = useRef(null);
+  const [left, setLeft] = useState(false);
+  const [right, setRight] = useState(true);
+  const check = () => {
+    if (!ref.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = ref.current;
+    setLeft(scrollLeft > 0);
+    setRight(scrollLeft < scrollWidth - clientWidth - 10);
+  };
+  useEffect(() => {
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [properties]);
+  const scroll = (direction) => {
+    if (!ref.current) return;
+    const firstCard = ref.current.firstElementChild;
+    const cardWidth = firstCard?.getBoundingClientRect().width || 320;
+    const gap = window.innerWidth < 768 ? 12 : 24;
+    const amount = cardWidth + gap;
+    ref.current.scrollBy({
+      left: direction === "left" ? -amount : amount,
+      behavior: "smooth",
+    });
+  };
   return (
-    <div className="relative">
+    <div className="relative px-0 md:px-14">
+      {left && (
+        <button
+          onClick={() => scroll("left")}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full hidden md:flex"
+          style={{
+            background: "linear-gradient(135deg, #fff 0%, #f6ead9 100%)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.14)",
+            color: colors.accent,
+            border: `1px solid ${colors.creamDeep}`,
+          }}
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      )}
       <div
-        className="grid gap-4 px-3 sm:grid-cols-2 md:gap-6 md:px-0"
+        ref={ref}
+        className="flex gap-3 md:gap-6 overflow-x-auto pl-3 pr-3 md:pl-0 md:pr-0"
+        style={{
+          scrollBehavior: "smooth",
+          scrollSnapType: "x mandatory",
+          scrollbarWidth: "none",
+        }}
+        onScroll={check}
       >
         {loading
-          ? [1,2,3,4].map((n) => (
-              <div key={n} className="min-w-0">
+          ? [1,2,3].map((n) => (
+              <div key={n} className="flex-shrink-0" style={{ width: "clamp(210px,58vw,265px)", scrollSnapAlign: "start" }}>
                 <SkeletonCard />
               </div>
             ))
           : properties.map((p) => (
-              <div key={p.id} className="min-w-0">
+              <div key={p.id} className="flex-shrink-0" style={{ width: "clamp(210px,58vw,265px)", scrollSnapAlign: "start" }}>
                 <PropertyCard property={p} onClick={onClick} isWishlisted={wishlist?.includes(p.id)} onToggleWishlist={onToggleWishlist} />
               </div>
             ))
         }
       </div>
+      {right && (
+        <button
+          onClick={() => scroll("right")}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-10 rounded-full hidden md:flex"
+          style={{
+            background: "linear-gradient(135deg, #fff 0%, #f6ead9 100%)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.14)",
+            color: colors.accent,
+            border: `1px solid ${colors.creamDeep}`,
+          }}
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      )}
     </div>
   );
 }
@@ -2367,7 +2439,6 @@ function AdminPanel({
     title: "",
     price: "",
     type: "sale",
-    highlight: false,
     location: "",
     address: "",
     amenitiesText: "",
@@ -2444,8 +2515,8 @@ function AdminPanel({
   );
   const pricePlaceholder =
     f.type === "sale"
-      ? "Total Price (e.g. ₹1.95 Cr)"
-      : "Rent per month (e.g. ₹78,000/month)";
+      ? "Total Price (e.g. Rs 1.95 Cr)"
+      : "Rent per month (e.g. Rs 78,000/month)";
 
   const totalSale = properties.filter((p) => p.type === "sale").length;
   const totalRent = properties.filter((p) => p.type === "rent").length;
@@ -2463,8 +2534,6 @@ function AdminPanel({
     const images = f.images.filter((x) => x.trim() !== "");
     const payload = normalize({
       ...f,
-      price: formatPriceDisplay(f.price),
-      highlight: Boolean(f.highlight),
       amenities,
       images,
       image: images[0],
@@ -2784,52 +2853,6 @@ function AdminPanel({
                           Construction
                         </option>
                       </select>
-                      {f.type !== "construction" && (
-                        <div
-                          className="rounded-xl p-3"
-                          style={{
-                            backgroundColor: "rgba(255,255,255,0.04)",
-                            border: "1px solid rgba(232,149,110,0.12)",
-                          }}
-                        >
-                          <p
-                            className="text-xs font-semibold uppercase tracking-wider mb-2"
-                            style={{ color: "rgba(245,230,211,0.55)" }}
-                          >
-                            Card Style
-                          </p>
-                          <div className="flex gap-3">
-                            {[
-                              { value: false, label: "Normal" },
-                              { value: true, label: "Highlight" },
-                            ].map((option) => (
-                              <label
-                                key={option.label}
-                                className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer"
-                                style={{
-                                  color: option.value === Boolean(f.highlight) ? "#fff" : "rgba(245,230,211,0.62)",
-                                  backgroundColor:
-                                    option.value === Boolean(f.highlight)
-                                      ? "rgba(232,149,110,0.18)"
-                                      : "rgba(255,255,255,0.04)",
-                                  border:
-                                    option.value === Boolean(f.highlight)
-                                      ? "1px solid rgba(232,149,110,0.28)"
-                                      : "1px solid rgba(255,255,255,0.06)",
-                                }}
-                              >
-                                <input
-                                  type="radio"
-                                  name="highlight"
-                                  checked={Boolean(f.highlight) === option.value}
-                                  onChange={() => setF({ ...f, highlight: option.value })}
-                                />
-                                {option.label}
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-                      )}
                       <div className="grid grid-cols-2 gap-3">
                         <input
                           value={f.price}
@@ -3021,21 +3044,8 @@ function AdminPanel({
                             className="price-text text-xs font-medium"
                             style={{ color: colors.accent }}
                           >
-                            {formatPriceDisplay(p.price)}
+                            {p.price}
                           </span>
-                          {Boolean(p.highlight || p.isHighlight || p.isHighlighted) && (
-                            <span
-                              className="text-xs px-2 py-0.5 rounded-full uppercase"
-                              style={{
-                                backgroundColor: "rgba(201,162,39,0.16)",
-                                color: "#FACC15",
-                                fontSize: 10,
-                                fontWeight: 700,
-                              }}
-                            >
-                              Highlight
-                            </span>
-                          )}
                           <span
                             className="text-xs px-2 py-0.5 rounded-full uppercase"
                             style={{
@@ -4640,7 +4650,7 @@ function WishlistPane({
                       className="price-text text-xs mt-0.5"
                       style={{ color: colors.accent }}
                     >
-                      {formatPriceDisplay(p.price)}
+                      {p.price}
                     </p>
                     <p
                       className="text-xs truncate"
@@ -4700,7 +4710,9 @@ class ErrorBoundary extends React.Component {
 }
 
 function AppInner() {
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState(
+    defaultProperties.map(normalize),
+  );
   const [inquiries, setInquiries] = useState([]);
   const [adminToken, setAdminToken] = useState(
     () => window.sessionStorage.getItem("adminToken") || "",
@@ -4913,29 +4925,9 @@ function AppInner() {
   };
 
   const reloadProperties = async () => {
-    try {
-      const propertyData = await requestApi("/api/properties");
-      const backendProperties = Array.isArray(propertyData) ? propertyData : [];
-      if (!backendProperties.length) {
-        throw new Error("Empty DB");
-      }
-      setProperties(backendProperties.map(normalize));
-      console.log("Loaded from Supabase");
-      return backendProperties;
-    } catch (primaryError) {
-      const fallbackResponse = await fetch(JSON_PROPERTIES_PATH);
-      if (!fallbackResponse.ok) {
-        throw primaryError;
-      }
-      const fallbackData = await fallbackResponse.json();
-      const fallbackProperties = Array.isArray(fallbackData) ? fallbackData : [];
-      if (!fallbackProperties.length) {
-        throw primaryError;
-      }
-      setProperties(fallbackProperties.map(normalize));
-      console.log("Loaded from JSON fallback");
-      return fallbackProperties;
-    }
+    const propertyData = await requestApi("/api/properties");
+    setProperties(propertyData.map(normalize));
+    return propertyData;
   };
 
   useEffect(() => {
@@ -4944,7 +4936,7 @@ function AppInner() {
         await reloadProperties();
         setError("");
       } catch {
-        setProperties([]);
+        // Backend unavailable — use default properties (no error shown)
         setError("");
       } finally {
         setPropertiesLoading(false);
