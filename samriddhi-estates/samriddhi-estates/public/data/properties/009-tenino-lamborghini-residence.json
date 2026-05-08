@@ -1,0 +1,58 @@
+{
+  "id": 9,
+  "title": "Tenino Lamborghini Residence",
+  "highlight": false,
+  "price": "Rs. 9.50 Cr",
+  "rating": 4.9,
+  "type": "sale",
+  "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+  "images": [
+    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1560448233-89f5fa2934c7?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80"
+  ],
+  "location": "Cyber City, Gurgaon",
+  "address": "Tenino Lamborghini Signature Tower, Cyber City, Gurgaon, Haryana",
+  "amenities": [
+    "Private Spa",
+    "Valet Parking",
+    "Concierge",
+    "Panoramic Views"
+  ],
+  "details": "Luxury signature residence inspired by the performance and craftsmanship of Lamborghini, set within a premium Gurugram tower.",
+  "bedrooms": 4,
+  "bathrooms": 5,
+  "area": "4,200",
+  "floor": "12 of 24",
+  "furnishing": "Ultra Luxury",
+  "parking": "3 Covered",
+  "facing": "West",
+  "isLuxury": true,
+  "nearbyPlaces": [
+    {
+      "name": "Metro Station",
+      "distance": "0.7 km"
+    },
+    {
+      "name": "Fortis Hospital",
+      "distance": "1.8 km"
+    },
+    {
+      "name": "Cyber Hub",
+      "distance": "2.4 km"
+    },
+    {
+      "name": "NH-48",
+      "distance": "2.1 km"
+    },
+    {
+      "name": "Golf Course Road",
+      "distance": "4.0 km"
+    }
+  ],
+  "contacts": {
+    "sales": "+91 8398979897",
+    "rent": "+91 9968149329",
+    "leasing": "+91 8448660575"
+  }
+}
