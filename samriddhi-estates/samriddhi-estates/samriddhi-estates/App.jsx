@@ -89,78 +89,7 @@ function validatePassword(password, isSignup = false) {
       throw new Error("Password must include a special character");
   }
 }
-function validateName(name) {
-  if (!name || name.trim().length < 2)
-    throw new Error("Name must be at least 2 characters");
-  if (name.length > 100) throw new Error("Name is too long");
-}
-function sanitizeInput(str) {
-  return str.replace(/[<>"'&]/g, "");
-}
 
-/* ── Admin users (passwords stored as SHA-256 hashes — never plain text) ── */
-const ADMIN_USERS = [
-  {
-    id: 1,
-    name: "Lukesh",
-    username: "lukeshprime",
-    passwordHash:
-      "31ceaeb92c5325e3eb867c84ef9f1c0684fe2f307ad8a1908828a4e98da02a61",
-    email: "samriddhiproperties9@gmail.com",
-    phone: "+91 8398979897",
-    role: "prime-admin",
-  },
-  {
-    id: 2,
-    name: "lukeshdmin",
-    username: "lukeshdmin",
-    passwordHash:
-      "c6a804d1136e556062f2a2f48beb0fb74e168c8b18a80813965030cb4c82be7a",
-    email: "jaide@example.com",
-    phone: "+91 7678478209",
-    role: "sub-admin",
-  },
-];
-
-/* ── 3D Tilt hook ── */
-function use3DTilt() {
-  const ref = useRef(null);
-  const onMove = (e) => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width  - 0.5) * 10;
-    const y = ((e.clientY - rect.top)  / rect.height - 0.5) * -10;
-    el.style.transform = `perspective(600px) rotateX(${y}deg) rotateY(${x}deg) translateZ(4px)`;
-  };
-  const onLeave = () => {
-    if (ref.current) ref.current.style.transform = "perspective(600px) rotateX(0deg) rotateY(0deg) translateZ(0)";
-  };
-  return { ref, onMove, onLeave };
-}
-
-/* ── Skeleton card ── */
-function SkeletonCard() {
-  return (
-    <div className="rounded-2xl bg-white overflow-hidden" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}>
-      <div className="skeleton" style={{ height: 175 }} />
-      <div className="px-3 pt-2.5 pb-3 space-y-2">
-        <div className="skeleton h-3.5 w-3/4 rounded" />
-        <div className="skeleton h-2.5 w-1/2 rounded" />
-        <div className="flex gap-1.5 mt-1">
-          <div className="skeleton h-2 w-12 rounded-full" />
-          <div className="skeleton h-2 w-10 rounded-full" />
-        </div>
-        <div className="flex gap-1.5 pt-1">
-          <div className="skeleton flex-1 h-8 rounded-xl" />
-          <div className="skeleton flex-1 h-8 rounded-xl" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ── Premium scroll-reveal hook ── */
 function useReveal(threshold = 0.15) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -168,8 +97,8 @@ function useReveal(threshold = 0.15) {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
     const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
+      ([entry]) => {
+        if (entry.isIntersecting) {
           setVisible(true);
           obs.disconnect();
         }
@@ -182,7 +111,6 @@ function useReveal(threshold = 0.15) {
   return [ref, visible];
 }
 
-/* ── Animated counter hook ── */
 function useCounter(end, duration = 2000, start = false) {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -200,6 +128,89 @@ function useCounter(end, duration = 2000, start = false) {
   return val;
 }
 
+function SkeletonCard() {
+  return (
+    <div
+      className="rounded-2xl bg-white overflow-hidden"
+      style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}
+    >
+      <div className="skeleton" style={{ height: 175 }} />
+      <div className="px-3 pt-2.5 pb-3 space-y-2">
+        <div className="skeleton h-3.5 w-3/4 rounded" />
+        <div className="skeleton h-2.5 w-1/2 rounded" />
+        <div className="flex gap-1.5 mt-1">
+          <div className="skeleton h-2 w-12 rounded-full" />
+          <div className="skeleton h-2 w-10 rounded-full" />
+        </div>
+        <div className="flex gap-1.5 pt-1">
+          <div className="skeleton flex-1 h-8 rounded-xl" />
+          <div className="skeleton flex-1 h-8 rounded-xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const formatLocation = (location) => {
+  if (!location) return "Gurgaon";
+  if (typeof location === "string") return location;
+  if (typeof location === "object") {
+    const parts = [location.address, location.area, location.city, location.region, location.state]
+      .filter(Boolean)
+      .join(", ");
+    return parts || JSON.stringify(location);
+  }
+  return String(location);
+};
+
+const buildDetailsTable = (p, normalizedLocation, normalizedAddress) => {
+  const rows = {
+    Price: p.price,
+    Type: p.type ? String(p.type).replace(/^./, (c) => c.toUpperCase()) : undefined,
+    Location: normalizedLocation,
+    Address: normalizedAddress,
+    Rating: p.rating ? `${p.rating} / 5` : undefined,
+    "Photo gallery": p.images?.length ? `${p.images.length} photos` : undefined,
+    "Amenity count": Array.isArray(p.amenities) ? `${p.amenities.length} items` : undefined,
+    "Sales contact": p?.contacts?.sales,
+    "Rent contact": p?.contacts?.rent,
+    "Leasing contact": p?.contacts?.leasing,
+  };
+  return Object.fromEntries(
+    Object.entries(rows).filter(([, value]) => value != null && value !== ""),
+  );
+};
+
+const normalize = (p) => {
+  const normalizedLocation = formatLocation(p.location);
+  const normalizedAddress = p.address || normalizedLocation || "Gurgaon";
+  return {
+    ...p,
+    title: p.title || p.name || p.slug || "Untitled Property",
+    type: p.type || "sale",
+    location: normalizedLocation || "Gurgaon",
+    address: normalizedAddress,
+    details:
+      typeof p.details === "string"
+        ? p.details
+        : p.description || "",
+    detailsTable:
+      typeof p.details === "object" && p.details !== null && !Array.isArray(p.details)
+        ? p.details
+        : p.detailsTable || buildDetailsTable(p, normalizedLocation, normalizedAddress),
+    amenities: Array.isArray(p.amenities) ? p.amenities : [],
+    images:
+      Array.isArray(p.images) && p.images.length
+        ? p.images
+        : [p.image].filter(Boolean),
+    contacts: {
+      sales: p?.contacts?.sales || "+91 8398979897",
+      rent: p?.contacts?.rent || "+91 9968149329",
+      leasing: p?.contacts?.leasing || "+91 8448660575",
+    },
+  };
+};
+
 const colors = {
   accent: "#D97B50",
   accentSoft: "#C99060",
@@ -208,7 +219,17 @@ const colors = {
   creamDeep: "#EDD9BF",
   dark: "#181512",
   body: "#5C6058",
+  muted: "#E6E6EA",
 };
+
+function formatPriceDisplay(price) {
+  const value = String(price || "").trim();
+  if (!value) return "";
+  const cleaned = value
+    .replace(/Ã¢â€šÂ¹/g, "â‚¹")
+    .replace(/\bRs\.?\s*/gi, "â‚¹");
+  return /^[0-9]/.test(cleaned) ? `â‚¹${cleaned}` : cleaned;
+}
 
 const bg = {
   hero: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1800&q=80",
@@ -233,15 +254,6 @@ function buildApiCandidates(path) {
   }
   return [path];
 }
-
-const CONSTRUCTION_HASHES = new Set([
-  "#construction",
-  "#projects",
-  "#estimator",
-  "#contact-construction",
-]);
-
-const isConstructionHash = (value) => CONSTRUCTION_HASHES.has(value);
 
 async function requestApi(path, options = {}) {
   const isFormDataBody =
@@ -313,169 +325,34 @@ async function requestApi(path, options = {}) {
   return response.json();
 }
 
-const defaultProperties = [
-  {
-    id: 1,
-    title: "Skyline 3BHK Residence",
-    price: "Rs 1.95 Cr",
-    rating: 4.9,
-    type: "sale",
-    image:
-      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600607688066-890987f18a86?auto=format&fit=crop&w=1200&q=80",
-    ],
-    location: "Golf Course Extension Road, Gurgaon",
-    address: "Tower 7, Sector 65, Gurgaon, Haryana",
-    amenities: ["Clubhouse", "Infinity Pool", "Gym", "3-Tier Security"],
-    details: "Luxury high-floor home with skyline views and premium finishes.",
-    contacts: {
-      sales: "+91 8398979897",
-      rent: "+91 9968149329",
-      leasing: "+91 8448660575",
-    },
-  },
-  {
-    id: 2,
-    title: "Urban Luxe 2BHK",
-    price: "Rs 1.25 Cr",
-    rating: 4.7,
-    type: "sale",
-    image:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1617098474202-0d0d7f60d8fd?auto=format&fit=crop&w=1200&q=80",
-    ],
-    location: "MG Road, Gurgaon",
-    address: "Skyline Heights, Sector 28, Gurgaon, Haryana",
-    amenities: ["EV Parking", "Co-working Lounge", "Kids Play Deck"],
-    details: "Modern 2BHK designed for urban families and professionals.",
-    contacts: {
-      sales: "+91 8398979897",
-      rent: "+91 9968149329",
-      leasing: "+91 8448660575",
-    },
-  },
-  {
-    id: 3,
-    title: "Executive 3BHK Lease",
-    price: "Rs 1.6 Lakh/month",
-    rating: 4.8,
-    type: "rent",
-    image:
-      "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?auto=format&fit=crop&w=1200&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600585152915-d208bec867a1?auto=format&fit=crop&w=1200&q=80",
-    ],
-    location: "Cyber Hub, Gurgaon",
-    address: "Sector 43, Gurgaon, Haryana",
-    amenities: ["Furnished", "Housekeeping", "Power Backup", "Metro Access"],
-    details: "Premium lease apartment for executive living.",
-    contacts: {
-      sales: "+91 8398979897",
-      rent: "+91 9968149329",
-      leasing: "+91 8448660575",
-    },
-  },
-  {
-    id: 4,
-    title: "Designer 2BHK Rental",
-    price: "Rs 78,000/month",
-    rating: 4.6,
-    type: "rent",
-    image:
-      "https://images.unsplash.com/photo-1616594039964-3d0dd0b4f184?auto=format&fit=crop&w=1200&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1616594039964-3d0dd0b4f184?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1615874959474-d609969a20ed?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80",
-    ],
-    location: "Sushant Lok, Gurgaon",
-    address: "Sector 57, Gurgaon, Haryana",
-    amenities: ["Pool", "Yoga Lawn", "Basement Parking"],
-    details: "Sunlit apartment with urban Gurgaon aesthetics.",
-    contacts: {
-      sales: "+91 8398979897",
-      rent: "+91 9968149329",
-      leasing: "+91 8448660575",
-    },
-  },
-  {
-    id: 5,
-    title: "Premium 4BHK Independent Floor",
-    price: "Rs 1.10 Lakh/month",
-    rating: 4.7,
-    type: "rent",
-    image:
-      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600585152915-d208bec867a1?auto=format&fit=crop&w=1200&q=80",
-    ],
-    location: "South City 1, Gurgaon",
-    address: "Block E, South City 1, Sector 41, Gurgaon, Haryana",
-    amenities: ["Modular Kitchen", "Terrace Garden", "Covered Parking", "24x7 Security"],
-    details: "Spacious independent floor with private terrace, vastu-compliant design and premium Italian marble throughout.",
-    contacts: {
-      sales: "+91 8398979897",
-      rent: "+91 9968149329",
-      leasing: "+91 8448660575",
-    },
-  },
-  {
-    id: 6,
-    title: "Custom Villa Construction Package",
-    price: "Starting at Rs 3,000/sq ft",
-    rating: 4.8,
-    type: "construction",
-    image:
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
-    ],
-    location: "New Gurgaon & Golf Course Extension",
-    address: "Custom build support across Gurgaon",
-    amenities: [
-      "Turnkey Execution",
-      "Architect Support",
-      "BOQ Planning",
-      "Premium Finishes",
-    ],
-    details:
-      "End-to-end villa and custom home construction packages with planning, approvals, civil work and finishing support.",
-    contacts: {
-      sales: "+91 8398979897",
-      rent: "+91 9968149329",
-      leasing: "+91 8448660575",
-    },
-  },
-];
+const JSON_PROPERTIES_PATH = "/data/properties.json";
+const defaultProperties = [];
+const SHEET_API_URL = (
+  import.meta.env.VITE_SHEET_API_URL ||
+  import.meta.env.NEXT_PUBLIC_SHEET_API_URL ||
+  ""
+).trim();
+const SHEET_CACHE_KEY = "samriddhi.sheet.properties.cache.v1";
+const SHEET_CACHE_TTL_MS = 10 * 60 * 1000;
+const FALLBACK_IMAGE_URL =
+  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80";
 
-const normalize = (p) => ({
-  ...p,
-  type: p.type || "sale",
-  location: p.location || "Gurgaon",
-  address: p.address || p.location || "Gurgaon",
-  amenities: Array.isArray(p.amenities) ? p.amenities : [],
-  images:
-    Array.isArray(p.images) && p.images.length
-      ? p.images
-      : [p.image].filter(Boolean),
-  contacts: {
-    sales: p?.contacts?.sales || "+91 8398979897",
-    rent: p?.contacts?.rent || "+91 9968149329",
-    leasing: p?.contacts?.leasing || "+91 8448660575",
-  },
-});
+function parseBoolean(value) {
+  if (typeof value === "boolean") return value;
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  return normalized === "true" || normalized === "yes" || normalized === "1";
+}
+
+const CONSTRUCTION_HASHES = new Set([
+  "#construction",
+  "#projects",
+  "#estimator",
+  "#contact-construction",
+]);
+
+const isConstructionHash = (value) => CONSTRUCTION_HASHES.has(value);
 
 const initialInquiryForm = {
   name: "",
@@ -1173,6 +1050,318 @@ function ContactCard({ label, number, color }) {
   );
 }
 
+const isMobileViewport = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(max-width: 767px)").matches;
+
+function PropertyDetailPage({ property, onBack, isWishlisted, onToggleWishlist }) {
+  if (!property) return null;
+  const images = property.images?.length ? property.images : [property.image].filter(Boolean);
+  const typeLabel =
+    property.type === "sale"
+      ? "For Sale"
+      : property.type === "rent"
+        ? "For Rent"
+        : "Construction";
+  const primaryContact =
+    property.contacts?.sales || property.contacts?.rent || "+918398979897";
+  const whatsappNumber = primaryContact.replace(/\D/g, "") || "918398979897";
+  const mapQuery = encodeURIComponent(
+    property.address || property.location || "Gurgaon, Haryana",
+  );
+  const whatsappText = encodeURIComponent(
+    `Hi Samriddhi Estates, I want details for ${property.title}. Price: ${property.price || "N/A"}. Location: ${property.location || "N/A"}.`,
+  );
+  const highlightItems = [
+    `${typeLabel} property in ${property.location || "Gurgaon"}`,
+    property.price ? `Current price: ${property.price}` : null,
+    property.rating ? `Rated ${property.rating} by visitors` : null,
+    ...(property.amenities || []).slice(0, 4),
+  ].filter(Boolean);
+  const handleWhatsAppLead = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const name = String(formData.get("name") || "").trim();
+    const phone = String(formData.get("phone") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const message = String(formData.get("message") || "").trim();
+    const text = [
+      `Hi Samriddhi Estates, I want details for ${property.title}.`,
+      property.price ? `Price: ${property.price}` : "",
+      property.location ? `Location: ${property.location}` : "",
+      name ? `Name: ${name}` : "",
+      phone ? `Phone: ${phone}` : "",
+      email ? `Email: ${email}` : "",
+      message ? `Requirement: ${message}` : "",
+    ].filter(Boolean).join("\n");
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`, "_blank");
+  };
+
+  return (
+    <main className="min-h-screen bg-[#F5F5F7] text-[#111]">
+      <a
+        href={`https://wa.me/${whatsappNumber}?text=${whatsappText}`}
+        target="_blank"
+        rel="noreferrer"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-2xl transition hover:scale-105"
+        aria-label="Chat on WhatsApp"
+      >
+        <MessageCircle className="h-7 w-7" />
+      </a>
+
+      <section className="mx-auto max-w-7xl px-6 py-8 md:py-10">
+        <button
+          type="button"
+          onClick={onBack}
+          className="mb-5 inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold shadow-sm transition hover:opacity-80"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to properties
+        </button>
+
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="grid h-[560px] grid-cols-2 grid-rows-2 gap-3">
+            <img
+              src={images[0]}
+              alt={property.title}
+              className="col-span-2 h-full w-full rounded-2xl object-cover shadow-sm"
+            />
+            {(images[1] || images[0]) && (
+              <img
+                src={images[1] || images[0]}
+                alt={`${property.title} view 2`}
+                className="h-full w-full rounded-2xl object-cover shadow-sm"
+              />
+            )}
+            {(images[2] || images[0]) && (
+              <img
+                src={images[2] || images[0]}
+                alt={`${property.title} view 3`}
+                className="h-full w-full rounded-2xl object-cover shadow-sm"
+              />
+            )}
+          </div>
+
+          <aside className="self-start rounded-2xl bg-white p-7 shadow-sm">
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.22em]" style={{ color: colors.accent }}>
+                  {typeLabel}
+                </p>
+                <h1 className="text-4xl font-bold leading-tight" style={{ fontFamily: "'Playfair Display', serif", color: colors.dark }}>
+                  {property.title}
+                </h1>
+              </div>
+              <button
+                type="button"
+                onClick={() => onToggleWishlist && onToggleWishlist(property.id)}
+                className="rounded-xl p-3 transition hover:scale-105"
+                style={{ backgroundColor: "rgba(217,123,80,0.10)" }}
+                aria-label="Toggle wishlist"
+              >
+                <Heart
+                  className="h-5 w-5"
+                  style={{
+                    color: isWishlisted ? colors.accent : colors.dark,
+                    fill: isWishlisted ? colors.accent : "none",
+                  }}
+                />
+              </button>
+            </div>
+
+            <p className="mb-5 flex items-center gap-2 text-sm" style={{ color: colors.body }}>
+              <MapPin className="h-4 w-4" style={{ color: colors.accent }} />
+              {property.location}
+              {property.address ? ` · ${property.address}` : ""}
+            </p>
+
+            <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: colors.body }}>
+                {property.type === "rent" ? "Per Month" : "Price"}
+              </p>
+              <p className="price-text mt-1 text-3xl font-bold" style={{ color: colors.dark }}>
+                {property.price}
+              </p>
+            </div>
+
+            <div className="mb-6 grid gap-3 sm:grid-cols-2">
+              {[
+                ["Type", typeLabel],
+                ["Rating", property.rating ? `${property.rating} / 5` : null],
+                ["Photos", images.length ? `${images.length} photos` : null],
+                ["Contact", primaryContact],
+              ]
+                .filter(([, value]) => value)
+                .map(([label, value]) => (
+                  <div key={label} className="rounded-xl border border-slate-200 p-3">
+                    <p className="text-[10px] uppercase tracking-[0.16em] text-slate-500">{label}</p>
+                    <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
+                  </div>
+                ))}
+            </div>
+
+            {(property.amenities || []).length > 0 && (
+              <div className="mb-6 flex flex-wrap gap-2">
+                {property.amenities.map((amenity) => (
+                  <span
+                    key={amenity}
+                    className="rounded-full px-3 py-1 text-xs font-semibold"
+                    style={{ backgroundColor: colors.cream, color: colors.dark }}
+                  >
+                    {amenity}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <a
+              href={`https://wa.me/${whatsappNumber}?text=${whatsappText}`}
+              target="_blank"
+              rel="noreferrer"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-4 text-sm font-bold text-white"
+              style={{ backgroundColor: "#25D366" }}
+            >
+              <MessageCircle className="h-4 w-4" />
+              WhatsApp Now
+            </a>
+          </aside>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-10">
+        <div className="rounded-2xl bg-white p-7 shadow-sm">
+          <h2 className="mb-3 text-2xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Description
+          </h2>
+          <p className="max-w-4xl text-sm leading-7 text-slate-700">
+            {property.details ||
+              `${property.title} is a curated ${typeLabel.toLowerCase()} listing in ${property.location || "Gurgaon"}, selected by Samriddhi Estates for buyers and tenants looking for clear details and direct support.`}
+          </p>
+        </div>
+      </section>
+
+      <section className="bg-[#F0F0F0]">
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <h2 className="mb-5 text-sm font-bold uppercase tracking-wide">Location</h2>
+          <div className="overflow-hidden border border-slate-300 bg-white">
+            <iframe
+              title={`${property.title} map`}
+              src={`https://maps.google.com/maps?q=${mapQuery}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+              className="h-56 w-full"
+              loading="lazy"
+            />
+          </div>
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+            target="_blank"
+            rel="noreferrer"
+            className="mx-auto mt-5 block w-fit bg-[#C9932D] px-8 py-2 text-xs font-bold uppercase text-black"
+          >
+            View Map
+          </a>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-8">
+        <div className="bg-white p-6 shadow-[0_2px_16px_rgba(0,0,0,0.16)]">
+          <h2 className="text-sm font-bold uppercase">Amenities</h2>
+          <p className="mb-6 text-xs">Available</p>
+          <div className="grid gap-6 md:grid-cols-2">
+            {(property.amenities?.length ? property.amenities : ["Parking", "Power Backup"]).slice(0, 4).map((amenity) => (
+              <div
+                key={amenity}
+                className="flex h-20 items-center justify-center border border-sky-300 text-center text-xs font-semibold"
+              >
+                {amenity}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#F0F0F0]">
+        <div className="mx-auto grid max-w-6xl gap-10 px-6 py-9 md:grid-cols-[460px_1fr]">
+          <img
+            src={images[2] || images[0]}
+            alt={`${property.title} highlights`}
+            className="h-72 w-full object-cover"
+          />
+          <div>
+            <h2 className="mb-3 text-lg font-bold">{property.title} Highlights</h2>
+            <ul className="list-disc space-y-2 pl-5 text-sm font-semibold">
+              {highlightItems.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-10">
+        <h2 className="mb-6 text-sm font-bold uppercase tracking-wide">Project Gallery</h2>
+        <div className="grid gap-5 md:grid-cols-4">
+          {images.slice(0, 4).map((image, index) => (
+            <div key={image} className="relative overflow-hidden rounded-sm">
+              <img src={image} alt={`${property.title} gallery ${index + 1}`} className="h-44 w-full object-cover" />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-xs font-semibold text-white">
+                {property.title}
+              </div>
+              <span className="absolute right-3 top-3 h-6 w-6 rounded-full bg-white" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-[#F0F0F0]">
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <h2 className="mb-5 text-sm font-bold uppercase tracking-wide">
+            {property.title} Floor Plan
+          </h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              ["Price", property.price],
+              ["Type", typeLabel],
+              ["Address", property.address || property.location],
+            ].map(([label, value]) => (
+              <div key={label} className="bg-white p-5 shadow-sm">
+                <p className="text-[10px] uppercase tracking-[0.16em] text-slate-500">{label}</p>
+                <p className="mt-2 text-sm font-bold">{value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-4xl px-6 py-12">
+        <form
+          onSubmit={handleWhatsAppLead}
+          className="rounded-2xl bg-white p-7 shadow-[0_10px_35px_rgba(0,0,0,0.10)]"
+        >
+          <h2 className="mb-2 text-2xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Contact Us
+          </h2>
+          <p className="mb-6 text-sm text-slate-600">
+            Submit your requirement and WhatsApp will open with all details pre-filled.
+          </p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <input name="name" placeholder="Name" className="h-12 rounded-xl border border-slate-300 px-4 text-sm outline-none focus:border-[#25D366]" />
+            <input name="phone" placeholder="Phone" className="h-12 rounded-xl border border-slate-300 px-4 text-sm outline-none focus:border-[#25D366]" />
+            <input name="email" placeholder="Email" className="h-12 rounded-xl border border-slate-300 px-4 text-sm outline-none focus:border-[#25D366] md:col-span-2" />
+            <textarea name="message" placeholder="Tell us what you need" className="h-28 resize-none rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-[#25D366] md:col-span-2" />
+          </div>
+          <button
+            type="submit"
+            className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-7 py-4 text-sm font-bold text-white shadow-lg transition hover:scale-[1.01]"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Send on WhatsApp
+          </button>
+        </form>
+      </section>
+    </main>
+  );
+}
+
 function PropertyModal({ property, isOpen, onClose }) {
   const [idx, setIdx] = useState(0);
   const [wishlisted, setWishlisted] = useState(false);
@@ -1328,11 +1517,111 @@ function PropertyModal({ property, isOpen, onClose }) {
           )}
 
           {/* Details */}
-          {property.details && (
-            <p className="text-[12.5px] leading-relaxed mb-3.5" style={{ color: colors.body, letterSpacing: "-0.01em" }}>
-              {property.details}
-            </p>
-          )}
+          <div className="mb-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
+            <div className="space-y-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-500 mb-1">Property Overview</p>
+                <h3 className="text-base font-semibold" style={{ color: colors.dark }}>Deep insights for smarter decisions</h3>
+              </div>
+              {property.details && (
+                <p className="text-sm leading-6 text-slate-700" style={{ letterSpacing: "-0.01em" }}>
+                  {property.details}
+                </p>
+              )}
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {[
+                  ["Price", property.price],
+                  ["Type", property.type ? String(property.type).replace(/^./, (c) => c.toUpperCase()) : null],
+                  ["Rating", property.rating ? `${property.rating} / 5` : null],
+                  ["Location", property.location],
+                  ["Address", property.address],
+                  ["Photos", property.images?.length ? `${property.images.length} photos` : null],
+                  ["Amenities", property.amenities?.length ? `${property.amenities.length} features` : null],
+                ]
+                  .filter(([, value]) => value)
+                  .map(([label, value]) => (
+                    <div key={String(label)} className="rounded-2xl bg-white p-3 shadow-sm border border-slate-200">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-slate-500 mb-1">{label}</p>
+                      <p className="text-sm font-semibold text-slate-800">{value}</p>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+
+          {property.detailsTable ? (
+            <div className="mb-4">
+              <div className="mb-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-500 mb-1">Property Details</p>
+                <h3 className="text-base font-semibold" style={{ color: colors.dark }}>Complete specification sheet</h3>
+              </div>
+              <div className="rounded-3xl border border-slate-200 overflow-hidden bg-white">
+                <table className="w-full text-left">
+                  <tbody>
+                    {Object.entries(property.detailsTable).map(([key, value]) => (
+                      <tr key={key} className="border-b last:border-b-0">
+                        <th
+                          className="px-4 py-3 align-top text-[10px] uppercase tracking-[0.16em] text-slate-500"
+                          style={{ width: "35%" }}
+                        >
+                          {String(key)
+                            .replace(/([A-Z])/g, " $1")
+                            .replace(/[_\-]/g, " ")
+                            .replace(/\s+/g, " ")
+                            .trim()
+                            .replace(/\b\w/g, (c) => c.toUpperCase())}
+                        </th>
+                        <td className="px-4 py-3 text-sm text-slate-700">
+                          {(() => {
+                            const renderValue = (item) => {
+                              if (item == null) return "-";
+                              if (typeof item === "string" || typeof item === "number") return String(item);
+                              if (Array.isArray(item)) {
+                                if (item.length === 0) return "-";
+                                if (item.every((x) => typeof x === "string" || typeof x === "number")) {
+                                  return item.join(", ");
+                                }
+                                return (
+                                  <div className="space-y-2">
+                                    {item.map((subItem, index) => (
+                                      <div key={index} className="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                                        {renderValue(subItem)}
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              }
+                              if (typeof item === "object") {
+                                return (
+                                  <div className="space-y-2 text-sm text-slate-700">
+                                    {Object.entries(item).map(([subKey, subValue]) => (
+                                      <div key={subKey} className="grid gap-2 md:grid-cols-[120px_1fr] items-start">
+                                        <div className="font-semibold text-slate-600">
+                                          {String(subKey)
+                                            .replace(/([A-Z])/g, " $1")
+                                            .replace(/[_\-]/g, " ")
+                                            .replace(/\s+/g, " ")
+                                            .trim()
+                                            .replace(/\b\w/g, (c) => c.toUpperCase())}:
+                                        </div>
+                                        <div>{renderValue(subValue)}</div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              }
+                              return String(item);
+                            };
+                            return renderValue(value);
+                          })()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
 
           {/* Amenities label */}
           {(property.amenities || []).length > 0 && (
@@ -1450,11 +1739,12 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
         : "Construction";
   return (
     <div
-      className="relative overflow-hidden cursor-pointer group rounded-2xl bg-white"
+      className="relative overflow-hidden cursor-pointer group rounded-2xl bg-white flex flex-col h-full"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => onClick(property)}
       style={{
+        minHeight: 520,
         transition: "transform 0.28s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s ease",
         transform: hover ? "translateY(-3px) scale(1.01)" : "translateY(0) scale(1)",
         boxShadow: hover
@@ -1463,7 +1753,7 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
       }}
     >
       {/* Image */}
-      <div className="relative overflow-hidden rounded-t-2xl" style={{ height: 175 }}>
+      <div className="relative overflow-hidden rounded-t-2xl h-[320px] md:h-[260px]">
         <img
           src={property.image}
           alt={property.title}
@@ -1519,65 +1809,71 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
       </div>
 
       {/* Info */}
-      <div className="px-3 pt-2.5 pb-3">
-        <h2
-          className="font-bold leading-snug mb-0.5 truncate"
-          style={{ fontFamily: "'Playfair Display', serif", color: colors.dark, fontSize: 13 }}
-        >
-          {property.title}
-        </h2>
-        <p className="flex items-center gap-1 mb-2 truncate" style={{ color: colors.body, fontSize: 10 }}>
-          <MapPin style={{ width: 10, height: 10, flexShrink: 0 }} />
-          {property.location}
-        </p>
-        {/* Amenity pills */}
-        {(property.amenities || []).length > 0 && (
-          <div className="flex gap-1 mb-2.5 overflow-hidden">
-            {(property.amenities || []).slice(0, 2).map((a) => (
-              <span
-                key={a}
-                className="px-2 py-0.5 rounded-full whitespace-nowrap font-medium"
-                style={{ backgroundColor: colors.cream, color: colors.body, fontSize: 9 }}
-              >
-                {a}
-              </span>
-            ))}
-            {(property.amenities || []).length > 2 && (
-              <span className="px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: colors.cream, color: colors.body, fontSize: 9 }}>
-                +{(property.amenities || []).length - 2}
-              </span>
-            )}
-          </div>
-        )}
-        {/* Action buttons */}
-        <div className="flex gap-1.5">
+      <div className="flex flex-col flex-1 px-3 pt-2 pb-3">
+        <div>
+          <h2
+            className="font-semibold leading-tight mb-1 truncate"
+            style={{ fontFamily: "'Playfair Display', serif", color: colors.dark, fontSize: 14 }}
+          >
+            {property.title}
+          </h2>
+          <p className="flex items-center gap-2 mb-1 text-xs truncate" style={{ color: colors.body }}>
+            <MapPin style={{ width: 11, height: 11, flexShrink: 0 }} />
+            {property.location}
+          </p>
+
+          {(property.amenities || []).length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-2">
+              {(property.amenities || []).slice(0, 3).map((a) => (
+                <span
+                  key={a}
+                  className="px-2 py-0.5 rounded-full whitespace-nowrap font-medium text-[11px]"
+                  style={{ backgroundColor: "#F6F6F8", color: colors.body }}
+                >
+                  {a}
+                </span>
+              ))}
+              {(property.amenities || []).length > 3 && (
+                <span className="px-2 py-0.5 rounded-full font-medium text-[11px]" style={{ backgroundColor: "#F6F6F8", color: colors.body }}>
+                  +{(property.amenities || []).length - 3}
+                </span>
+              )}
+            </div>
+          )}
+
+          {property.details && (
+            <p className="text-sm leading-snug mb-3 text-slate-700" style={{ minHeight: 44 }}>
+              {property.details.length > 140 ? `${property.details.slice(0, 140).trim()}...` : property.details}
+            </p>
+          )}
+        </div>
+
+        <div className="mt-auto flex gap-2">
           <a
-            href="tel:+918398979897"
-            className="flex-1 flex items-center justify-center gap-1 rounded-xl font-semibold"
+            href={`tel:${property.contacts?.sales || property.contacts?.rent || "#"}`}
+            className="flex-1 flex items-center justify-center gap-2 rounded-lg font-semibold text-sm"
             style={{
               background: "linear-gradient(135deg, #D97B50 0%, #C06030 100%)",
               color: "#fff",
-              height: 32,
-              fontSize: 11,
-              boxShadow: "0 3px 10px rgba(217,123,80,0.30)",
+              height: 36,
+              boxShadow: "0 6px 18px rgba(208,98,55,0.18)",
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <Phone style={{ width: 11, height: 11 }} />
+            <Phone style={{ width: 13, height: 13 }} />
             Call
           </a>
           <button
-            className="flex-1 flex items-center justify-center gap-1 rounded-xl font-semibold"
+            className="flex-1 flex items-center justify-center gap-2 rounded-lg font-semibold text-sm"
             style={{
-              backgroundColor: colors.cream,
+              backgroundColor: "#fff",
               color: colors.dark,
-              border: `1px solid ${colors.creamDeep}`,
-              height: 32,
-              fontSize: 11,
+              border: `1px solid ${colors.muted || '#E6E6EA'}`,
+              height: 36,
             }}
             onClick={(e) => { e.stopPropagation(); onClick(property); }}
           >
-            <Eye style={{ width: 11, height: 11 }} />
+            <Eye style={{ width: 13, height: 13 }} />
             Details
           </button>
         </div>
@@ -1590,17 +1886,28 @@ function PropertyCarousel({ properties, onClick, wishlist, onToggleWishlist, loa
   const ref = useRef(null);
   const [left, setLeft] = useState(false);
   const [right, setRight] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const updateIsMobile = () => setIsMobile(window.innerWidth < 768);
+
   const check = () => {
     if (!ref.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = ref.current;
     setLeft(scrollLeft > 0);
     setRight(scrollLeft < scrollWidth - clientWidth - 10);
   };
+
   useEffect(() => {
+    const handleResize = () => {
+      updateIsMobile();
+      check();
+    };
+    updateIsMobile();
     check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [properties]);
+
   const scroll = (direction) => {
     if (!ref.current) return;
     const firstCard = ref.current.firstElementChild;
@@ -1630,22 +1937,36 @@ function PropertyCarousel({ properties, onClick, wishlist, onToggleWishlist, loa
       )}
       <div
         ref={ref}
-        className="flex gap-3 md:gap-6 overflow-x-auto pl-3 pr-3 md:pl-0 md:pr-0"
+        className="flex flex-col md:flex-row gap-3 md:gap-6 overflow-x-hidden md:overflow-x-auto pl-3 pr-3 md:pl-0 md:pr-0"
         style={{
           scrollBehavior: "smooth",
-          scrollSnapType: "x mandatory",
+          scrollSnapType: isMobile ? "y proximity" : "x mandatory",
           scrollbarWidth: "none",
         }}
         onScroll={check}
       >
         {loading
           ? [1,2,3].map((n) => (
-              <div key={n} className="flex-shrink-0" style={{ width: "clamp(210px,58vw,265px)", scrollSnapAlign: "start" }}>
+              <div
+                key={n}
+                className="flex-shrink-0"
+                style={{
+                  width: isMobile ? "100%" : "clamp(210px,58vw,265px)",
+                  scrollSnapAlign: "start",
+                }}
+              >
                 <SkeletonCard />
               </div>
             ))
           : properties.map((p) => (
-              <div key={p.id} className="flex-shrink-0" style={{ width: "clamp(210px,58vw,265px)", scrollSnapAlign: "start" }}>
+              <div
+                key={p.id}
+                className="flex-shrink-0"
+                style={{
+                  width: isMobile ? "100%" : "clamp(210px,58vw,265px)",
+                  scrollSnapAlign: "start",
+                }}
+              >
                 <PropertyCard property={p} onClick={onClick} isWishlisted={wishlist?.includes(p.id)} onToggleWishlist={onToggleWishlist} />
               </div>
             ))
@@ -4720,6 +5041,7 @@ function AppInner() {
   const [selected, setSelected] = useState(null);
   const [hash, setHash] = useState(window.location.hash || "#home");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailPageOpen, setIsDetailPageOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
   const [error, setError] = useState("");
@@ -4907,6 +5229,7 @@ function AppInner() {
 
   const closePropertyState = () => {
     setIsModalOpen(false);
+    setIsDetailPageOpen(false);
     document.body.style.overflow = "auto";
     setTimeout(() => setSelected(null), 200);
   };
@@ -4924,10 +5247,36 @@ function AppInner() {
     });
   };
 
+  const loadPropertiesFromJson = async () => {
+    const response = await fetch(JSON_PROPERTIES_PATH, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Properties JSON request failed (${response.status})`);
+    }
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      throw new Error("Properties JSON did not return an array");
+    }
+    return data;
+  };
+
   const reloadProperties = async () => {
-    const propertyData = await requestApi("/api/properties");
-    setProperties(propertyData.map(normalize));
-    return propertyData;
+    try {
+      const jsonProperties = await loadPropertiesFromJson();
+      setProperties(jsonProperties.map(normalize));
+      console.log("Loaded properties from JSON");
+      return jsonProperties;
+    } catch (jsonError) {
+      try {
+        const propertyData = await requestApi("/api/properties");
+        setProperties(propertyData.map(normalize));
+        console.log("Loaded properties from API fallback");
+        return propertyData;
+      } catch (apiError) {
+        setProperties(defaultProperties.map(normalize));
+        console.log("Loaded from default properties fallback");
+        return defaultProperties;
+      }
+    }
   };
 
   useEffect(() => {
@@ -4969,13 +5318,21 @@ function AppInner() {
 
   const openProperty = (p) => {
     setSelected(p);
-    setIsModalOpen(true);
-    window.history.pushState({ quickView: true }, "");
-    document.body.style.overflow = "hidden";
+    if (isMobileViewport()) {
+      setIsDetailPageOpen(false);
+      setIsModalOpen(true);
+      window.history.pushState({ quickView: true }, "");
+      document.body.style.overflow = "hidden";
+      return;
+    }
+    setIsModalOpen(false);
+    setIsDetailPageOpen(true);
+    window.history.pushState({ propertyDetail: true }, "", `#property-${p.id}`);
+    document.body.style.overflow = "auto";
   };
 
   const closeProperty = () => {
-    if (window.history.state?.quickView) {
+    if (window.history.state?.quickView || window.history.state?.propertyDetail) {
       window.history.back();
       return;
     }
@@ -4984,13 +5341,13 @@ function AppInner() {
 
   useEffect(() => {
     const onPopState = () => {
-      if (isModalOpen) {
+      if (isModalOpen || isDetailPageOpen) {
         closePropertyState();
       }
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [isModalOpen]);
+  }, [isModalOpen, isDetailPageOpen]);
 
   const handleInquiryChange = (e) => {
     const { name, value } = e.target;
@@ -5120,7 +5477,14 @@ function AppInner() {
         hash={hash}
         onNavigateHome={navigateHome}
       />
-      {isConstructionHash(hash) ? (
+      {isDetailPageOpen && selected ? (
+        <PropertyDetailPage
+          property={selected}
+          onBack={closeProperty}
+          isWishlisted={wishlist.includes(selected.id)}
+          onToggleWishlist={toggleWishlist}
+        />
+      ) : isConstructionHash(hash) ? (
         <Construction
           projects={constructionProjects}
           listedProperties={properties}
