@@ -322,6 +322,7 @@ async function requestApi(path, options = {}) {
 }
 
 const JSON_PROPERTIES_PATH = "/data/properties.json";
+const JSON_PROPERTIES_INDEX_PATH = "/data/properties/index.json";
 const SHEET_API_URL = (
   import.meta.env.VITE_SHEET_API_URL ||
   import.meta.env.NEXT_PUBLIC_SHEET_API_URL ||
@@ -526,6 +527,39 @@ async function fetchSheetProperties() {
     }
   }
   throw lastError || new Error("Unable to load properties from sheet");
+}
+
+async function fetchJsonFileProperties() {
+  const indexResponse = await fetch(JSON_PROPERTIES_INDEX_PATH, {
+    cache: "no-store",
+  });
+  if (!indexResponse.ok) {
+    throw new Error("Property JSON index is unavailable");
+  }
+
+  const index = await indexResponse.json();
+  const entries = Array.isArray(index)
+    ? index.filter((item) => item?.file)
+    : [];
+  if (!entries.length) {
+    throw new Error("Property JSON index is empty");
+  }
+
+  const properties = await Promise.all(
+    entries.map(async (item) => {
+      const response = await fetch(`/data/properties/${item.file}`, {
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        throw new Error(`Property JSON failed: ${item.file}`);
+      }
+      return response.json();
+    }),
+  );
+
+  return properties
+    .filter(Boolean)
+    .sort((a, b) => Number(a.id || 0) - Number(b.id || 0));
 }
 
 const normalize = (p) => ({
@@ -5201,6 +5235,18 @@ function AppInner() {
   };
 
   const reloadProperties = async () => {
+    try {
+      const jsonFileProperties = await fetchJsonFileProperties();
+      if (!jsonFileProperties.length) {
+        throw new Error("Property JSON files are empty");
+      }
+      setProperties(jsonFileProperties.map(normalize));
+      console.log("Loaded from individual property JSON files");
+      return jsonFileProperties;
+    } catch (jsonFileError) {
+      // Continue to configured live data sources.
+    }
+
     const cachedSheet = getCachedSheetProperties();
     if (cachedSheet?.length) {
       setProperties(cachedSheet.map(normalize));

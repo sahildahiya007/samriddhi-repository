@@ -7,7 +7,7 @@
   ],
   "functions": {
     "api/index.js": {
-      "includeFiles": "backend/**",
+      "includeFiles": ["backend/**", "public/data/**"],
       "maxDuration": 10
     }
   }
