@@ -7,7 +7,7 @@ const propertiesIndexPath = path.join(propertiesDir, "index.json");
 const legacyPropertiesPath = path.join(publicDataDir, "properties.json");
 
 function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  return JSON.parse(fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/, ""));
 }
 
 function loadPropertyFiles() {
@@ -23,19 +23,23 @@ function loadPropertyFiles() {
 
 function loadProperties() {
   try {
+    const legacyProperties = readJson(legacyPropertiesPath);
+    if (Array.isArray(legacyProperties) && legacyProperties.length) {
+      return legacyProperties.sort(
+        (a, b) => Number(a.id || 0) - Number(b.id || 0),
+      );
+    }
+  } catch (error) {
+    console.warn("Could not load properties.json:", error.message);
+  }
+
+  try {
     const properties = loadPropertyFiles();
     if (properties.length) return properties;
   } catch (error) {
     console.warn("Could not load individual property JSON files:", error.message);
   }
-
-  try {
-    const legacyProperties = readJson(legacyPropertiesPath);
-    return Array.isArray(legacyProperties) ? legacyProperties : [];
-  } catch (error) {
-    console.warn("Could not load legacy properties.json:", error.message);
-    return [];
-  }
+  return [];
 }
 
 module.exports = loadProperties();

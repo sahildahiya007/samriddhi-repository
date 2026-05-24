@@ -530,6 +530,18 @@ async function fetchSheetProperties() {
 }
 
 async function fetchJsonFileProperties() {
+  const singleFileResponse = await fetch(JSON_PROPERTIES_PATH, {
+    cache: "no-store",
+  });
+  if (singleFileResponse.ok) {
+    const singleFileData = await singleFileResponse.json();
+    if (Array.isArray(singleFileData) && singleFileData.length) {
+      return singleFileData.sort(
+        (a, b) => Number(a.id || 0) - Number(b.id || 0),
+      );
+    }
+  }
+
   const indexResponse = await fetch(JSON_PROPERTIES_INDEX_PATH, {
     cache: "no-store",
   });
@@ -587,6 +599,7 @@ const normalize = (p) => ({
   builder: p.builder || "",
   details: p.details || p.description || "",
   description: p.description || p.details || "",
+  cardDescription: p.cardDescription || p.card_description || p.summary || p.description || p.details || "",
   whatsappNumber: normalizePhoneNumber(
     p.whatsappNumber || p.whatsapp_number,
     "918398979897",
@@ -1629,10 +1642,6 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
     String(property.contacts?.sales || property.contacts?.rent || "")
       .replace(/\D/g, "") ||
     "918398979897";
-  const whatsappNumber = property.whatsappNumber || callNumber;
-  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    `Hi, I am interested in ${property.title} on Samriddhi Estates.`,
-  )}`;
   const highlighted = false;
 
   if (highlighted && (isSale || isRent)) {
@@ -1856,6 +1865,22 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
             )}
           </div>
         )}
+        {property.cardDescription && (
+          <p
+            className="mb-3 overflow-hidden"
+            style={{
+              color: colors.body,
+              fontSize: 11,
+              lineHeight: 1.45,
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+              minHeight: 48,
+            }}
+          >
+            {property.cardDescription}
+          </p>
+        )}
         {/* Action buttons */}
         <div className="flex gap-1.5">
           <a
@@ -1873,10 +1898,8 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
             <Phone style={{ width: 11, height: 11 }} />
             Call
           </a>
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noreferrer"
+          <button
+            type="button"
             className="flex-1 flex items-center justify-center gap-1 rounded-xl font-semibold"
             style={{
               backgroundColor: colors.cream,
@@ -1885,11 +1908,14 @@ function PropertyCard({ property, onClick, isWishlisted, onToggleWishlist }) {
               height: 32,
               fontSize: 11,
             }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick(property);
+            }}
           >
-            <MessageCircle style={{ width: 11, height: 11 }} />
-            WhatsApp
-          </a>
+            <Eye style={{ width: 11, height: 11 }} />
+            Details
+          </button>
         </div>
       </div>
     </div>
@@ -1900,7 +1926,7 @@ function PropertyCarousel({ properties, onClick, wishlist, onToggleWishlist, loa
   return (
     <div className="relative">
       <div
-        className="grid gap-4 px-3 sm:grid-cols-2 md:gap-6 md:px-0"
+        className="grid gap-4 px-3 sm:grid-cols-2 lg:grid-cols-4 md:gap-6 md:px-0"
       >
         {loading
           ? [1,2,3,4].map((n) => (
