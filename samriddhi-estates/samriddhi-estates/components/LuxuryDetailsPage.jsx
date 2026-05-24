@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Heart, Phone, MessageCircle, ChevronLeft, ChevronRight, MapPin, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import FloorplanSlider from './FloorplanSlider';
 
 const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -20,6 +21,7 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
   const images = property.images || [property.image];
   const floorPlans = property.floorPlans || [];
   const heroHeight = windowWidth < 768 ? 46 : 52;
+  const isMobile = windowWidth < 768;
 
   const highlights = property.highlights || [
     'Clubhouse',
@@ -150,9 +152,9 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
       <motion.div
         initial={{ y: 26 }}
         animate={{ y: -26 }}
-        className="relative bg-white rounded-t-[32px] -mt-[40px]"
+        className={`relative bg-white ${isMobile ? 'rounded-none' : 'rounded-t-[32px]'} -mt-[40px]`}
         style={{
-          maxHeight: `calc(100vh - ${heroHeight}vh)`,
+          maxHeight: isMobile ? '100vh' : `calc(100vh - ${heroHeight}vh)`,
           overflowY: 'auto',
         }}
       >
@@ -238,6 +240,14 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Floorplan Slider */}
+              {floorPlans && floorPlans.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-bold mb-4 text-gray-900">Floor Plans</h2>
+                  <FloorplanSlider images={floorPlans} />
                 </div>
               )}
 
