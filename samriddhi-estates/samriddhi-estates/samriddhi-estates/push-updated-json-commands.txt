@@ -1,0 +1,17 @@
+# Push updated JSON files to Git
+
+# 1. Review changed files
+git status
+
+# 2. Add updated JSON data files
+git add public/data/properties.json
+
+# 3. Commit the updates
+git commit -m "Update properties JSON data"
+
+# 4. Push to the current branch
+git push origin HEAD
+
+# If you need to create a new branch first:
+git checkout -b update-properties-json
+# then repeat add, commit, push

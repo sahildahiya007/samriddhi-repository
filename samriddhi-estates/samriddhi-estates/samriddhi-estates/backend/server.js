@@ -64,7 +64,33 @@ app.use("/uploads", express.static(uploadsDir));
 
 // Import persistent storage
 const persistentStorage = require("./storage");
-const propertyStorage = require("./supabaseStorage");
+// Support either Supabase or Postgres-backed storage. Set POSTGRES_URL to use Postgres.
+let propertyStorage = require("./supabaseStorage");
+try {
+  const pgStorage = require("./pgStorage");
+  if (pgStorage && pgStorage.hasSupabase) {
+    propertyStorage = pgStorage;
+    console.log("Using Postgres-backed storage (pgStorage)");
+  }
+} catch (e) {
+  // pgStorage not present or failed to load — fallback to supabaseStorage/file storage
+}
+
+// If we are using Postgres-backed storage, seed public properties on server start (non-blocking)
+try {
+  if (propertyStorage && propertyStorage.hasSupabase) {
+    const seeder = require("./scripts/seed_public_properties");
+    if (seeder && typeof seeder.main === "function") {
+      // Run seeder but don't block startup if it fails
+      seeder
+        .main()
+        .then(() => console.log("Seeded public properties into Postgres (if needed)."))
+        .catch((err) => console.warn("Seeding properties failed:", err.message || err));
+    }
+  }
+} catch (e) {
+  console.warn("Could not run seeder at startup:", e.message || e);
+}
 const persistentDb = persistentStorage.getDb();
 
 // Use persistent storage instead of in-memory arrays
