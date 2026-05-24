@@ -1,0 +1,27 @@
+{
+  "id": 1,
+  "title": "Skyline 3BHK Residence",
+  "price": "₹1.95 Cr",
+  "rating": 4.9,
+  "type": "sale",
+  "image": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+  "images": [
+    "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1600607688066-890987f18a86?auto=format&fit=crop&w=1200&q=80"
+  ],
+  "location": "Golf Course Extension Road, Gurgaon",
+  "address": "Tower 7, Sector 65, Gurgaon, Haryana",
+  "amenities": [
+    "Clubhouse",
+    "Infinity Pool",
+    "Gym",
+    "3-Tier Security"
+  ],
+  "details": "Luxury high-floor home with skyline views and premium finishes.",
+  "contacts": {
+    "sales": "+91 9876543210",
+    "rent": "+91 9876543211",
+    "leasing": "+91 9876543212"
+  }
+}

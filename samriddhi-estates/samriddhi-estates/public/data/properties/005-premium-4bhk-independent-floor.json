@@ -1,0 +1,27 @@
+{
+  "id": 5,
+  "title": "Premium 4BHK Independent Floor",
+  "price": "₹1.10 Lakh/month",
+  "rating": 4.7,
+  "type": "rent",
+  "image": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
+  "images": [
+    "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1600585152915-d208bec867a1?auto=format&fit=crop&w=1200&q=80"
+  ],
+  "location": "South City 1, Gurgaon",
+  "address": "Block E, South City 1, Sector 41, Gurgaon, Haryana",
+  "amenities": [
+    "Modular Kitchen",
+    "Terrace Garden",
+    "Covered Parking",
+    "24x7 Security"
+  ],
+  "details": "Spacious independent floor with private terrace, vastu-compliant design and premium Italian marble throughout.",
+  "contacts": {
+    "sales": "+91 8398979897",
+    "rent": "+91 9968149329",
+    "leasing": "+91 8448660575"
+  }
+}
