@@ -2,46 +2,43 @@
   "id": 2,
   "title": "Sobha Sector 63A",
   "price": "₹6 Cr Onwards*",
-  "rating": 4.8, 
+  "rating": 4.8,
   "type": "sale",
   "image": "",
   "images": [
-    "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644032/SCG_lutyens_podium_efnnng.webp",
+ "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644032/SCG_lutyens_podium_efnnng.webp",
     "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644043/SCG_lutyens_Vista_xygpam.webp",
     "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644054/Grand-Entrance-Plaza-S1_rxrbiw.webp",
-    "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644073/Resort-Style-Lakelet-S_n1hn99.webp",
-    "",
-    ""
+    "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644073/Resort-Style-Lakelet-S_n1hn99.webp"
   ],
   "location": "Sector 63A, Golf Course Extension Road, Gurgaon",
-  "address": "Sobha Sector 63A, Sector 63A, Golf Course Extension Road, Gurugram, Haryana",
+  "address": "Sobha Sector 63A, Golf Course Extension Road, Gurugram, Haryana",
   "amenities": [
     "Premium Parking Facilities",
     "Modern Clubhouse",
-    "Fully Equipped Gym",
+    "Infinity Swimming Pool",
+    "Fully Equipped Gymnasium",
     "Club Lounge",
     "Senior Citizen Zone",
     "Open Green Spaces",
     "Fine Dining Area",
     "Jogging Track",
+    "Yoga & Meditation Deck",
+    "Kids Play Area",
+    "Indoor Games Arena",
     "Landscaped Gardens",
-    "Children's Play Area",
-    "Multipurpose Hall",
-    "Yoga & Meditation Zone",
-    "Indoor Games Room",
-    "High-Speed Elevators",
-    "24x7 Security",
-    "Power Backup",
+    "Multi-tier Security",
+    "24x7 Power Backup",
     "CCTV Surveillance",
-    "Reception & Concierge",
+    "High-Speed Elevators",
+    "Luxury Lobby",
     "Visitor Parking",
-    "Community Seating Areas"
+    "Concierge Services"
   ],
-  "details": "Sobha Sector 63A is a premium residential landmark by SOBHA Limited, thoughtfully positioned in Sector 63A on Golf Course Extension Road, Gurgaon. Designed for contemporary luxury living, the project brings together elegant architecture, spacious residences, open green landscapes, and carefully curated lifestyle amenities that create a refined urban address. With excellent connectivity to major business corridors, premium schools, healthcare facilities, retail destinations, entertainment hubs, and commercial centers, the project offers both everyday convenience and strong long-term investment potential. The residences are planned to balance comfort, sophistication, and functionality, making them ideal for families seeking a prestigious home in one of Gurgaon’s most desirable locations. The development features 3 BHK residences of approximately 2300 sq. ft. and 4 BHK residences of approximately 2700 sq. ft., along with premium community spaces, modern recreational zones, and the trusted quality construction associated with the SOBHA brand.",
+  "details": "Sobha Sector 63A is a premium luxury residential development located on Golf Course Extension Road, Gurugram, crafted by SOBHA Limited for refined urban living. The project offers spacious 3 & 4 BHK residences with elegant layouts, premium interiors, expansive balconies, and thoughtfully planned living spaces designed for comfort and sophistication. Surrounded by landscaped greens and world-class lifestyle amenities, the development combines modern architecture with seamless connectivity to major business hubs, top educational institutions, healthcare centers, retail destinations, and entertainment zones across Gurgaon. With premium recreational spaces, luxury clubhouse experiences, wellness amenities, and excellent infrastructure growth in the surrounding region, Sobha Sector 63A delivers a balanced lifestyle experience along with strong long-term investment potential in one of Gurgaon’s most prestigious residential corridors.",
   "contacts": {
     "sales": "+91 9876543216",
     "rent": "+91 9876543217",
     "leasing": "+91 9876543218"
-  },
-  "cardDescription": "Premium 3 & 4 BHK residences on Golf Course Extension Road with luxury amenities, green spaces, and excellent connectivity."
+  }
 }
