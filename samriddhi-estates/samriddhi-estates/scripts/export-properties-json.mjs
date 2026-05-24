@@ -27,30 +27,13 @@ const toSlug = (value) =>
     .replace(/^-+|-+$/g, "")
     .slice(0, 80) || "property";
 
-const manifest = [];
-for (const property of properties) {
-  const filename = `${String(property.id).padStart(3, "0")}-${toSlug(property.title)}.json`;
-  fs.writeFileSync(
-    path.resolve(outputDir, filename),
-    `${JSON.stringify(property, null, 2)}\n`,
-    "utf8",
-  );
-  manifest.push({
-    id: property.id,
-    title: property.title,
-    file: filename,
-  });
-}
-
-fs.writeFileSync(
-  path.resolve(outputDir, "index.json"),
-  `${JSON.stringify(manifest, null, 2)}\n`,
-  "utf8",
-);
+// We only emit a single consolidated JSON file now. Individual per-property
+// JSON files are archived to keep the site routes hidden while preserving
+// original data and formats.
 fs.writeFileSync(
   path.resolve(projectRoot, "public/data/properties.json"),
   `${JSON.stringify(properties, null, 2)}\n`,
   "utf8",
 );
 
-console.log(`Exported ${properties.length} properties to ${outputDir}`);
+console.log(`Exported ${properties.length} properties to public/data/properties.json`);
