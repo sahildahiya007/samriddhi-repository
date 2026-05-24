@@ -1,24 +1,32 @@
 {
   "id": 1,
-  "title": "Skyline 3BHK Residence",
-  "price": "₹1.95 Cr",
+  "title": "Elan The Emperor",
+  "price": "₹10 Cr Onwards",
   "rating": 4.9,
   "type": "sale",
-  "image": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+  "image": "",
   "images": [
-    "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1600607688066-890987f18a86?auto=format&fit=crop&w=1200&q=80"
+    "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642962/image1_jkyxpy.jpg",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642962/image10_pul0fn.jpg",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642961/b2afe0baf7c600751f0408a669626d46_oihmlj.jpg"
   ],
-  "location": "Golf Course Extension Road, Gurgaon",
-  "address": "Tower 7, Sector 65, Gurgaon, Haryana",
+  "location": "Sector 106, Dwarka Expressway, Gurgaon",
+  "address": "Elan The Emperor, Sector 106, Gurugram, Haryana",
   "amenities": [
-    "Clubhouse",
+    "8-Level Luxury Clubhouse",
     "Infinity Pool",
-    "Gym",
+    "Private Elevators",
+    "VRV Air Conditioning",
+    "Sky Deck",
+    "Spa & Wellness Center",
+    "Gymnasium",
+    "Indoor Sports Arena",
+    "Kids Play Area",
+    "Horse Riding Zone",
+    "Landscaped Greens",
     "3-Tier Security"
   ],
-  "details": "Luxury high-floor home with skyline views and premium finishes.",
+  "details": "Elan The Emperor is an ultra-luxury residential project located in Sector 106 on Dwarka Expressway, Gurugram. The development offers premium 4 & 5 BHK residences with spacious layouts, private lift access, large balconies, premium interiors, and world-class lifestyle amenities. Designed with iconic architecture and resort-style living, the project provides seamless connectivity to Delhi, IGI Airport, Cyber City, and major business hubs.",
   "contacts": {
     "sales": "+91 9876543210",
     "rent": "+91 9876543211",
