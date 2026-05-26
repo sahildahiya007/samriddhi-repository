@@ -12,8 +12,7 @@
     "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644043/SCG_lutyens_Vista_xygpam.webp",
     "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644054/Grand-Entrance-Plaza-S1_rxrbiw.webp"
   ],
-  "location": "Sector 63A, Golf Course Extension Road, Gurgaon",
-  "address": "Sobha Sector 63A, Golf Course Extension Road, Gurugram, Haryana",
+  "location": "Sobha Sector 63A, Golf Course Extension Road, Gurugram, Haryana",
   "amenities": [
     "Modern Clubhouse",
     "Infinity Pool",
@@ -275,11 +274,11 @@
   {
     "id": 9,
     "title": "Tenino Lamborghini Residence",
-    "highlight": false,
+    "highlight": true,
     "price": "Rs. 9.50 Cr",
     "rating": 4.9,
     "type": "sale",
-    "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+    "image": "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752230/Tonino_Lamborghini_Residences_Balneario_Camboriu_1_640x800_crop_center_c95urw.webp",
     "images": [
       "https://res.cloudinary.com/dse4d1tua/image/upload/v1777751831/Prancheta-6_2x-1536x864_szycii.webp",
       "https://res.cloudinary.com/dse4d1tua/image/upload/v1777751831/living-1-quarto-1536x864_nbjgnl.webp",
