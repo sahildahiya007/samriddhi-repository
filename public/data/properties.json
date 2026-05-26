@@ -1,40 +1,5 @@
 [
-  {
-    "id": 1,
-    "title": "Elan The Emperor",
-    "price": "₹10 Cr Onwards",
-    "rating": 4.9,
-    "type": "sale",
-    "image": "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642961/3_e50v1p.jpg",
-    "images": [
-      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642962/image1_jkyxpy.jpg",
-      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642962/image10_pul0fn.jpg",
-      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642961/b2afe0baf7c600751f0408a669626d46_oihmlj.jpg"
-    ],
-    "location": "Sector 106, Dwarka Expressway, Gurgaon",
-    "address": "Elan The Emperor, Sector 106, Gurugram, Haryana",
-    "amenities": [
-      "8-Level Luxury Clubhouse",
-      "Infinity Swimming Pool",
-      "Private Elevators",
-      "VRV Air Conditioning",
-      "Sky Deck & Observatory",
-      "Gymnasium",
-      "Spa & Wellness Center",
-      "Indoor Sports Arena",
-      "Kids Play Area",
-      "Horse Riding Area",
-      "3-Tier Security",
-      "Landscaped Greens"
-    ],
-    "details": "Elan The Emperor is an ultra-luxury residential development located in Sector 106 on Dwarka Expressway, Gurugram. Spread across expansive acres with iconic high-rise towers, the project offers premium 4 & 5 BHK residences designed with world-class architecture, private lift access, spacious balconies, imported finishes, and smart living features. Residents experience unmatched luxury through an 8-level clubhouse, resort-style amenities, landscaped open spaces, wellness zones, sports facilities, and seamless connectivity to Delhi, IGI Airport, Cyber City, and major business hubs.",
-    "contacts": {
-      "sales": "+91 9876543210",
-      "rent": "+91 9876543211",
-      "leasing": "+91 9876543212"
-    },
-    "cardDescription": "Ultra-luxury 4 & 5 BHK residences on Dwarka Expressway with private elevators, premium amenities, and skyline views."
-  },
+
   {
   "id": 2,
   "title": "Sobha Sector 63A",
