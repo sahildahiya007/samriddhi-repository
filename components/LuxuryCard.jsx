@@ -190,4 +190,4 @@ const LuxuryCard = ({ property, onViewDetails, onCall }) => {
   );
 };
 
-export default LuxuryCard;
+export default LuxuryCard; 
