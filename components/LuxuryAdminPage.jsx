@@ -384,4 +384,4 @@ const LuxuryAdminPage = ({ token, onBack }) => {
   );
 };
 
-export default LuxuryAdminPage;
+export default LuxuryAdminPage; 
