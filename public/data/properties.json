@@ -36,39 +36,41 @@
     "cardDescription": "Ultra-luxury 4 & 5 BHK residences on Dwarka Expressway with private elevators, premium amenities, and skyline views."
   },
   {
-    "id": 2,
-    "title": "Elan The Emperor",
-    "price": "₹10 Cr Onwards",
-    "rating": 4.9,
-    "type": "sale",
-    "image": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
-    "images": [
-      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642961/b2afe0baf7c600751f0408a669626d46_oihmlj.jpg",
-      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642962/4_tmdsof.jpg",
-      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642962/image10_pul0fn.jpg"
-    ],
-    "location": "Sector 106, Dwarka Expressway, Gurgaon",
-    "address": "Elan The Emperor, Sector 106, Dwarka Expressway, Gurugram, Haryana",
-    "amenities": [
-      "Clubhouse",
-      "Infinity Pool",
-      "Private Elevator",
-      "Luxury Spa",
-      "Sky Lounge",
-      "Multi-tier Security",
-      "Landscaped Gardens",
-      "Power Backup",
-      "Sports Arena",
-      "Premium Concierge"
-    ],
-    "details": "Elan The Emperor is an iconic ultra-luxury residential development in Sector 106, Dwarka Expressway, Gurugram, offering resort-style living, world-class architecture, premium residences, elite amenities, and unmatched connectivity in one of Gurgaon’s most prestigious locations.",
-    "contacts": {
-      "sales": "+91 9876543213",
-      "rent": "+91 9876543214",
-      "leasing": "+91 9876543215"
-    },
-    "cardDescription": "Elan The Emperor is an iconic ultra-luxury residential development in Sector 106, Dwarka Expressway, Gurugram, offering resort-style living, world-class architecture, premium residences, elite amenities, and unmatched connectivity in one of Gurgaon’s most prestigious locations."
+  "id": 2,
+  "title": "Sobha Sector 63A",
+  "price": "₹6 Cr Onwards*",
+  "rating": 4.8,
+  "type": "sale",
+  "image": "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644043/SCG_lutyens_Vista_xygpam.webp",
+  "images": [
+    "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644032/SCG_lutyens_podium_efnnng.webp",
+    "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644043/SCG_lutyens_Vista_xygpam.webp",
+    "https://res.cloudinary.com/dse4d1tua/image/upload/v1779644054/Grand-Entrance-Plaza-S1_rxrbiw.webp"
+  ],
+  "location": "Sector 63A, Golf Course Extension Road, Gurgaon",
+  "address": "Sobha Sector 63A, Golf Course Extension Road, Gurugram, Haryana",
+  "amenities": [
+    "Modern Clubhouse",
+    "Infinity Pool",
+    "Fully Equipped Gymnasium",
+    "Luxury Lounge",
+    "Landscaped Gardens",
+    "Jogging Track",
+    "Senior Citizen Zone",
+    "Kids Play Area",
+    "Yoga & Meditation Deck",
+    "Multi-tier Security",
+    "Power Backup",
+    "Premium Concierge"
+  ],
+  "details": "Sobha Sector 63A is a premium luxury residential development located on Golf Course Extension Road, Gurugram, offering elegant 3 & 4 BHK residences with spacious layouts, sophisticated interiors, landscaped open spaces, and world-class lifestyle amenities. Developed by SOBHA Limited, the project combines architectural excellence, modern comfort, seamless connectivity, and refined living in one of Gurgaon’s most prestigious residential destinations.",
+  "contacts": {
+    "sales": "+91 9876543216",
+    "rent": "+91 9876543217",
+    "leasing": "+91 9876543218"
   },
+  "cardDescription": "Sobha Sector 63A is a premium luxury residential development located on Golf Course Extension Road, Gurugram, offering elegant residences, landscaped greens, elite amenities, and seamless connectivity."
+},
   {
     "id": 3,
     "title": "Executive 3BHK Lease",
