@@ -648,7 +648,7 @@ const LuxuryDetailsPage = ({ property, onClose, onCall }) => {
         </div>
       </motion.div>
     </motion.div>
-  );
+  ); 
 };
 
 export default LuxuryDetailsPage;
