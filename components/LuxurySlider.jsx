@@ -19,3 +19,4 @@ const LuxurySlider = ({ properties, onViewDetails, onCall }) => {
 };
 
 export default LuxurySlider;
+ 
