@@ -174,3 +174,4 @@ module.exports = {
   deleteProperty,
   uploadPropertyImage,
 };
+ 
