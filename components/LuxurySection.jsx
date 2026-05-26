@@ -314,4 +314,4 @@ const LuxurySection = () => {
   );
 };
 
-export default LuxurySection;
+export default LuxurySection; 
