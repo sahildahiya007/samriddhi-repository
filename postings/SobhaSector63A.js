@@ -77,4 +77,4 @@ const SobhaSector63A = {
   contacts: { sales: "+91 7838777017", email: "enquire@sobhalimited.com" },
 };
 
-module.exports = SobhaSector63A;
+module.exports = SobhaSector63A; 
