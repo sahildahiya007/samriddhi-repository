@@ -9,7 +9,7 @@
 ### [x] 3. Active Navbar Highlighting
 
 ### [x] 4. Update index.html SEO Meta
-
+ 
 - Title: "Civil Contractor Gurgaon | Construction Services - Samriddhi Estates"
 - Meta description with keywords
 - Open Graph tags
