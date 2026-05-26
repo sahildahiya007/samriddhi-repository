@@ -308,7 +308,7 @@ export default function Construction({
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 3500);
     } catch {
-      // Parent handler already manages user-facing error state.
+      // Parent handler  already manages user-facing error state.
     }
   };
 
