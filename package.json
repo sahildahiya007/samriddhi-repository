@@ -9,7 +9,7 @@
     "dev:all": "node scripts/dev-all.mjs",
     "build": "vite build",
     "preview": "vite preview"
-  },
+  }, 
   "dependencies": {
     "@supabase/supabase-js": "^2.101.1",
     "bcryptjs": "^2.4.3",
