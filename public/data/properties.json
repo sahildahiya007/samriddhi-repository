@@ -280,7 +280,12 @@
     "type": "sale",
     "image": "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752230/Tonino_Lamborghini_Residences_Balneario_Camboriu_1_640x800_crop_center_c95urw.webp",
     "images": [
-     "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752230/Prancheta-6_2x-1536x864_loxywb.webp","https://res.cloudinary.com/dse4d1tua/image/upload/v1777752230/suite-1-quarto-1536x864_zc5evx.webp","https://res.cloudinary.com/dse4d1tua/image/upload/v1777752229/hall-social-residences_krd7yz.webp","https://res.cloudinary.com/dse4d1tua/image/upload/v1777752053/Prancheta-6_2x-1536x864_sul7lu.webp","https://res.cloudinary.com/dse4d1tua/image/upload/v1777751831/Prancheta-6_2x-1536x864_szycii.webp","https://res.cloudinary.com/dse4d1tua/image/upload/v1777751831/living-1-quarto-1536x864_nbjgnl.webp",
+     "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752230/Prancheta-6_2x-1536x864_loxywb.webp",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752230/suite-1-quarto-1536x864_zc5evx.webp",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752229/hall-social-residences_krd7yz.webp",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752053/Prancheta-6_2x-1536x864_sul7lu.webp",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777751831/Prancheta-6_2x-1536x864_szycii.webp",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777751831/living-1-quarto-1536x864_nbjgnl.webp"
       
     ],
     "location": "Cyber City, Gurgaon",
