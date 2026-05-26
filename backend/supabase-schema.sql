@@ -11,4 +11,4 @@ create policy "app_state_service_role_all"
 on public.app_state
 for all
 using (auth.role() = 'service_role')
-with check (auth.role() = 'service_role');
+with check (auth.role() = 'service_role'); 
