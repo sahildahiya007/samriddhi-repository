@@ -140,7 +140,7 @@ samriddhi-estates/
 - **Registered Users**: User registration data and wishlists
 - **User IDs**: Counter for generating new user IDs
 
-## Important Notes
+## Important Notes 
 
 ⚠️ **The `persistent-data/` folder is NOT versioned** (.gitignore)
 - Each environment (dev, production) has its own database.json
