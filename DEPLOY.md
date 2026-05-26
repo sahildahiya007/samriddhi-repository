@@ -5,7 +5,7 @@
 ### Setup in 3 steps:
 
 1. **Connect to Netlify** from your GitHub repo
-2. **Set Environment Variables** in Netlify UI (Settings → Environment):
+2. **Set Environment Variables** in Netlify UI (Settings → Environment) :
    ```
    ADMIN_PASSWORD = K@9971647910
    JWT_SECRET = samridhi_jwt_secret_2025
