@@ -4,4 +4,4 @@ let constructionRates = {
   luxury: 4500,
 };
 
-module.exports = constructionRates;
+module.exports = constructionRates; 
