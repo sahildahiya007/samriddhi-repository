@@ -6,7 +6,7 @@ try {
   handler = serverless(app);
 } catch (err) {
   loadError = err;
-}
+} 
 
 exports.handler = async (event, context) => {
   // If the module failed to load, return a helpful error
