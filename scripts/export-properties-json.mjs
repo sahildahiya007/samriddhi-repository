@@ -54,3 +54,4 @@ fs.writeFileSync(
 );
 
 console.log(`Exported ${properties.length} properties to ${outputDir}`);
+ 
