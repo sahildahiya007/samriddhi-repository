@@ -29,3 +29,4 @@ try {
 }
 
 export const supabase = supabaseInstance;
+ 
