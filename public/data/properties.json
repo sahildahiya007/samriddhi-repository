@@ -69,9 +69,9 @@
     "price": "₹78,000/month",
     "rating": 4.6,
     "type": "rent",
-    "image": "https://images.unsplash.com/photo-1616594039964-3d0dd0b4f184?auto=format&fit=crop&w=1200&q=80",
+    "image": "https://images.unsplash.com/photo-1615874959474-d609969a20ed?auto=format&fit=crop&w=1200&q=80",
     "images": [
-      "https://images.unsplash.com/photo-1616594039964-3d0dd0b4f184?auto=format&fit=crop&w=1200&q=80",
+      
       "https://images.unsplash.com/photo-1615874959474-d609969a20ed?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80"
     ],
@@ -282,9 +282,7 @@
     "images": [
      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752230/Prancheta-6_2x-1536x864_loxywb.webp",
       "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752230/suite-1-quarto-1536x864_zc5evx.webp",
-      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752229/hall-social-residences_krd7yz.webp",
-      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752053/Prancheta-6_2x-1536x864_sul7lu.webp",
-      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777751831/Prancheta-6_2x-1536x864_szycii.webp",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777752229/hall-social-residences_krd7yz.webp",      
       "https://res.cloudinary.com/dse4d1tua/image/upload/v1777751831/living-1-quarto-1536x864_nbjgnl.webp"
       
     ],
