@@ -1,0 +1,907 @@
+[
+  {
+    "id": 1,
+    "title": "Elan The Emperor",
+    "price": "₹10 Cr Onwards",
+    "rating": 4.9,
+    "type": "sale",
+    "image": "",
+    "images": [
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642962/image1_jkyxpy.jpg",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642962/image10_pul0fn.jpg",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642961/b2afe0baf7c600751f0408a669626d46_oihmlj.jpg"
+    ],
+    "location": "Sector 106, Dwarka Expressway, Gurgaon",
+    "address": "Elan The Emperor, Sector 106, Gurugram, Haryana",
+    "amenities": [
+      "8-Level Luxury Clubhouse",
+      "Infinity Swimming Pool",
+      "Private Elevators",
+      "VRV Air Conditioning",
+      "Sky Deck & Observatory",
+      "Gymnasium",
+      "Spa & Wellness Center",
+      "Indoor Sports Arena",
+      "Kids Play Area",
+      "Horse Riding Area",
+      "3-Tier Security",
+      "Landscaped Greens"
+    ],
+    "details": "Elan The Emperor is an ultra-luxury residential development located in Sector 106 on Dwarka Expressway, Gurugram. Spread across expansive acres with iconic high-rise towers, the project offers premium 4 & 5 BHK residences designed with world-class architecture, private lift access, spacious balconies, imported finishes, and smart living features. Residents experience unmatched luxury through an 8-level clubhouse, resort-style amenities, landscaped open spaces, wellness zones, sports facilities, and seamless connectivity to Delhi, IGI Airport, Cyber City, and major business hubs.",
+    "contacts": {
+      "sales": "+91 9876543210",
+      "rent": "+91 9876543211",
+      "leasing": "+91 9876543212"
+    },
+    "cardDescription": "Ultra-luxury 4 & 5 BHK residences on Dwarka Expressway with private elevators, premium amenities, and skyline views."
+  },
+  {
+    "id": 2,
+    "title": "Elan The Emperor",
+    "price": "₹10 Cr Onwards",
+    "rating": 4.9,
+    "type": "sale",
+    "image": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
+    "images": [
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642961/b2afe0baf7c600751f0408a669626d46_oihmlj.jpg",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642962/4_tmdsof.jpg",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1779642962/image10_pul0fn.jpg"
+    ],
+    "location": "Sector 106, Dwarka Expressway, Gurgaon",
+    "address": "Elan The Emperor, Sector 106, Dwarka Expressway, Gurugram, Haryana",
+    "amenities": [
+      "Clubhouse",
+      "Infinity Pool",
+      "Private Elevator",
+      "Luxury Spa",
+      "Sky Lounge",
+      "Multi-tier Security",
+      "Landscaped Gardens",
+      "Power Backup",
+      "Sports Arena",
+      "Premium Concierge"
+    ],
+    "details": "Elan The Emperor is an iconic ultra-luxury residential development in Sector 106, Dwarka Expressway, Gurugram, offering resort-style living, world-class architecture, premium residences, elite amenities, and unmatched connectivity in one of Gurgaon’s most prestigious locations.",
+    "contacts": {
+      "sales": "+91 9876543213",
+      "rent": "+91 9876543214",
+      "leasing": "+91 9876543215"
+    },
+    "cardDescription": "Elan The Emperor is an iconic ultra-luxury residential development in Sector 106, Dwarka Expressway, Gurugram, offering resort-style living, world-class architecture, premium residences, elite amenities, and unmatched connectivity in one of Gurgaon’s most prestigious locations."
+  },
+  {
+    "id": 3,
+    "title": "Executive 3BHK Lease",
+    "price": "₹1.6 Lakh/month",
+    "rating": 4.8,
+    "type": "rent",
+    "image": "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?auto=format&fit=crop&w=1200&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600585152915-d208bec867a1?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "location": "Cyber Hub, Gurgaon",
+    "address": "Sector 43, Gurgaon, Haryana",
+    "amenities": [
+      "Furnished",
+      "Housekeeping",
+      "Power Backup",
+      "Metro Access"
+    ],
+    "details": "Premium lease apartment for executive living.",
+    "contacts": {
+      "sales": "+91 8398979897",
+      "rent": "+91 9968149329",
+      "leasing": "+91 8448660575"
+    },
+    "cardDescription": "Premium lease apartment for executive living."
+  },
+  {
+    "id": 4,
+    "title": "Designer 2BHK Rental",
+    "price": "₹78,000/month",
+    "rating": 4.6,
+    "type": "rent",
+    "image": "https://images.unsplash.com/photo-1616594039964-3d0dd0b4f184?auto=format&fit=crop&w=1200&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1616594039964-3d0dd0b4f184?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1615874959474-d609969a20ed?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "location": "Sushant Lok, Gurgaon",
+    "address": "Sector 57, Gurgaon, Haryana",
+    "amenities": [
+      "Pool",
+      "Yoga Lawn",
+      "Basement Parking"
+    ],
+    "details": "Sunlit apartment with urban Gurgaon aesthetics.",
+    "contacts": {
+      "sales": "+91 8398979897",
+      "rent": "+91 9968149329",
+      "leasing": "+91 8448660575"
+    },
+    "cardDescription": "Sunlit apartment with urban Gurgaon aesthetics."
+  },
+  {
+    "id": 5,
+    "title": "Premium 4BHK Independent Floor",
+    "price": "₹1.10 Lakh/month",
+    "rating": 4.7,
+    "type": "rent",
+    "image": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600585152915-d208bec867a1?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "location": "South City 1, Gurgaon",
+    "address": "Block E, South City 1, Sector 41, Gurgaon, Haryana",
+    "amenities": [
+      "Modular Kitchen",
+      "Terrace Garden",
+      "Covered Parking",
+      "24x7 Security"
+    ],
+    "details": "Spacious independent floor with private terrace, vastu-compliant design and premium Italian marble throughout.",
+    "contacts": {
+      "sales": "+91 8398979897",
+      "rent": "+91 9968149329",
+      "leasing": "+91 8448660575"
+    },
+    "cardDescription": "Spacious independent floor with private terrace, vastu-compliant design and premium Italian marble throughout."
+  },
+  {
+    "id": 6,
+    "title": "Custom Villa Construction Package",
+    "price": "Starting at ₹3,000/sq ft",
+    "rating": 4.8,
+    "type": "construction",
+    "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "location": "New Gurgaon & Golf Course Extension",
+    "address": "Custom build support across Gurgaon",
+    "amenities": [
+      "Turnkey Execution",
+      "Architect Support",
+      "BOQ Planning",
+      "Premium Finishes"
+    ],
+    "details": "End-to-end villa and custom home construction packages with planning, approvals, civil work and finishing support.",
+    "contacts": {
+      "sales": "+91 8398979897",
+      "rent": "+91 9968149329",
+      "leasing": "+91 8448660575"
+    },
+    "cardDescription": "End-to-end villa and custom home construction packages with planning, approvals, civil work and finishing support."
+  },
+  {
+    "id": 8,
+    "title": "Elan The Emperor",
+    "badge": "New Launch",
+    "subtitle": "Sector 106 Gurgaon",
+    "typeText": "4/5 BHK Luxury Apartments",
+    "developer": "Elan Group",
+    "reraNumber": "GGM/902/634/2025/05",
+    "status": "Under Construction",
+    "startingPrice": "Rs. 10.45 Cr*",
+    "priceRange": "4 BHK: Rs. 10.45 Cr – Rs. 19.93 Cr • 5 BHK: Rs. 13.45 Cr – Rs. 25.61 Cr",
+    "price": "Rs. 10.45 Cr*",
+    "rating": 4.9,
+    "type": "sale",
+    "image": "https://res.cloudinary.com/dse4d1tua/image/upload/v1777923957/image12_xkcf84.jpg",
+    "images": [
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777923957/image12_xkcf84.jpg",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777923968/videoframe_2442_xi86go.png",
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777923968/videoframe_2442_xi86go.png"
+    ],
+    "floorPlans": [
+      "https://images.openai.com/static-rsc-4/FKwZBfkE7791Zy9oaLjcz7PkI1ipDlcPjrhF0TMIIX0n2Ud3-AlrQoUgoFdCiE_9FdNlnpsHQfIbtRz8S5cbTV7zTVn6VU9LGnZMOvbtWHK50FkzTMZ3WOtPW1qMpFAfJtlgdmsE0q_VcY2prrl9_JgeNUBP5MNURHR3fSPvw8MYnNGyYYOKknhkRcRgM22m?purpose=fullsize",
+      "https://images.openai.com/static-rsc-4/hpc_mQ5gNoRXe0Rt_CNlZlgn7-MZURDCnksiEw8MsrocekQoIlKK0ZA2-EbAqCJJifh49lSBjbPNgE9jbkgwmaXa9lBW5sjh6tYPJNpTHYBsHMy7dT4TqApRVX0INcwyo12oMc9jsndHGY9uQJsnghm65gLx54houaiLAVXeiU841whp8jlQwrHTIxgwER_L?purpose=fullsize"
+    ],
+    "location": "Dwarka Expressway, Gurgaon",
+    "address": "Sector 106, Dwarka Expressway, Gurugram, Haryana",
+    "amenities": [
+      "Private Lift Lobby",
+      "1.5 Lakh sq.ft Clubhouse",
+      "Smart Home Features",
+      "Resort-style Living"
+    ],
+    "details": "Elan The Emperor is a landmark ultra-luxury residential project on Dwarka Expressway offering exclusive 4 & 5 BHK residences with premium amenities and strong connectivity.",
+    "highlights": [
+      "Ultra-luxury 4 & 5 BHK apartments & penthouses",
+      "Private lift lobby & elevators per residence",
+      "100+ amenities in a massive clubhouse",
+      "Green-facing and club-facing premium units",
+      "32–38 storey towers with smart home features"
+    ],
+    "detailsSections": [
+      {
+        "heading": "Overview",
+        "text": "Elan The Emperor is an ultra-luxury residential project located in Sector 106, Dwarka Expressway, Gurugram. Developed by Elan Group, this iconic development offers world-class 4 & 5 BHK residences designed for premium living and exclusivity. This project is positioned as one of the most prestigious addresses on Dwarka Expressway, combining luxury, connectivity, and modern architecture."
+      },
+      {
+        "heading": "Key Highlights",
+        "text": "• Ultra-luxury 4 & 5 BHK apartments & penthouses\n• Located on Dwarka Expressway (Sector 106 Gurgaon)\n• Private lift lobby & elevators for each residence\n• Massive clubhouse with 100+ amenities\n• Green-facing and club-facing premium units\n• High-rise towers with smart home features\n• Resort-style living with landscaped greens"
+      },
+      {
+        "heading": "Location Advantages",
+        "text": "Direct access to Dwarka Expressway\n15 mins to IGI Airport\n20 mins to Cyber City & Udyog Vihar\nClose to top schools, hospitals & malls\nExcellent connectivity to Delhi & Gurgaon"
+      },
+      {
+        "heading": "Project Details",
+        "text": "Developer: Elan Group\nLocation: Sector 106, Gurgaon\nProject Type: Ultra-Luxury Residential\nTotal Area: Approx. 30 Acres\nTowers: 18+ high-rise towers\nFloors: 32–38 storeys\nTotal Units: ~1800 units\nRERA No.: GGM/902/634/2025/05\nStatus: Under Construction"
+      },
+      {
+        "heading": "Unit Configurations & Sizes",
+        "text": "4 BHK: 4,223 – 8,053 sq.ft\n5 BHK: 5,434 – 10,347 sq.ft\nPenthouses: Up to ~10,000+ sq.ft"
+      },
+      {
+        "heading": "Price Details",
+        "text": "Starting Price: Rs. 10.45 Cr*\n4 BHK: Rs. 10.45 Cr – Rs. 19.93 Cr\n5 BHK: Rs. 13.45 Cr – Rs. 25.61 Cr\n(*Prices are indicative & subject to change)"
+      }
+    ],
+    "bedrooms": 5,
+    "bathrooms": 5,
+    "area": "5,434",
+    "floor": "32 of 38",
+    "furnishing": "Ultra Luxury",
+    "parking": "3 Covered",
+    "facing": "North-West",
+    "isLuxury": true,
+    "nearbyPlaces": [
+      {
+        "name": "IGI Airport",
+        "distance": "15 mins"
+      },
+      {
+        "name": "Cyber City",
+        "distance": "20 mins"
+      },
+      {
+        "name": "Top Schools",
+        "distance": "Nearby"
+      },
+      {
+        "name": "Hospitals",
+        "distance": "Nearby"
+      },
+      {
+        "name": "Malls",
+        "distance": "Nearby"
+      }
+    ],
+    "unitConfigs": [
+      {
+        "type": "4 BHK",
+        "size": "4,223 – 8,053 sq.ft"
+      },
+      {
+        "type": "5 BHK",
+        "size": "5,434 – 10,347 sq.ft"
+      },
+      {
+        "type": "Penthouse",
+        "size": "Up to ~10,000+ sq.ft"
+      }
+    ],
+    "contacts": {
+      "sales": "+91 8398979897",
+      "rent": "+91 9968149329",
+      "leasing": "+91 8448660575"
+    },
+    "cardDescription": "Elan The Emperor is a landmark ultra-luxury residential project on Dwarka Expressway offering exclusive 4 & 5 BHK residences with premium amenities and strong connectivity."
+  },
+  {
+    "id": 9,
+    "title": "Tenino Lamborghini Residence",
+    "highlight": false,
+    "price": "Rs. 9.50 Cr",
+    "rating": 4.9,
+    "type": "sale",
+    "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1560448233-89f5fa2934c7?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "location": "Cyber City, Gurgaon",
+    "address": "Tenino Lamborghini Signature Tower, Cyber City, Gurgaon, Haryana",
+    "amenities": [
+      "Private Spa",
+      "Valet Parking",
+      "Concierge",
+      "Panoramic Views"
+    ],
+    "details": "Luxury signature residence inspired by the performance and craftsmanship of Lamborghini, set within a premium Gurugram tower.",
+    "bedrooms": 4,
+    "bathrooms": 5,
+    "area": "4,200",
+    "floor": "12 of 24",
+    "furnishing": "Ultra Luxury",
+    "parking": "3 Covered",
+    "facing": "West",
+    "isLuxury": true,
+    "nearbyPlaces": [
+      {
+        "name": "Metro Station",
+        "distance": "0.7 km"
+      },
+      {
+        "name": "Fortis Hospital",
+        "distance": "1.8 km"
+      },
+      {
+        "name": "Cyber Hub",
+        "distance": "2.4 km"
+      },
+      {
+        "name": "NH-48",
+        "distance": "2.1 km"
+      },
+      {
+        "name": "Golf Course Road",
+        "distance": "4.0 km"
+      }
+    ],
+    "contacts": {
+      "sales": "+91 8398979897",
+      "rent": "+91 9968149329",
+      "leasing": "+91 8448660575"
+    },
+    "cardDescription": "Luxury signature residence inspired by the performance and craftsmanship of Lamborghini, set within a premium Gurugram tower."
+  },
+  {
+    "id": 10,
+    "title": "Sobha Crescent",
+    "badge": "New Launch",
+    "subtitle": "Sector 63A, Golf Course Extension Road",
+    "typeText": "3/4 BHK Luxury Apartments",
+    "developer": "Sobha Limited",
+    "reraNumber": "GGM/1054/786/2026/26",
+    "status": "Under Construction",
+    "startingPrice": "Rs. 4.66 Cr*",
+    "priceRange": "3 BHK: Rs. 5.4 Cr – Rs. 6.3 Cr • 4 BHK: Rs. 6.4 Cr – Rs. 7+ Cr",
+    "price": "Rs. 4.66 Cr*",
+    "rating": 4.8,
+    "type": "sale",
+    "image": "https://res.cloudinary.com/dse4d1tua/image/upload/v1777924619/sobha-crescent-63a-master-bedroom_ad1ecp.png",
+    "images": [
+      "https://res.cloudinary.com/dse4d1tua/image/upload/v1777924619/sobha-crescent-63a-master-bedroom_ad1ecp.png",
+      "https://images.openai.com/static-rsc-4/FKwZBfkE7791Zy9oaLjcz7PkI1ipDlcPjrhF0TMIIX0n2Ud3-AlrQoUgoFdCiE_9FdNlnpsHQfIbtRz8S5cbTV7zTVn6VU9LGnZMOvbtWHK50FkzTMZ3WOtPW1qMpFAfJtlgdmsE0q_VcY2prrl9_JgeNUBP5MNURHR3fSPvw8MYnNGyYYOKknhkRcRgM22m?purpose=fullsize",
+      "https://images.openai.com/static-rsc-4/hpc_mQ5gNoRXe0Rt_CNlZlgn7-MZURDCnksiEw8MsrocekQoIlKK0ZA2-EbAqCJJifh49lSBjbPNgE9jbkgwmaXa9lBW5sjh6tYPJNpTHYBsHMy7dT4TqApRVX0INcwyo12oMc9jsndHGY9uQJsnghm65gLx54houaiLAVXeiU841whp8jlQwrHTIxgwER_L?purpose=fullsize"
+    ],
+    "location": "Golf Course Extension Road, Gurgaon",
+    "address": "Sector 63A, Golf Course Extension Road, Gurugram, Haryana",
+    "amenities": [
+      "Grand luxury clubhouse",
+      "Swimming pool & wellness zones",
+      "Gymnasium & fitness center",
+      "Sports courts & jogging tracks"
+    ],
+    "details": "Sobha Crescent is a premium ultra-luxury residential project on Golf Course Extension Road offering elegant 3 & 4 BHK residences with Aravalli views, premium amenities, and strong connectivity.",
+    "highlights": [
+      "Ultra-luxury 3 & 4 BHK apartments",
+      "Prime Golf Course Extension Road location",
+      "Low-density project with limited units",
+      "Massive clubhouse and green spaces",
+      "Smart home features and premium finishes"
+    ],
+    "detailsSections": [
+      {
+        "heading": "Overview",
+        "text": "Sobha Crescent is a premium ultra-luxury residential project located on Golf Course Extension Road, Gurugram. Developed by Sobha Limited, it offers beautifully designed 3 & 4 BHK residences with world-class construction quality and modern lifestyle features. The project combines luxury, privacy, and connectivity with Aravalli-facing views and large balconies."
+      },
+      {
+        "heading": "Key Highlights",
+        "text": "• Ultra-luxury 3 & 4 BHK apartments\n• Prime location on Golf Course Extension Road\n• Low-density project with limited units for privacy\n• Massive clubhouse (60,000–1,00,000 sq.ft approx.)\n• Aravalli-facing views & large balconies\n• Smart home features & premium interiors\n• 80% open green spaces with resort-style landscaping"
+      },
+      {
+        "heading": "Location Advantages",
+        "text": "Located on Golf Course Extension Road, Sector 63A Gurgaon\n10–15 mins to Cyber City & Golf Course Road\n25 mins to IGI Airport\nClose to top schools, hospitals & malls\nExcellent connectivity to NH-48 & Sohna Road\nSurrounded by premium residential developments"
+      },
+      {
+        "heading": "Project Details",
+        "text": "Developer: Sobha Limited\nLocation: Sector 63A, Gurgaon\nProject Type: Luxury Residential\nTotal Area: ~12 Acres\nTowers: 2–4 towers (phase-wise development)\nTotal Units: ~350–600 (low-density)\nFloors: High-rise + low-rise mix\nRERA No.: GGM/1054/786/2026/26\nStatus: New Launch / Under Construction\nPossession: ~2030–2031"
+      },
+      {
+        "heading": "Unit Configurations & Sizes",
+        "text": "3 BHK: 2,277 – 2,634 sq.ft\n4 BHK: 2,669 – 2,996 sq.ft\nPremium Units: Up to ~3,000+ sq.ft"
+      },
+      {
+        "heading": "Price Details",
+        "text": "Starting Price: Rs. 4.66 Cr*\n3 BHK: Rs. 5.4 Cr – Rs. 6.3 Cr*\n4 BHK: Rs. 6.4 Cr – Rs. 7+ Cr*\n(*Prices are indicative & may vary)"
+      }
+    ],
+    "bedrooms": 4,
+    "bathrooms": 4,
+    "area": "2,996",
+    "floor": "High-rise mix",
+    "furnishing": "Furnished",
+    "parking": "2 Covered",
+    "facing": "Aravalli-facing",
+    "isLuxury": true,
+    "nearbyPlaces": [
+      {
+        "name": "Cyber City",
+        "distance": "10–15 mins"
+      },
+      {
+        "name": "Golf Course Road",
+        "distance": "10–15 mins"
+      },
+      {
+        "name": "IGI Airport",
+        "distance": "25 mins"
+      },
+      {
+        "name": "Top Schools",
+        "distance": "Nearby"
+      },
+      {
+        "name": "Hospitals",
+        "distance": "Nearby"
+      }
+    ],
+    "contacts": {
+      "sales": "+91 8398979897",
+      "rent": "+91 9968149329",
+      "leasing": "+91 8448660575"
+    },
+    "cardDescription": "Sobha Crescent is a premium ultra-luxury residential project on Golf Course Extension Road offering elegant 3 & 4 BHK residences with Aravalli views, premium amenities, and strong connectivity."
+  },
+  {
+    "id": 11,
+    "title": "Sobha Sector 63A",
+    "badge": "New Launch",
+    "subtitle": "Sector 63A Gurugram",
+    "typeText": "3/4 BHK Luxury Apartments",
+    "developer": "SOBHA Limited",
+    "reraNumber": "NA",
+    "status": "New Launch",
+    "startingPrice": "₹6.00 Cr",
+    "priceRange": "3 BHK: ₹5.40 Cr – ₹6.10 Cr • 4 BHK: ₹6.00 Cr – ₹7.00 Cr",
+    "price": "₹6.00 Cr",
+    "rating": 4.8,
+    "type": "sale",
+    "image": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "location": "Golf Course Extension Road, Gurgaon",
+    "address": "Sector 63A, Golf Course Extension Road, Gurugram, Haryana",
+    "amenities": [
+      "Low-density luxury layout",
+      "Grand entrance and lobby",
+      "Premium clubhouse and leisure decks",
+      "Aravalli-facing open greens"
+    ],
+    "details": "New Ultra-Luxury Residential Project by Sobha Limited in Sector 63A, Gurugram. Known for unmatched construction quality and timely delivery, this new launch delivers premium living for homebuyers who value space, privacy, and excellence.",
+    "highlights": [
+      "Prime Sector 63A location on Golf Course Extension Road",
+      "New launch by SOBHA Limited with luxury finishes",
+      "Low-density project with premium open spaces",
+      "Ultra-luxury 3/4 BHK apartments with smart living features"
+    ],
+    "detailsSections": [
+      {
+        "heading": "About Sobha Sector 63A",
+        "text": "New Ultra-Luxury Residential Project by Sobha Limited in Sector 63A, Gurugram. Sobha Limited proudly presents a new ultra-luxury residential project designed for those who value space, privacy, and excellence. This upcoming launch is set to become one of the most sought-after luxury addresses in Gurugram."
+      },
+      {
+        "heading": "Prime Location",
+        "text": "Located on Golf Course Extension Road, Sector 63A, this project offers seamless connectivity to Golf Course Road, NH-48, Sohna Road, premium schools, hospitals, and business districts. It is surrounded by high-end developments and strong social infrastructure."
+      },
+      {
+        "heading": "Project Overview",
+        "text": "This 12-acre low-density residential development is thoughtfully planned with only around 600 exclusive units, ensuring privacy and expansive open spaces. The project features premium towers, grand entry, superior ventilation, and views toward the Aravalli hills."
+      },
+      {
+        "heading": "Location Advantages",
+        "text": "Close to Golf Course Road & Golf Course Extension Road\nExcellent connectivity to NH-48 and Sohna Road\nProximity to top schools, hospitals & business districts\nPeaceful surroundings with Aravalli hill views"
+      }
+    ],
+    "bedrooms": 4,
+    "bathrooms": 4,
+    "area": "3,025",
+    "floor": "High-rise towers",
+    "furnishing": "Luxury Finish",
+    "parking": "2 Covered",
+    "facing": "North-East",
+    "isLuxury": true,
+    "nearbyPlaces": [
+      {
+        "name": "Golf Course Road",
+        "distance": "10 mins"
+      },
+      {
+        "name": "Cyber City",
+        "distance": "15 mins"
+      },
+      {
+        "name": "IGI Airport",
+        "distance": "25 mins"
+      },
+      {
+        "name": "Top Schools",
+        "distance": "Nearby"
+      },
+      {
+        "name": "Hospitals",
+        "distance": "Nearby"
+      }
+    ],
+    "contacts": {
+      "sales": "+91 7838777017",
+      "email": "enquire@sobhalimited.com"
+    },
+    "cardDescription": "New Ultra-Luxury Residential Project by Sobha Limited in Sector 63A, Gurugram. Known for unmatched construction quality and timely delivery, this new launch delivers premium living for homebuyers who value space, privacy, and excellence."
+  },
+  {
+    "id": 100,
+    "title": "Gurgaon Signature Residences",
+    "badge": "Demo Detail Page",
+    "subtitle": "Sector 66, Golf Course Extension Road",
+    "typeText": "2, 3, 4 BHK Apartments and Penthouses",
+    "developer": "Signature Realty",
+    "reraNumber": "GGM/2026/999/01",
+    "status": "Ready To Move",
+    "startingPrice": "Rs. 1.25 Cr*",
+    "priceRange": "2 BHK: Rs. 1.25 Cr - Rs. 1.65 Cr | 3 BHK: Rs. 1.85 Cr - Rs. 2.75 Cr | 4 BHK: Rs. 3.50 Cr+",
+    "price": "Rs. 1.25 Cr*",
+    "rating": 5,
+    "type": "sale",
+    "image": "https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=1400&q=80",
+    "images": [
+      "https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=80"
+    ],
+    "location": "Golf Course Extension Road, Gurgaon",
+    "address": "Sector 66, Golf Course Extension Road, Gurugram, Haryana",
+    "amenities": [
+      "Rooftop Infinity Pool",
+      "Private Lift Lobbies",
+      "Concierge & Valet",
+      "Clubhouse & Spa",
+      "Multi-sport Court",
+      "Children's Play Area",
+      "Jogging Track",
+      "Basement Parking",
+      "EV Charging",
+      "CCTV & 3-tier Security",
+      "Landscaped Gardens",
+      "Power Backup"
+    ],
+    "details": "Gurgaon Signature Residences is a demo luxury listing built to show the complete detail-page experience for a Gurgaon real estate website. It combines verified approval information, floor plans, amenities, location intelligence, pricing, possession status, builder credibility, and site-visit actions in one property page.",
+    "highlights": [
+      "Ready-to-move 2, 3, 4 BHK apartments and limited penthouses",
+      "Direct access to Golf Course Extension Road",
+      "Verified RERA and approval details",
+      "High rental demand in the micro-market",
+      "Clubhouse, pool, EV charging and three-tier security"
+    ],
+    "detailsSections": [
+      {
+        "heading": "Overview",
+        "text": "A premium collection of apartments and penthouses built with efficient planning, solid construction standards, large balconies, and smart-home readiness. The project is suitable for end-use as well as long-term rental yield."
+      },
+      {
+        "heading": "Location Advantages",
+        "text": "8-12 mins to Cyber City\n25 mins to IGI Airport\nImmediate access to Sohna Road, SPR and NH-48\nClose to Heritage Xperiential School, Medanta Medicity and premium retail hubs"
+      },
+      {
+        "heading": "Investment Rationale",
+        "text": "Golf Course Extension Road continues to see demand from corporate tenants, upgrading families and NRIs. Ready inventory, verified approvals and limited premium supply help support rental and resale fundamentals."
+      }
+    ],
+    "bedrooms": null,
+    "bathrooms": null,
+    "area": "950 - 4,500+",
+    "floor": "Low, mid and high floor options",
+    "furnishing": "Semi-furnished",
+    "parking": "2 covered parkings",
+    "facing": "East, north-east and park-facing options",
+    "isLuxury": true,
+    "nearbyPlaces": [
+      {
+        "name": "Cyber City",
+        "distance": "8-12 mins"
+      },
+      {
+        "name": "IGI Airport",
+        "distance": "25 mins"
+      },
+      {
+        "name": "DLF Golf Course",
+        "distance": "6 mins"
+      },
+      {
+        "name": "Nearest Metro",
+        "distance": "3.5 km"
+      },
+      {
+        "name": "Medanta Medicity",
+        "distance": "12 mins"
+      },
+      {
+        "name": "Heritage Xperiential School",
+        "distance": "10 mins"
+      }
+    ],
+    "unitConfigs": [
+      {
+        "label": "2 BHK",
+        "size": "950 - 1,100 sq.ft",
+        "price": "Rs. 1.25 Cr - Rs. 1.65 Cr"
+      },
+      {
+        "label": "3 BHK",
+        "size": "1,450 - 1,650 sq.ft",
+        "price": "Rs. 1.85 Cr - Rs. 2.75 Cr"
+      },
+      {
+        "label": "4 BHK",
+        "size": "2,350 - 2,800 sq.ft",
+        "price": "Rs. 3.50 Cr - Rs. 5.20 Cr"
+      },
+      {
+        "label": "Penthouse",
+        "size": "4,500+ sq.ft",
+        "price": "On request"
+      }
+    ],
+    "floorPlans": [
+      {
+        "label": "2 BHK Efficient Plan",
+        "size": "950 sq.ft",
+        "thumbnail": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=60",
+        "fullImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=80",
+        "pdf": "https://example.com/floorplans/gurgaon-signature-2bhk.pdf"
+      },
+      {
+        "label": "3 BHK Corner Plan",
+        "size": "1,450 sq.ft",
+        "thumbnail": "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=60",
+        "fullImage": "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1400&q=80",
+        "pdf": "https://example.com/floorplans/gurgaon-signature-3bhk.pdf"
+      },
+      {
+        "label": "4 BHK Premium Plan",
+        "size": "2,350 sq.ft",
+        "thumbnail": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80",
+        "fullImage": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1400&q=80",
+        "pdf": "https://example.com/floorplans/gurgaon-signature-4bhk.pdf"
+      }
+    ],
+    "masterPlan": {
+      "image": "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1400&q=80",
+      "pdf": "https://example.com/masterplan/gurgaon-signature-masterplan.pdf"
+    },
+    "priceList": [
+      {
+        "unit": "2 BHK",
+        "size": "950 sq.ft",
+        "price": "Rs. 1.25 Cr"
+      },
+      {
+        "unit": "3 BHK",
+        "size": "1,450 sq.ft",
+        "price": "Rs. 1.95 Cr"
+      },
+      {
+        "unit": "4 BHK",
+        "size": "2,350 sq.ft",
+        "price": "Rs. 3.85 Cr"
+      }
+    ],
+    "contacts": {
+      "sales": "+91 9123456789",
+      "whatsapp": "+91 9123456789"
+    },
+    "brochureUrl": "https://example.com/brochures/gurgaon-signature-brochure.pdf",
+    "builder": {
+      "name": "Signature Realty",
+      "logo": "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=400&q=60",
+      "years": 25,
+      "projectsDelivered": 45,
+      "underConstruction": 8,
+      "totalArea": "12M+ sq.ft",
+      "link": "/builder/signature-realty",
+      "description": "Signature Realty has 25+ years of experience delivering premium residential and mixed-use projects across NCR. Known for quality, compliance and timely delivery."
+    },
+    "cardDescription": "Complete demo Gurgaon detail listing with RERA approvals, floor plans, amenities, location map, builder profile and Airbnb-style detail UX.",
+    "why": "A ready-to-move luxury address with strong Golf Course Extension connectivity, practical apartment layouts, verified approvals, and high rental demand from corporate tenants.",
+    "configurationSummary": "2, 3, 4 BHK apartments and penthouses",
+    "sizeRange": "950 - 4,500+ sq.ft",
+    "possession": "Ready to move",
+    "landParcel": "7.5 acres",
+    "towers": "5 towers",
+    "totalUnits": "420 residences",
+    "floors": "G+32 floors",
+    "maintenance": "Rs. 8.50 per sq.ft approx.",
+    "bookingAmount": "Rs. 10 lakh",
+    "connectivitySummary": "Golf Course Extension Road, Sohna Road, SPR and NH-48 access",
+    "mapQuery": "Sector 66 Golf Course Extension Road Gurugram Haryana",
+    "licenseStatus": "Valid group housing license",
+    "approvingAuthority": "HRERA Gurugram",
+    "reraApprovals": [
+      {
+        "label": "RERA registration",
+        "value": "GGM/2026/999/01"
+      },
+      {
+        "label": "Building plan",
+        "value": "Approved by DTCP Haryana"
+      },
+      {
+        "label": "Occupation certificate",
+        "value": "Available for completed towers"
+      }
+    ]
+  },
+  {
+    "id": 9999,
+    "isTemplate": true,
+    "hidden": true,
+    "slug": "template-property",
+    "metaTitle": "Template Property - Use to add a new listing",
+    "metaDescription": "Fill every field to create a new Gurgaon property listing. Remove isTemplate/hidden before publishing.",
+    "title": "TEMPLATE: Property Title",
+    "subtitle": "Sector XX, Gurgaon",
+    "badge": "Template",
+    "typeText": "2/3/4 BHK Apartments",
+    "developer": "Developer Name",
+    "reraNumber": "GGM/XXXX/XXXX/XXXX",
+    "status": "Status (Ready/Under Construction/New Launch)",
+    "possession": "YYYY-MM",
+    "landParcel": "Land Parcel / Plot No.",
+    "towers": "Number of Towers",
+    "totalUnits": "Total units",
+    "floors": "Floors e.g. 32-38",
+    "startingPrice": "₹X Cr*",
+    "priceRange": "2 BHK: ₹X – ₹Y • 3 BHK: ...",
+    "price": "₹X",
+    "pricePerSqft": {
+      "2BHK": "₹0/sqft",
+      "3BHK": "₹0/sqft",
+      "4BHK": "₹0/sqft"
+    },
+    "priceList": [
+      {
+        "unit": "2 BHK",
+        "size": "xxx sq.ft",
+        "price": "₹X"
+      },
+      {
+        "unit": "3 BHK",
+        "size": "yyy sq.ft",
+        "price": "₹Y"
+      }
+    ],
+    "unitConfigs": [
+      {
+        "label": "2 BHK",
+        "size": "xxx sq.ft",
+        "price": "₹X"
+      },
+      {
+        "label": "3 BHK",
+        "size": "yyy sq.ft",
+        "price": "₹Y"
+      },
+      {
+        "label": "4 BHK",
+        "size": "zzz sq.ft",
+        "price": "₹Z"
+      }
+    ],
+    "floorPlans": [
+      {
+        "label": "2 BHK Plan",
+        "size": "xxx sq.ft",
+        "thumbnail": "",
+        "fullImage": "",
+        "pdf": ""
+      },
+      {
+        "label": "3 BHK Plan",
+        "size": "yyy sq.ft",
+        "thumbnail": "",
+        "fullImage": "",
+        "pdf": ""
+      }
+    ],
+    "masterPlan": {
+      "image": "",
+      "pdf": ""
+    },
+    "image": "",
+    "images": [
+      ""
+    ],
+    "gallery": [
+      ""
+    ],
+    "location": "Locality / Landmark, Gurgaon",
+    "address": "Full postal address here",
+    "lat": 0,
+    "lng": 0,
+    "mapEmbedUrl": "https://www.google.com/maps?q=PLACE&output=embed",
+    "amenities": [
+      "Amenity 1",
+      "Amenity 2",
+      "Amenity 3"
+    ],
+    "highlights": [
+      "Highlight 1",
+      "Highlight 2"
+    ],
+    "details": "Long description for the property. Include floor area, special finishes, and buyer-focused details.",
+    "detailsSections": [
+      {
+        "heading": "Overview",
+        "text": "Short project overview."
+      },
+      {
+        "heading": "Location Advantages",
+        "text": "Key connectivity and local infrastructure."
+      },
+      {
+        "heading": "Project Details",
+        "text": "Developer, total area, towers, units, possession, RERA."
+      }
+    ],
+    "nearbyPlaces": [
+      {
+        "name": "IGI Airport",
+        "distance": "15 mins"
+      },
+      {
+        "name": "Cyber City",
+        "distance": "12 mins"
+      }
+    ],
+    "contacts": {
+      "sales": "+91 9XXXXXXXXX",
+      "whatsapp": "+91 9XXXXXXXXX",
+      "email": "sales@example.com"
+    },
+    "brochureUrl": "",
+    "builder": {
+      "name": "Builder Name",
+      "logo": "",
+      "years": 0,
+      "projectsDelivered": 0,
+      "underConstruction": 0,
+      "totalArea": "",
+      "link": "",
+      "description": "Short builder profile to build trust. Include awards, delivery record and specialties."
+    },
+    "why": "Why this property — fill in location, builder, finishes, and investment case.",
+    "configurationSummary": "List of available configurations",
+    "sizeRange": "Min - Max sq.ft",
+    "possession": "Possession date or status string",
+    "maintenance": "Maintenance estimate",
+    "bookingAmount": "Numeric or string deposit info",
+    "connectivitySummary": "Short connectivity summary",
+    "mapQuery": "Address or query for embedding maps",
+    "licenseStatus": "e.g., group housing license status",
+    "approvingAuthority": "Local approving agency, e.g., HRERA Gurugram",
+    "reraApprovals": [
+      {
+        "label": "RERA registration",
+        "value": "GGM/XXXX/XXXX/XXXX"
+      }
+    ],
+    "cardDescription": "Short card description used in listings and social cards."
+  }
+]
